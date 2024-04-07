@@ -1,0 +1,160 @@
+<?php
+
+use App\Http\Controllers\CaracteristicasController;
+use App\Http\Controllers\ClientAuthController;
+use App\Http\Controllers\DocumentacionController;
+use App\Http\Controllers\GarantiaController;
+use App\Http\Controllers\keller\ClientsController;
+use App\Http\Controllers\keller\CustomFieldsController;
+use App\Http\Controllers\keller\ModulesController;
+use App\Http\Controllers\keller\PermissionsController;
+use App\Http\Controllers\keller\PruebasController;
+use App\Http\Controllers\keller\UsersController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use GuzzleHttp\Psr7\Request;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+    return redirect('/login');
+});
+
+// Route::get('/dashboard', function () {
+//     $user = Auth::user();
+//     if ($user->role_id == 4) {
+//         return to_route('dashboard');
+//     }
+
+//     if ($user->role_id == 5) {
+//         return to_route('dashboard');
+//     }
+
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::get('/inicio', [ClientAuthController::class, 'index'])->middleware(['auth', 'verified'])->name('client.inicio');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/inicio', [ClientAuthController::class, 'index'])->name('client.inicio');
+    Route::get('/dashboard', [ClientAuthController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/pruebas-johann', [PruebasController::class, 'index'])->name('pruebas.johann');
+
+    // Users    
+    Route::get('/users',                            [UsersController::class, 'index'])->name('users.index');
+    Route::get('/users/create',                     [UsersController::class, 'create'])->name('users.create');
+    Route::get('/users/{id}/details',               [UsersController::class, 'show'])->name('users.details');
+    Route::get('/users/{id}/edit',                  [UsersController::class, 'edit'])->name('users.edit');
+    Route::post('/users',                           [UsersController::class, 'store'])->name('users.store');
+    Route::put('/users/{id}',                       [UsersController::class, 'update'])->name('users.update');
+    Route::post('/users/pagination',                [UsersController::class, 'pagination'])->name('users.pagination');
+    Route::delete('/users/{id}',                    [UsersController::class, 'destroy'])->name('users.delete');
+    //
+
+
+    // Permisions   
+    Route::get('/permisos',                         [PermissionsController::class, 'index'])->name('permissions.index');
+    Route::post('/permissions/roles',               [PermissionsController::class, 'store'])->name('permissions.roles.store');
+    Route::get('/permissions/roles',                [PermissionsController::class, 'list'])->name('permissions.roles.list');
+    Route::get('/permissions/roles/{id}',           [PermissionsController::class, 'edit'])->name('roles.permissions');
+    Route::put('/permissions/roles/{id}',           [PermissionsController::class, 'update'])->name('permissions.roles.update');
+    Route::put('/permissions/roles/{id}/check',     [PermissionsController::class, 'changePermissions'])->name('permissions.roles.change');
+    Route::delete('/permissions/roles/{id}',        [PermissionsController::class, 'destroy'])->name('permissions.roles.destroy');
+    //
+
+
+    // Custom  
+    Route::get('/config/custom-fields',             [CustomFieldsController::class, 'index'])->name('custom_fields.index');
+    Route::post('/custom-fields/pagination',        [CustomFieldsController::class, 'pagination'])->name('custom_fields.pagination');
+    Route::post('/custom-fields',                   [CustomFieldsController::class, 'store'])->name('custom_fields.store');
+    Route::put('/custom-fields/{id}',               [CustomFieldsController::class, 'update'])->name('custom_fields.update');
+    //
+
+
+    // Modules  
+    Route::get('/config/modules',                   [ModulesController::class, 'index'])->name('modules.index');
+    Route::get('/modules',                          [ModulesController::class, 'list'])->name('modules.list');
+    Route::put('/modules/{id}/change',              [ModulesController::class, 'change'])->name('modules.change');
+    Route::put('/modules/{id}',                     [ModulesController::class, 'update'])->name('modules.update');
+    //
+
+
+    // Clients
+    Route::get('/clients',                          [ClientsController::class, 'index'])->name('clients.index');
+    Route::post('/clients-pagination',              [ClientsController::class, 'pagination'])->name('clients.pagination');
+    Route::post('/clients',                         [ClientsController::class, 'store'])->name('clients.store');
+    Route::get('/client/{client}',                  [ClientsController::class, 'show'])->name('client.show');
+    Route::put('/clients/{client}',                 [ClientsController::class, 'update'])->name('clients.update');
+    Route::delete('/clients/{client}',              [ClientsController::class, 'destroy'])->name('clients.destroy');
+    //
+
+    // Productos 
+    Route::get('/productos',                        [ProductController::class, 'index'])->name('products.index');
+    Route::get('/productos-all',                    [ProductController::class, 'productos'])->name('products.productos');
+    Route::post('/products-pagination',             [ProductController::class, 'pagination'])->name('products.pagination');
+    Route::post('/producto',                        [ProductController::class, 'saveProduct'])->name('products.saveProduct');
+    Route::put('/producto/{product}',               [ProductController::class, 'updateProduct'])->name('products.updateProduct');
+    Route::delete('/producto/{product}',            [ProductController::class, 'deleteProduct'])->name('products.deleteProduct');
+    //
+
+    // Caracteristicas 
+    Route::get('/caracteristicas',                  [CaracteristicasController::class, 'index'])->name('catacteristica.index');
+    Route::get('/caracteristicas/{id}',             [CaracteristicasController::class, 'caracteristicas'])->name('catacteristica.selectProduct');
+    Route::get('/get-caracteristicas/{id}',         [CaracteristicasController::class, 'getCaracteristica'])->name('catacteristica.getCaracteristica');
+    Route::post('/caracteristicas-pagination',      [CaracteristicasController::class, 'pagination'])->name('catacteristica.pagination');
+    Route::post('/caracteristica',                  [CaracteristicasController::class, 'saveCaracteristica'])->name('catacteristica.saveCaracteristica');
+    Route::put('/caracteristica/{id}',              [CaracteristicasController::class, 'updateCaracteristica'])->name('catacteristica.updateCaracteristica');
+    Route::delete('/caracteristica/{id}',           [CaracteristicasController::class, 'deletePCaracteristica'])->name('catacteristica.deletePCaracteristica');
+    //
+
+    // Garantia 
+    Route::get('/garantias',                        [GarantiaController::class, 'index'])->name('garantia.index');
+    Route::post('/garantia-pagination',             [GarantiaController::class, 'pagination'])->name('garantia.pagination');
+    Route::post('/garantia',                        [GarantiaController::class, 'save'])->name('garantia.save');
+    Route::put('/garantia/{id}',                    [GarantiaController::class, 'update'])->name('garantia.update');
+    Route::delete('/garantia/{id}',                 [GarantiaController::class, 'delete'])->name('garantia.delete');
+    //
+
+    // Documentacion 
+    Route::get('/documentacion',                    [DocumentacionController::class, 'index'])->name('documentacion.index');
+    Route::post('/documentacion-pagination',        [DocumentacionController::class, 'pagination'])->name('documentacion.pagination');
+    Route::post('/documentacion',                   [DocumentacionController::class, 'save'])->name('documentacion.save');
+    Route::put('/documentacion/{id}',               [DocumentacionController::class, 'update'])->name('documentacion.update');
+    Route::delete('/documentacion/{id}',            [DocumentacionController::class, 'delete'])->name('documentacion.delete');
+    //
+
+
+
+});
+
+
+Route::get('/prueba', [PruebasController::class, 'test']);
+Route::get('email/{correo}',          [PruebasController::class, 'enviarCorreo']);
+
+
+Route::get('correo-prueba',          [PruebasController::class, 'correoPrueba']);
+
+require __DIR__ . '/auth.php';

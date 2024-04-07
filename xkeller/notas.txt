@@ -1,0 +1,59 @@
+#php 7.2.4 => C:\xampp\php
+#php 8.1   => C:\wamp64\bin\php\php8.1.13
+
+# http://10.255.255.2:7083/wsbemovil_pos.wsdl
++3174401159
++573174401159
+Pablo Vásquez
+
+
+✅ 🟠 🟡
+
+🟡 Perfil
+🟡 Roles y permisos 
+🟡 Usuarios 
+🟡 Modulos
+🟡 Campos personalizados
+
+🟡 Auth 
+  🟡 Forgot Password 
+  🟡 Reset Password
+  🟡 Login 
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+* En Sforza poner grafica de "Partes del cuerpo" -.-
+
+* Dashboard 
+* Configuracion plantilla tipo cms 
+* Auth 
+  - Confirm Password
+  - Verifay email 
+
+
+
+
+
+  INSERT INTO public.modules(
+	id,  jerarquia, module_permissions, module_group, name, icon, route)
+	VALUES (0,  0, 'permisos', '0', 'Inicio','fas fa-eye', '/');
+
