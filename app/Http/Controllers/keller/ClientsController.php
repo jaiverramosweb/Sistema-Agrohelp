@@ -80,10 +80,8 @@ class ClientsController extends Controller
 
     public function store(ClientSaveRequest $request)
     {
-        // $user_id = auth()->user()->id;
 
-        // dd($request->all());
-
+        // dd('entre');
         if (isset($request->password)) {
             User::create([
                 'email' => $request->email,
@@ -94,33 +92,33 @@ class ClientsController extends Controller
 
         $client = new Client();
         $client->nombre             = $request->nombre;
-        $client->segundo_nombre     = $request->segundo_nombre;
-        $client->apellido           = $request->apellido;
-        $client->segundo_apellido   = $request->segundo_apellido;
-        $client->tipo_documento     = $request->tipo_identificacion;
-        $client->documento          = $request->numero_identificacion;
+        $client->segundo_nombre     = isset($request->segundo_nombre) ? $request->segundo_nombre : '';
+        $client->apellido           = isset($request->apellido) ? $request->apellido : '';
+        $client->segundo_apellido   = isset($request->segundo_apellido) ? $request->segundo_apellido : '';
+        $client->tipo_documento     = $request->tipo_documento;
+        $client->documento          = $request->documento;
         $client->email              = $request->email;
-        $client->genero             = $request->genero;
-        $client->tipo_persona       = $request->tipo_persona;
-        $client->fecha_nacimiento   = $request->fecha_nacimiento;
+        $client->genero             = isset($request->genero) ? $request->genero : '';
+        $client->tipo_persona       = isset($request->tipo_persona) ? $request->tipo_persona : '';
+        $client->fecha_nacimiento   = isset($request->fecha_nacimiento) ? $request->fecha_nacimiento : null;
         $client->estado_persona     = 'Activo';
         $client->indicador_persona  = 'En espara';
 
         $client->save();
 
-        foreach ($request->direcciones as $direccion) {
-            $direcc = new Direccion();
+        // foreach ($request->direcciones as $direccion) {
+        //     $direcc = new Direccion();
 
-            $direcc->clients_id      = $client->id;
-            $direcc->tipo_direccion  = $direccion['tipo_direccion'];
-            $direcc->direccion       = $direccion['direccion'];
-            $direcc->ciudad          = $direccion['ciudad'];
-            $direcc->departamento    = $direccion['departamento'];
-            $direcc->estado          = 'Activo';
-            $direcc->indicador       = 'En espara';
+        //     $direcc->clients_id      = $client->id;
+        //     $direcc->tipo_direccion  = $direccion['tipo_direccion'];
+        //     $direcc->direccion       = $direccion['direccion'];
+        //     $direcc->ciudad          = $direccion['ciudad'];
+        //     $direcc->departamento    = $direccion['departamento'];
+        //     $direcc->estado          = 'Activo';
+        //     $direcc->indicador       = 'En espara';
 
-            $direcc->save();
-        }
+        //     $direcc->save();
+        // }
 
         return response()->json([
             "status"    => true,

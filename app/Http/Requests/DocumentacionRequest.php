@@ -22,10 +22,9 @@ class DocumentacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'caracteristicas_productos_id'  => ['required'],
-            'tipo'                          => ['required'],
-            'nombre'                        => ['required'],
-            'codigo'                        => ['required'],
+            'tipo'                          => ['nullable'],
+            'nombre'                        => ['nullable'],
+            'codigo'                        => ['nullable'],
         ];
     }
 }

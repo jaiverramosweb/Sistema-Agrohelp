@@ -18,11 +18,13 @@ return new class extends Migration
 
             $table->string('nombre');
             $table->string('interes');
-            $table->string('mora');
-            $table->string('indicador');
-            $table->string('codigo');
-            $table->integer('tiempo_minimo');
-            $table->integer('tiempo_maximo');
+            $table->string('mora')->nullable();
+            $table->string('indicador')->nullable();
+            $table->string('codigo')->nullable();
+            $table->string('monto_minimo')->nullable();
+            $table->string('monto_maximo')->nullable();
+            $table->integer('tiempo_minimo')->nullable();
+            $table->integer('tiempo_maximo')->nullable();
             $table->date('inactivacion')->nullable();
 
             $table->timestamps();

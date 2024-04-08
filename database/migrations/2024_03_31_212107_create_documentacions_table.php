@@ -13,13 +13,10 @@ return new class extends Migration
     {
         Schema::create('documentacions', function (Blueprint $table) {
             $table->id();
-
-            $table->integer('caracteristicas_productos_id');
-
-            $table->string('tipo');
             $table->string('nombre');
-            $table->string('indicador');
-            $table->string('codigo');
+            $table->string('tipo')->nullable();
+            $table->string('indicador')->nullable();
+            $table->string('codigo')->nullable();
 
             $table->timestamps();
         });

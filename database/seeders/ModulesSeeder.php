@@ -51,6 +51,35 @@ class ModulesSeeder extends Seeder
         // ]);
         //
 
+        // GRUPO - Configuraciones
+        DB::table('modules')->insert([
+            'jerarquia'             => 3,
+            'group'                 => true,
+            'name'                  => "Configuraciones",
+            'module_group'          => "0",
+            'icon'                  => "fas fa-cogs",
+            'route'                 => "config_group",
+            'module_permissions'    => "config",
+        ]);
+        DB::table('modules')->insert([
+            'jerarquia'             => 1,
+            'name'                  => "Garantias",
+            'icon'                  => "fab fa-wpforms",
+            'route'                 => "/config/garantias",
+            'module_permissions'    => "garantias",
+            'module_group'          => "config_group",
+        ]);
+        DB::table('modules')->insert([
+            'jerarquia'             => 2,
+            'name'                  => "Documentación",
+            'module_group'          => "0",
+            'icon'                  => "fas fa-cogs",
+            'route'                 => "/config/documentacion",
+            'module_permissions'    => "documentacion",
+            'module_group'          => "config_group",
+        ]);
+
+
         // Cientes
         DB::table('modules')->insert([
             'jerarquia'             => 2,
@@ -64,7 +93,7 @@ class ModulesSeeder extends Seeder
 
         // Productos
         DB::table('modules')->insert([
-            'jerarquia'             => 3,
+            'jerarquia'             => 5,
             'name'                  => "Productos",
             'icon'                  => "fas fa-product-hunt",
             'route'                 => "/productos",
@@ -91,27 +120,10 @@ class ModulesSeeder extends Seeder
         //
 
 
-        // GRUPO - Configuraciones
-        // DB::table('modules')->insert([
-        //     'jerarquia'             => 10,
-        //     'group'                 => true,
-        //     'name'                  => "Configuraciones",
-        //     'module_group'          => "0",
-        //     'icon'                  => "fas fa-cogs",
-        //     'route'                 => "config_group",
-        //     'module_permissions'    => "config",
-        // ]);
-        // DB::table('modules')->insert([
-        //     'jerarquia'             => 1,
-        //     'name'                  => "Campos personalizados",
-        //     'icon'                  => "fab fa-wpforms",
-        //     'route'                 => "/config/custom-fields",
-        //     'module_permissions'    => "custom_fields",
-        //     'module_group'          => "config_group",
-        // ]);
+
         // DB::table('modules')->insert([
         //     'jerarquia'             => 2,
-        //     'name'                  => "Modulos",
+        //     'name'                  => "Tipos",
         //     'module_group'          => "0",
         //     'icon'                  => "fas fa-cogs",
         //     'route'                 => "/config/modules",

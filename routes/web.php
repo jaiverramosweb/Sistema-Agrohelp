@@ -93,6 +93,24 @@ Route::middleware('auth')->group(function () {
     Route::put('/custom-fields/{id}',               [CustomFieldsController::class, 'update'])->name('custom_fields.update');
     //
 
+    // Garantia 
+    Route::get('/config/garantias',                 [GarantiaController::class, 'index'])->name('garantia.index');
+    Route::get('/get-garantias',                    [GarantiaController::class, 'getGarantias'])->name('garantia.getGarantias');
+    Route::post('/garantia-pagination',             [GarantiaController::class, 'pagination'])->name('garantia.pagination');
+    Route::post('/garantia',                        [GarantiaController::class, 'save'])->name('garantia.save');
+    Route::put('/garantia/{id}',                    [GarantiaController::class, 'update'])->name('garantia.update');
+    Route::delete('/garantia/{id}',                 [GarantiaController::class, 'delete'])->name('garantia.delete');
+    //
+
+    // Documentacion 
+    Route::get('/config/documentacion',             [DocumentacionController::class, 'index'])->name('documentacion.index');
+    Route::get('/get-documentacion',                [DocumentacionController::class, 'getDocumentacion'])->name('documentacion.getDocumentacion');
+    Route::post('/documentacion-pagination',        [DocumentacionController::class, 'pagination'])->name('documentacion.pagination');
+    Route::post('/documentacion',                   [DocumentacionController::class, 'save'])->name('documentacion.save');
+    Route::put('/documentacion/{id}',               [DocumentacionController::class, 'update'])->name('documentacion.update');
+    Route::delete('/documentacion/{id}',            [DocumentacionController::class, 'delete'])->name('documentacion.delete');
+    //
+
 
     // Modules  
     Route::get('/config/modules',                   [ModulesController::class, 'index'])->name('modules.index');
@@ -124,29 +142,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/caracteristicas',                  [CaracteristicasController::class, 'index'])->name('catacteristica.index');
     Route::get('/caracteristicas/{id}',             [CaracteristicasController::class, 'caracteristicas'])->name('catacteristica.selectProduct');
     Route::get('/get-caracteristicas/{id}',         [CaracteristicasController::class, 'getCaracteristica'])->name('catacteristica.getCaracteristica');
+    Route::get('/get-product-caract',               [CaracteristicasController::class, 'getProductGarantias'])->name('garantia.getProductGarantias');
     Route::post('/caracteristicas-pagination',      [CaracteristicasController::class, 'pagination'])->name('catacteristica.pagination');
     Route::post('/caracteristica',                  [CaracteristicasController::class, 'saveCaracteristica'])->name('catacteristica.saveCaracteristica');
     Route::put('/caracteristica/{id}',              [CaracteristicasController::class, 'updateCaracteristica'])->name('catacteristica.updateCaracteristica');
     Route::delete('/caracteristica/{id}',           [CaracteristicasController::class, 'deletePCaracteristica'])->name('catacteristica.deletePCaracteristica');
     //
-
-    // Garantia 
-    Route::get('/garantias',                        [GarantiaController::class, 'index'])->name('garantia.index');
-    Route::post('/garantia-pagination',             [GarantiaController::class, 'pagination'])->name('garantia.pagination');
-    Route::post('/garantia',                        [GarantiaController::class, 'save'])->name('garantia.save');
-    Route::put('/garantia/{id}',                    [GarantiaController::class, 'update'])->name('garantia.update');
-    Route::delete('/garantia/{id}',                 [GarantiaController::class, 'delete'])->name('garantia.delete');
-    //
-
-    // Documentacion 
-    Route::get('/documentacion',                    [DocumentacionController::class, 'index'])->name('documentacion.index');
-    Route::post('/documentacion-pagination',        [DocumentacionController::class, 'pagination'])->name('documentacion.pagination');
-    Route::post('/documentacion',                   [DocumentacionController::class, 'save'])->name('documentacion.save');
-    Route::put('/documentacion/{id}',               [DocumentacionController::class, 'update'])->name('documentacion.update');
-    Route::delete('/documentacion/{id}',            [DocumentacionController::class, 'delete'])->name('documentacion.delete');
-    //
-
-
 
 });
 

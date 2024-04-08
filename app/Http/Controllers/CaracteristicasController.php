@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CaracteristicasRequest;
+use App\Models\CaracteristicasDocumentacion;
+use App\Models\CaracteristicasGarantia;
 use App\Models\CaracteristicasProducto;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -94,6 +97,33 @@ class CaracteristicasController extends Controller
         ], 200);
     }
 
+    public function getProductGarantias()
+    {
+        $products = CaracteristicasProducto::all();
+
+        foreach ($products as $value) {
+
+            $producto = Producto::select(['nombre'])->where('id', $value->productos_id)->first();
+            $value->producto = $producto->nombre;
+
+            $value->garantias = CaracteristicasGarantia::select([
+                'garantias.nombre',
+            ])
+                ->join('garantias', 'caracteristicas_garantias.garantias_id', 'garantias.id')
+                ->where('caracteristicas_garantias.caracteristicas_productos_id', $value->id)
+                ->get();
+
+            $value->documentos = CaracteristicasDocumentacion::select([
+                'documentacions.nombre',
+            ])
+                ->join('documentacions', 'caracteristicas_documentacions.documentacions_id', 'documentacions.id')
+                ->where('caracteristicas_documentacions.caracteristicas_productos_id', $value->id)
+                ->get();
+        }
+
+        return response()->json($products, 200);
+    }
+
     public function saveCaracteristica(CaracteristicasRequest $request)
     {
         $carac = new CaracteristicasProducto();
@@ -103,11 +133,31 @@ class CaracteristicasController extends Controller
         $carac->interes       = $request->interes;
         $carac->mora          = $request->mora;
         $carac->codigo        = $request->codigo;
+        $carac->monto_minimo  = $request->monto_minimo;
+        $carac->monto_maximo  = $request->monto_maximo;
         $carac->tiempo_minimo = $request->tiempo_minimo;
         $carac->tiempo_maximo = $request->tiempo_maximo;
         $carac->indicador     = 'En espera';
 
         $carac->save();
+
+        if (isset($request->garantias)) {
+            foreach ($request->garantias as $garantia) {
+                CaracteristicasGarantia::create([
+                    'caracteristicas_productos_id'  => $carac->id,
+                    'garantias_id'                  => $garantia['id']
+                ]);
+            }
+        }
+
+        if (isset($request->documentos)) {
+            foreach ($request->documentos as $documento) {
+                CaracteristicasDocumentacion::create([
+                    'caracteristicas_productos_id'  => $carac->id,
+                    'documentacions_id'             => $documento['id']
+                ]);
+            }
+        }
 
         return response()->json([
             'status' => true,
@@ -123,6 +173,8 @@ class CaracteristicasController extends Controller
         $catacte->interes       = $request->interes;
         $catacte->mora          = $request->mora;
         $catacte->codigo        = $request->codigo;
+        $catacte->monto_minimo  = $request->monto_minimo;
+        $catacte->monto_maximo  = $request->monto_maximo;
         $catacte->tiempo_minimo = $request->tiempo_minimo;
         $catacte->tiempo_maximo = $request->tiempo_maximo;
 

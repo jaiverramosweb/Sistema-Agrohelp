@@ -28,8 +28,12 @@ class CaracteristicasRequest extends FormRequest
             'mora'          => ['required'],
             'indicador'     => ['nullable'],
             'codigo'        => ['required'],
+            'monto_minimo'  => ['required'],
+            'monto_maximo'  => ['required'],
             'tiempo_minimo' => ['required'],
-            'tiempo_maximo' => ['required']
+            'tiempo_maximo' => ['required'],
+            'garantias'     => ['nullable'],
+            'documentos'    => ['nullable']
 
         ];
     }

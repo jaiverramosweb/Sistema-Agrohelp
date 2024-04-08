@@ -11,6 +11,8 @@ onMounted(() => {
     activeMenu('productos', 'productos')
     paginationCar()
     getProducts()
+    getGarantias()
+    getDocuentacion()
 })
 
 const activeMenu = (menu, submenu) => {
@@ -92,16 +94,25 @@ const asyncFind = () => {
 
 const dataCaracteristicas = ref('');
 const dataProducts = ref('');
+const dataGarantias = ref('');
+const dataDocumentacion = ref('');
 
 const id = ref(0);
 const productos_id = ref(0);
 const nombre = ref('');
 const interes = ref('');
 const mora = ref('');
-const indicador = ref('');
 const codigo = ref('');
+const monto_minimo = ref('');
+const monto_maximo = ref('');
 const tiempo_minimo = ref('');
 const tiempo_maximo = ref('');
+
+const garantia = ref('');
+const garantias = ref([]);
+
+const documento = ref('');
+const documentos = ref([]);
 
 
 const getProducts = () => {
@@ -110,12 +121,44 @@ const getProducts = () => {
     })
 }
 
+const getGarantias = () => {
+    axios.get('/get-garantias').then(({ data }) => {
+        dataGarantias.value = data.data
+    })
+}
+
+const getDocuentacion = () => {
+    axios.get('/get-documentacion').then(({ data }) => {
+        dataDocumentacion.value = data.data
+    })
+}
+
+const onGarantias = () => {
+    garantias.value.push(garantia.value)
+    garantia.value = ''
+}
+
+const deleteGar = (id) => {
+    garantias.value = garantias.value.filter(gar => gar.id != id)
+}
+
+const onDocumentos = () => {
+    documentos.value.push(documento.value)
+    documento.value = ''
+}
+
+const deleteDoc = (id) => {
+    documentos.value = documentos.value.filter(doc => doc.id != id)
+}
+
 const save = () => {
     if (productos_id.value.length == 0) return
     if (nombre.value.length == 0) return
     if (interes.value.length == 0) return
     if (mora.value.length == 0) return
     if (codigo.value.length == 0) return
+    if (monto_minimo.value.length == 0) return
+    if (monto_maximo.value.length == 0) return
     if (tiempo_minimo.value.length == 0) return
     if (tiempo_maximo.value.length == 0) return
 
@@ -125,8 +168,14 @@ const save = () => {
         interes: interes.value,
         mora: mora.value,
         codigo: codigo.value,
+        monto_minimo: monto_minimo.value,
+        monto_maximo: monto_maximo.value,
         tiempo_minimo: tiempo_minimo.value,
-        tiempo_maximo: tiempo_maximo.value
+        tiempo_maximo: tiempo_maximo.value,
+
+        garantias: garantias.value,
+        documentos: documentos.value
+
     }).then(res => {
         Swal.fire({
             icon: 'success',
@@ -146,8 +195,10 @@ const editItem = (item) => {
     interes.value = item.interes
     mora.value = item.mora
     codigo.value = item.codigo
-    tiempo_minimo.value = item.codigo
-    tiempo_maximo.value = item.codigo
+    monto_minimo.value = item.monto_minimo
+    monto_maximo.value = item.monto_maximo
+    tiempo_minimo.value = item.tiempo_minimo
+    tiempo_maximo.value = item.tiempo_maximo
 
     $("#modalCatacteristica").modal("show");
 }
@@ -159,6 +210,8 @@ const update = () => {
         interes: interes.value,
         mora: mora.value,
         codigo: codigo.value,
+        monto_minimo: monto_minimo.value,
+        monto_maximo: monto_maximo.value,
         tiempo_minimo: tiempo_minimo.value,
         tiempo_maximo: tiempo_maximo.value
     }).then(res => {
@@ -196,12 +249,17 @@ const clear = () => {
     interes.value = ''
     mora.value = ''
     codigo.value = ''
+    monto_minimo.value = ''
+    monto_maximo.value = ''
     tiempo_minimo.value = ''
     tiempo_maximo.value = ''
+    garantias.value = [];
+    documentos.value = [];
 }
 
 
 const loader = ref(false);
+
 const isLouding = () => {
     loader.value = true
 }
@@ -210,7 +268,6 @@ const isLouding = () => {
 
 <template>
     <div>
-
         <div class="card-body">
 
             <div class='row'>
@@ -319,7 +376,7 @@ const isLouding = () => {
                                 </tr>
 
                                 <tr v-show='dataCaracteristicas.length == 0'>
-                                    <td colspan="5">
+                                    <td colspan="6">
                                         <center>No existen registros</center>
                                     </td>
                                 </tr>
@@ -448,6 +505,28 @@ const isLouding = () => {
                         </div>
 
                         <div class="form-group col-6" has-validation>
+                            <label for="tiempo_minimo">Monto minimo<span class="text-danger">
+                                    *</span></label>
+                            <input v-model="monto_minimo" type="text" class="form-control" id="monto_minimo"
+                                aria-describedby="monto_minimo" autocomplete="off">
+                            <div v-if="monto_minimo == ''" class="invalid-feedback d-block">El
+                                campo es
+                                requerido
+                            </div>
+                        </div>
+
+                        <div class="form-group col-6" has-validation>
+                            <label for="monto_maximo">Monto Maximo<span class="text-danger">
+                                    *</span></label>
+                            <input v-model="monto_maximo" type="text" class="form-control" id="monto_maximo"
+                                aria-describedby="monto_maximo" autocomplete="off">
+                            <div v-if="monto_maximo == ''" class="invalid-feedback d-block">El
+                                campo es
+                                requerido
+                            </div>
+                        </div>
+
+                        <div class="form-group col-6" has-validation>
                             <label for="tiempo_minimo">Tiempo minimo<span class="text-danger">
                                     *</span></label>
                             <input v-model="tiempo_minimo" type="number" class="form-control" id="tiempo_minimo"
@@ -466,6 +545,48 @@ const isLouding = () => {
                             <div v-if="tiempo_maximo == ''" class="invalid-feedback d-block">El
                                 campo es
                                 requerido
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="monto_maximo">Agregar Garantias<span class="text-danger">
+                                    *</span></label>
+                            <select id="inputState" class="form-control" @change="onGarantias" v-model="garantia">
+                                <option value="" selected>Seleccione...</option>
+                                <option v-for="garantia in dataGarantias" :key="garantia.id" :value="garantia">
+                                    {{ garantia.nombre }}</option>
+                            </select>
+
+                            <div v-for="garan in garantias" :key="garantia.id">
+                                <div class="row">
+                                    <div class="col-10 mt-2 ml-2">
+                                        {{ garan.nombre }}
+                                    </div>
+                                    <div class="col-1 mt-2">
+                                        <button @click="deleteGar(garan.id)" class="btn btn-sm btn-danger">X</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-2">
+                            <label for="monto_maximo">Agregar Documentación<span class="text-danger">
+                                    *</span></label>
+                            <select id="inputState" class="form-control" @change="onDocumentos" v-model="documento">
+                                <option value="" selected>Seleccione...</option>
+                                <option v-for="documento in dataDocumentacion" :key="documento.id" :value="documento">
+                                    {{ documento.nombre }}</option>
+                            </select>
+
+                            <div v-for="doc in documentos" :key="doc.id">
+                                <div class="row">
+                                    <div class="col-10 mt-2 ml-2">
+                                        {{ doc.nombre }}
+                                    </div>
+                                    <div class="col-1 mt-2">
+                                        <button @click="deleteDoc(doc.id)" class="btn btn-sm btn-danger">X</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

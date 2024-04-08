@@ -22,11 +22,10 @@ class GarantiaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'caracteristicas_productos_id'  => ['required'],
-            'tipo'                          => ['required'],
-            'nombre'                        => ['required'],
-            'numero'                        => ['required'],
-            'codigo'                        => ['required'],
+            'tipo'                          => ['nullable'],
+            'nombre'                        => ['nullable'],
+            'numero'                        => ['nullable'],
+            'codigo'                        => ['nullable'],
         ];
     }
 }

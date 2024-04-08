@@ -7,8 +7,6 @@ import 'sweetalert2/dist/sweetalert2.css';
 
 import Productos from './components/Products.vue';
 import Caracteristicas from './components/Caracteristicas.vue'
-import Garantias from './components/Garantias.vue';
-import Documentacion from './components/Documentacion.vue';
 
 const props = defineProps(['permissions'])
 
@@ -22,8 +20,14 @@ const activeMenu = (menu, submenu) => {
     $("#sub_menu_" + submenu).addClass('active')
 }
 
+const tag = ref('producto')
+
 
 const loader = ref(false);
+
+const isTag = (item) => {
+    tag.value = item
+}
 
 
 const isLouding = () => {
@@ -41,7 +45,6 @@ const isLouding = () => {
 
         <template #header>
             <div class="row mb-2">
-
                 <div class="col-sm-6">
                     <!-- <button v-if="permissions.create" type="button" class="btn btn-success" data-toggle="modal"
                         data-target="#modalClient">
@@ -57,22 +60,18 @@ const isLouding = () => {
                 </div>
 
                 <div class="row mt-4">
-
                     <div class="col-12">
-                        <div class="card">
+                        <div class="card" style="width: 100%;">
                             <div class="card-header p-2">
 
                                 <ul class="nav nav-pills">
-                                    <li class="nav-item"><a class="nav-link active" href="#producto"
-                                            data-toggle="tab">Productos</a></li>
-                                    <li class="nav-item"><a class="nav-link" href="#caracteristicas"
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="#producto" @click="isTag('producto')"
+                                            data-toggle="tab">Productos</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#caracteristicas" @click="isTag('caracteristicas')"
                                             data-toggle="tab">Caracteristicas</a>
-                                    </li>
-                                    <li class="nav-item"><a class="nav-link" href="#garantias"
-                                            data-toggle="tab">Garantias</a>
-                                    </li>
-                                    <li class="nav-item"><a class="nav-link" href="#documentacion"
-                                            data-toggle="tab">Documentación</a>
                                     </li>
                                 </ul>
                             </div>
@@ -82,25 +81,14 @@ const isLouding = () => {
                                 <div class="tab-content">
 
                                     <!-- Productos  -->
-                                    <div class="active tab-pane" id="producto">
+                                    <div v-if="tag == 'producto'" class="active tab-pane" id="producto">
                                         <Productos :permissions="permissions" />
                                     </div>
 
                                     <!-- /.Caracteristicas -->
-                                    <div class="tab-pane" id="caracteristicas">
+                                    <div v-if="tag == 'caracteristicas'" class="tab-pane" id="caracteristicas">
                                         <Caracteristicas :permissions="permissions" />
                                     </div>
-
-                                    <!-- /.Garantias-->
-                                    <div class="tab-pane" id="garantias">
-                                        <Garantias :permissions="permissions" />
-                                    </div>
-
-                                    <!-- /.Documentación-->
-                                    <div class="tab-pane" id="documentacion">
-                                        <Documentacion :permissions="permissions" />
-                                    </div>
-
 
                                 </div>
 

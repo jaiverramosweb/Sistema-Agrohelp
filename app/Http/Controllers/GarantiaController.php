@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GarantiaRequest;
 use App\Models\Garantia;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class GarantiaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $garantia = Garantia::all();
-
-        return response()->json([
-            'status' => true,
-            'data' => $garantia
-        ], 200);
+        if (!hasPermissionModule('config', 'read', 'config')) {
+            return to_route('dashboard');
+        }
+        $permissions = permissionModule('users', '', true);
+        $garantias = $this->pagination($request);
+        return Inertia::render('Products/Garantias/Index', [
+            'permissions' => $permissions,
+            'garantias' => $garantias,
+        ]);
     }
 
     public $search_;
@@ -33,20 +37,14 @@ class GarantiaController extends Controller
         if ($search == "") {
             $h = Garantia::select([
                 "garantias.*",
-                "caracteristicas_productos.nombre as caracteristica",
             ]);
-
-            $h->join('caracteristicas_productos', 'garantias.caracteristicas_productos_id', 'caracteristicas_productos.id');
             $h->orderBy('garantias.' . $order_field, $order_type);
             $show = $h->paginate($entries);
         } else {
 
             $h = Garantia::select([
                 "garantias.*",
-                "caracteristicas_productos.nombre as caracteristica",
             ]);
-
-            $h->join('caracteristicas_productos', 'garantias.caracteristicas_productos_id', 'caracteristicas_productos.id');
 
             $this->search_ = $search;
 
@@ -76,16 +74,22 @@ class GarantiaController extends Controller
         ];
     }
 
+    public function getGarantias()
+    {
+        $garantias = Garantia::select(['id', 'nombre'])->get();
+        return response()->json([
+            'status' => true,
+            'data' => $garantias
+        ], 200);
+    }
+
     public function save(GarantiaRequest $request)
     {
         $garantia = new Garantia();
 
-        $garantia->caracteristicas_productos_id     = $request->caracteristicas_productos_id;
-        $garantia->tipo                             = $request->tipo;
         $garantia->nombre                           = $request->nombre;
-        $garantia->numero                           = $request->numero;
         $garantia->codigo                           = $request->codigo;
-        $garantia->indicador                        = 'En espera';
+        $garantia->indicador                        = 'Activo';
 
         $garantia->save();
 
@@ -98,10 +102,7 @@ class GarantiaController extends Controller
     public function update(GarantiaRequest $request, $id)
     {
         $garantia = Garantia::find($id);
-        $garantia->caracteristicas_productos_id     = $request->caracteristicas_productos_id;
-        $garantia->tipo                             = $request->tipo;
         $garantia->nombre                           = $request->nombre;
-        $garantia->numero                           = $request->numero;
         $garantia->codigo                           = $request->codigo;
 
         $garantia->save();

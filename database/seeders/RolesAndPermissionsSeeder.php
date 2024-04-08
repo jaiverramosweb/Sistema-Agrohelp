@@ -56,6 +56,18 @@ class RolesAndPermissionsSeeder extends Seeder
             {
                 "name": "Productos",
                 "module": "productos"
+            },
+            {
+                "name": "Configuraciones",
+                "module": "config"
+            },
+            {
+                "name": "Garantias",
+                "module": "garantias"
+            },
+            {
+                "name": "Documentación",
+                "module": "documentacion"
             }
         ]';
 

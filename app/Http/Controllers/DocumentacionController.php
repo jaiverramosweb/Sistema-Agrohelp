@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DocumentacionRequest;
 use App\Models\Documentacion;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DocumentacionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $documento = Documentacion::all();
-
-        return response()->json([
-            'status' => true,
-            'data' => $documento
-        ], 200);
+        if (!hasPermissionModule('config', 'read', 'config')) {
+            return to_route('dashboard');
+        }
+        $permissions = permissionModule('users', '', true);
+        $documentos = $this->pagination($request);
+        return Inertia::render('Products/Documentacion/Index', [
+            'permissions' => $permissions,
+            'documentos' => $documentos,
+        ]);
     }
 
     public $search_;
@@ -33,20 +37,15 @@ class DocumentacionController extends Controller
         if ($search == "") {
             $h = Documentacion::select([
                 "documentacions.*",
-                "caracteristicas_productos.nombre as caracteristica",
             ]);
 
-            $h->join('caracteristicas_productos', 'documentacions.caracteristicas_productos_id', 'caracteristicas_productos.id');
             $h->orderBy('documentacions.' . $order_field, $order_type);
             $show = $h->paginate($entries);
         } else {
 
             $h = Documentacion::select([
                 "documentacions.*",
-                "caracteristicas_productos.nombre as caracteristica",
             ]);
-
-            $h->join('caracteristicas_productos', 'documentacions.caracteristicas_productos_id', 'caracteristicas_productos.id');
 
             $this->search_ = $search;
 
@@ -76,15 +75,23 @@ class DocumentacionController extends Controller
         ];
     }
 
+    public function getDocumentacion()
+    {
+        $documentos = Documentacion::select(['id', 'nombre'])->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $documentos
+        ], 200);
+    }
+
     public function save(DocumentacionRequest $request)
     {
         $documento = new Documentacion();
 
-        $documento->caracteristicas_productos_id     = $request->caracteristicas_productos_id;
-        $documento->tipo                             = $request->tipo;
         $documento->nombre                           = $request->nombre;
         $documento->codigo                           = $request->codigo;
-        $documento->indicador                        = 'En espera';
+        $documento->indicador                        = 'Avtivo';
 
         $documento->save();
 
@@ -97,8 +104,6 @@ class DocumentacionController extends Controller
     public function update(DocumentacionRequest $request, $id)
     {
         $documento = Documentacion::find($id);
-        $documento->caracteristicas_productos_id     = $request->caracteristicas_productos_id;
-        $documento->tipo                             = $request->tipo;
         $documento->nombre                           = $request->nombre;
         $documento->codigo                           = $request->codigo;
 
