@@ -1,21 +1,27 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { onMounted, reactive, ref, computed, watch } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/dist/sweetalert2.css'
 
-
-
-const props = defineProps(['permissions', 'clients'])
+const props = defineProps(['solicitudes', 'permissions',])
 
 onMounted(() => {
-    activeMenu('clients', 'clients')
+    activeMenu('solicitudes', 'solicitudes')
 
-    dataClients.value = props.clients.data.data
-    pagination.value = props.clients.pagination
+    dataSolicitudes.value = props.solicitudes.data.data
+    pagination.value = props.solicitudes.pagination
 
 })
+
+
+// Metodos Requeridos para iniciar modulo
+const activeMenu = (menu, submenu) => {
+    $(".menu_" + menu).addClass('menu-is-opening menu-open')
+    $("#menu_" + menu).addClass('active')
+    $("#sub_menu_" + submenu).addClass('active')
+}
 
 const isActived = computed(() => {
     return pagination.value.current_page;
@@ -65,39 +71,6 @@ const Toast = Swal.mixin({
         toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
 })
-
-
-const dataClients = ref('')
-
-const id = ref(0)
-const tipo_identificacion = ref('')
-const numero_identificacion = ref('')
-const nombre = ref('')
-const segundo_nombre = ref('')
-const apellido = ref('')
-const segundo_apellido = ref('')
-const email = ref('')
-const password = ref('')
-const genero = ref('')
-const tipo_persona = ref('')
-const fecha_nacimiento = ref('')
-
-
-const tipo_direccion = ref('')
-const direccion = ref('')
-const ciudad = ref('')
-const departamento = ref('')
-
-const direcciones = ref([])
-
-
-
-// Metodos Requeridos para iniciar modulo
-const activeMenu = (menu, submenu) => {
-    $(".menu_" + menu).addClass('menu-is-opening menu-open')
-    $("#menu_" + menu).addClass('active')
-    $("#sub_menu_" + submenu).addClass('active')
-}
 
 const orderTest = (val) => {
     let result;
@@ -154,7 +127,7 @@ const paginationList = (page) => {
     })
         .then((response) => {
             let res = response.data;
-            dataClients.value = res.data.data;
+            dataSolicitudes.value = res.data.data;
             pagination.value = res.pagination;
         })
         .catch((error) => {
@@ -166,105 +139,10 @@ const changePage = (page) => {
     pagination.value.current_page = page;
     paginationList(page);
 }
+// FIN de metodos Requeridos para iniciar modulo
 
+const dataSolicitudes = ref([])
 
-// Modulos a crear
-
-const agregarDirecciones = () => {
-    const direc = {
-        tipo_direccion: tipo_direccion.value,
-        direccion: direccion.value,
-        ciudad: ciudad.value,
-        departamento: departamento.value
-    }
-
-    direcciones.value.push(direc)
-
-    tipo_direccion.value = ''
-    direccion.value = ''
-    ciudad.value = ''
-    departamento.value = ''
-}
-
-const save = () => {
-    if (tipo_identificacion.value.length == 0) return
-    if (numero_identificacion.value.length == 0) return
-    if (nombre.value.length == 0) return
-    if (segundo_nombre.value.length == 0) return
-    if (apellido.value.length == 0) return
-    if (segundo_apellido.value.length == 0) return
-    if (genero.value.length == 0) return
-    if (tipo_persona.value.length == 0) return
-    if (fecha_nacimiento.value.length == 0) return
-
-    if (direcciones.value.length == 0) return
-
-    axios.post('/clients', {
-        email: email.value,
-        password: password.value,
-        tipo_identificacion: tipo_identificacion.value,
-        numero_identificacion: numero_identificacion.value,
-        nombre: nombre.value,
-        segundo_nombre: segundo_nombre.value,
-        apellido: apellido.value,
-        segundo_apellido: segundo_apellido.value,
-        genero: genero.value,
-        tipo_persona: tipo_persona.value,
-        fecha_nacimiento: fecha_nacimiento.value,
-
-        direcciones: direcciones.value
-
-    }).then(res => {
-        Toast.fire({
-            icon: 'success',
-            title: 'Registro creado con exito'
-        })
-
-        clear()
-
-        paginationList()
-
-        $("#modalClient").modal("hide");
-    })
-}
-
-const clear = () => {
-    id.value = 0
-    email.value = ''
-    password.value = ''
-    tipo_identificacion.value = ''
-    numero_identificacion.value = ''
-    nombre.value = ''
-    segundo_nombre.value = ''
-    apellido.value = ''
-    segundo_apellido.value = ''
-    genero.value = ''
-    tipo_persona.value = ''
-    fecha_nacimiento.value = ''
-
-    direcciones.value = []
-}
-
-const deleteItem = (id) => {
-    Swal.fire({
-        title: 'Estas seguro de eliminarlo?',
-        showCancelButton: true,
-        confirmButtonText: 'Eliminar',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            axios.delete(`/clients/${id}`).then(res => {
-                paginationList()
-                Swal.fire('Eliminado!', '', 'success')
-            })
-        } else if (result.isDenied) {
-            Swal.fire('Changes are not saved', '', 'info')
-        }
-    })
-}
-
-const isLouding = () => {
-    loader.value = true
-}
 
 const transforDate = (date) => {
     let fecha = new Date(date);
@@ -281,28 +159,27 @@ const transforDate = (date) => {
 </script>
 
 <template>
-
     <AuthenticatedLayout title="Clientes">
 
         <div class="preloader flex-column justify-content-center align-items-center" v-if="loader">
             <img class="animation__shake" src="/assets/img/CGRLogo.png" alt="AdminLTELogo" height="100" width="200">
         </div>
 
-
         <template #header>
             <div class="row mb-2">
 
                 <div class="col-sm-6">
-                    <button v-if="permissions.create" type="button" class="btn btn-success" data-toggle="modal"
+                    <!-- <button v-if="permissions.create" type="button" class="btn btn-success" data-toggle="modal"
                         data-target="#modalClient">
                         + Nuevo Cliente
-                    </button>
+                    </button> -->
+
                 </div>
 
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/dashboard">Inicio</a></li>
-                        <li class="breadcrumb-item active">Clientes</li>
+                        <li class="breadcrumb-item active">Solicitudes</li>
                     </ol>
                 </div>
 
@@ -317,12 +194,12 @@ const transforDate = (date) => {
 
                     <div class="card-header">
 
-                        <h3 class="card-title">Resumen de clientes</h3>
+                        <h3 class="card-title">Todas las solicitudes</h3>
 
                         <div class="card-tools">
                             <!-- <button v-if="permissions.create" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalClient">
-                                Crear Piezómetro
-                            </button> -->
+                            Crear Piezómetro
+                        </button> -->
 
                         </div>
 
@@ -334,32 +211,31 @@ const transforDate = (date) => {
                         <div class='row'>
 
                             <!-- FILTRO -->
-                            <div class='col-md-6 col-sm-6 col-xs-12'>
-                                <b>Mostrar </b>
-                                <select id="entries" @change='paginationList()' v-model="show">
-                                    <option :value="10">10</option>
-                                    <option :value="25">25</option>
-                                    <option :value="50">50</option>
-                                    <option :value="100">100</option>
-                                </select>
-                                <b> registros</b>
-                            </div>
+                            <!-- <div class='col-md-6 col-sm-6 col-xs-12'>
+                            <b>Mostrar </b>
+                            <select id="entries" @change='paginationList()' v-model="show">
+                                <option :value="10">10</option>
+                                <option :value="25">25</option>
+                                <option :value="50">50</option>
+                                <option :value="100">100</option>
+                            </select>
+                            <b> registros</b>
+                        </div> -->
 
                             <!-- BUSCADOR -->
-                            <div class='col-md-6 col-sm-6 col-xs-12'>
+                            <!-- <div class='col-md-6 col-sm-6 col-xs-12'>
 
-                                <div class="pull-right">
-                                    <div class="input-group input-group-sm mb-3">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                        </div>
-                                        <!-- <input type="text" maxlength="250" id='search' @change='asyncFind()' class='form-control' placeholder="Buscar" v-model="search"> -->
-                                        <input type="text" maxlength="250" id='search' @keyup='asyncFind()'
-                                            class='form-control' placeholder="Buscar" v-model="search">
+                            <div class="pull-right">
+                                <div class="input-group input-group-sm mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
                                     </div>
+                                    <input type="text" maxlength="250" id='search' @keyup='asyncFind()'
+                                        class='form-control' placeholder="Buscar" v-model="search">
                                 </div>
-
                             </div>
+
+                        </div> -->
 
                             <!-- TABLA -->
                             <div class='col-12'>
@@ -370,13 +246,22 @@ const transforDate = (date) => {
 
                                             <tr>
                                                 <th>
-                                                    Nombre y Apellido
+                                                    Solicitante
                                                 </th>
                                                 <th>
-                                                    Numero de Identificación
+                                                    Nombre del producto
                                                 </th>
                                                 <th>
-                                                    Fecha creación
+                                                    Monto solicitado
+                                                </th>
+                                                <th>
+                                                    Tiempo en meses
+                                                </th>
+                                                <th>
+                                                    Estado solicitud
+                                                </th>
+                                                <th>
+                                                    Fecha inicio solicitud
                                                 </th>
 
                                                 <th class="border text-center">
@@ -388,13 +273,37 @@ const transforDate = (date) => {
 
                                         <tbody>
 
-                                            <tr v-for=" ( item_data, i ) in dataClients " :key='i'>
+                                            <tr v-for=" ( item_data, i ) in dataSolicitudes " :key='i'>
 
                                                 <td>
-                                                    {{ item_data.nombre }} {{ item_data.apellido }}
+                                                    {{ item_data.nombre }}
                                                 </td>
                                                 <td>
-                                                    {{ item_data.documento }}
+                                                    {{ item_data.nombre_producto }} {{ item_data.nombre_caract }}
+                                                </td>
+                                                <td>
+                                                    {{ item_data.monto }}
+                                                </td>
+                                                <td>
+                                                    {{ item_data.tiempo }}
+                                                </td>
+                                                <td class=" text-center">
+                                                    <span v-if="item_data.estado_solicitud == 'En Tramite'"
+                                                        class="badge badge-warning p-2">
+                                                        {{ item_data.estado_solicitud }}
+                                                    </span>
+                                                    <span v-if="item_data.estado_solicitud == 'Solicitado'"
+                                                        class="badge badge-info p-2">
+                                                        {{ item_data.estado_solicitud }}
+                                                    </span>
+                                                    <span v-if="item_data.estado_solicitud == 'Aceptado'"
+                                                        class="badge badge-success p-2">
+                                                        {{ item_data.estado_solicitud }}
+                                                    </span>
+                                                    <span v-if="item_data.estado_solicitud == 'Denegado'"
+                                                        class="badge badge-danger p-2">
+                                                        {{ item_data.estado_solicitud }}
+                                                    </span>
                                                 </td>
                                                 <td>
                                                     {{ transforDate(item_data.created_at) }}
@@ -402,25 +311,26 @@ const transforDate = (date) => {
 
                                                 <td>
                                                     <div class='d-flex flex-row justify-content-center'>
-
                                                         <!-- <button :class="'btn mr-1 btn-xs bg-info btn-round'" @click="showItem( item_data )" v-if="permissions.read">
                                                             <i class='fas fa-eye'></i>
-                                                        </button> -->
+                                                        </button>
 
                                                         <Link class="btn mr-1 btn-xs bg-info btn-round"
                                                             data-toggle="tooltip" title="Info"
                                                             :href="route('client.show', { client: item_data.id })"
                                                             @click="isLouding" v-if="permissions.read">
-                                                        <i class='fas fa-eye'></i>
-                                                        </Link>
-
-                                                        <!-- <Link :href="route('info.sensor',{id: item_data.serial} )" @click="isLouding" class="btn mr-1 btn-xs bg-info btn-round" data-toggle="tooltip" title="Ir a piezometro">
                                                             <i class='fas fa-eye'></i>
                                                         </Link> -->
 
+                                                        <Link :href="route('solicitud.show', { id: item_data.id })"
+                                                            class="btn mr-1 btn-xs bg-info btn-round"
+                                                            data-toggle="tooltip" title="Ver detalle">
+                                                        <i class='fas fa-eye'></i>
+                                                        </Link>
+
                                                         <!-- <button @click="edit(item_data)" class="btn mr-1 btn-xs bg-warning  btn-round" data-toggle="tooltip" title="Editar"  v-if="permissions.update">
-                                                            <i class='fas fa-edit'></i>
-                                                        </button> -->
+                                                        <i class='fas fa-edit'></i>
+                                                    </button> -->
 
                                                         <!-- <button class="btn mr-1 btn-xs bg-danger btn-round"
                                                             data-toggle="tooltip" title="Eliminar"
@@ -433,8 +343,8 @@ const transforDate = (date) => {
 
                                             </tr>
 
-                                            <tr v-show='dataClients.length == 0'>
-                                                <td colspan="4">
+                                            <tr v-show='dataSolicitudes.length == 0'>
+                                                <td colspan="7">
                                                     <center>No existen registros</center>
                                                 </td>
                                             </tr>
@@ -502,13 +412,13 @@ const transforDate = (date) => {
                                 <div class="row">
 
                                     <!-- <div class="form-group col-md-3  has-validation">
-                                        <label for="zonas_id">Zona</label>
-                                        <select v-model="zonas_id" class="form-control" id="zonas_id">
-                                            <option value="0" >Seleccione..</option>
-                                            <option v-for="zona in zonas" :key="zona.id" :value="zona.id">{{ zona.name }}</option>
-                                        </select>
-                                        <div v-if="zonas_id.length == 0" class="invalid-feedback d-block">El campo es requerido</div>
-                                    </div> -->
+                                    <label for="zonas_id">Zona</label>
+                                    <select v-model="zonas_id" class="form-control" id="zonas_id">
+                                        <option value="0" >Seleccione..</option>
+                                        <option v-for="zona in zonas" :key="zona.id" :value="zona.id">{{ zona.name }}</option>
+                                    </select>
+                                    <div v-if="zonas_id.length == 0" class="invalid-feedback d-block">El campo es requerido</div>
+                                </div> -->
 
                                     <div class="form-group col-4" has-validation>
                                         <label for="tipo_identificacion">Tipo de Identificación <span
@@ -711,9 +621,8 @@ const transforDate = (date) => {
 
         </div>
 
+
     </AuthenticatedLayout>
-
-
 </template>
 
 <style scoped>

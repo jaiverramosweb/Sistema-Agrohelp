@@ -108,6 +108,10 @@ const monto_maximo = ref('');
 const tiempo_minimo = ref('');
 const tiempo_maximo = ref('');
 
+const tipo_amortizacion = ref('');
+const cobro_intereses = ref('');
+const periodicidad = ref('');
+
 const garantia = ref('');
 const garantias = ref([]);
 
@@ -172,6 +176,9 @@ const save = () => {
         monto_maximo: monto_maximo.value,
         tiempo_minimo: tiempo_minimo.value,
         tiempo_maximo: tiempo_maximo.value,
+        tipo_amortizacion: tipo_amortizacion.value,
+        cobro_intereses: cobro_intereses.value,
+        periodicidad: periodicidad.value,
 
         garantias: garantias.value,
         documentos: documentos.value
@@ -199,6 +206,9 @@ const editItem = (item) => {
     monto_maximo.value = item.monto_maximo
     tiempo_minimo.value = item.tiempo_minimo
     tiempo_maximo.value = item.tiempo_maximo
+    tipo_amortizacion.value = item.tipo_amortizacion
+    cobro_intereses.value = item.cobro_intereses
+    periodicidad.value = item.periodicidad
 
     $("#modalCatacteristica").modal("show");
 }
@@ -213,7 +223,10 @@ const update = () => {
         monto_minimo: monto_minimo.value,
         monto_maximo: monto_maximo.value,
         tiempo_minimo: tiempo_minimo.value,
-        tiempo_maximo: tiempo_maximo.value
+        tiempo_maximo: tiempo_maximo.value,
+        tipo_amortizacion: tipo_amortizacion.value,
+        cobro_intereses: cobro_intereses.value,
+        periodicidad: periodicidad.value
     }).then(res => {
         Swal.fire({
             icon: 'success',
@@ -253,6 +266,9 @@ const clear = () => {
     monto_maximo.value = ''
     tiempo_minimo.value = ''
     tiempo_maximo.value = ''
+    tipo_amortizacion.value = ''
+    cobro_intereses.value = ''
+    periodicidad.value = ''
     garantias.value = [];
     documentos.value = [];
 }
@@ -433,8 +449,8 @@ const isLouding = () => {
     <!-- Modal -->
     <div class="modal fade" id="modalCatacteristica" data-backdrop="static" tabindex="-1"
         aria-labelledby="modalCatacteristicaLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <!-- <div class="modal-dialog modal-xl"> -->
+        <!-- <div class="modal-dialog"> -->
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 v-if="id == 0" class="modal-title" id="modalCatacteristicaLabel">+ Nuevo Caracteristica</h5>
@@ -460,7 +476,7 @@ const isLouding = () => {
 
                         </div>
 
-                        <div class="form-group col-6" has-validation>
+                        <div class="form-group col-4" has-validation>
                             <label for="nombre">Nombre<span class="text-danger">
                                     *</span></label>
                             <input v-model="nombre" type="text" class="form-control" id="nombre"
@@ -471,7 +487,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-6" has-validation>
+                        <div class="form-group col-4" has-validation>
                             <label for="interes">Interes<span class="text-danger">
                                     *</span></label>
                             <input v-model="interes" type="text" class="form-control" id="interes"
@@ -482,7 +498,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-6" has-validation>
+                        <div class="form-group col-4" has-validation>
                             <label for="mora">Mora<span class="text-danger">
                                     *</span></label>
                             <input v-model="mora" type="text" class="form-control" id="mora" aria-describedby="mora"
@@ -493,7 +509,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-6" has-validation>
+                        <div class="form-group col-4" has-validation>
                             <label for="codigo">Código<span class="text-danger">
                                     *</span></label>
                             <input v-model="codigo" type="text" class="form-control" id="codigo"
@@ -504,7 +520,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-6" has-validation>
+                        <div class="form-group col-4" has-validation>
                             <label for="tiempo_minimo">Monto minimo<span class="text-danger">
                                     *</span></label>
                             <input v-model="monto_minimo" type="text" class="form-control" id="monto_minimo"
@@ -515,7 +531,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-6" has-validation>
+                        <div class="form-group col-4" has-validation>
                             <label for="monto_maximo">Monto Maximo<span class="text-danger">
                                     *</span></label>
                             <input v-model="monto_maximo" type="text" class="form-control" id="monto_maximo"
@@ -526,7 +542,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-6" has-validation>
+                        <div class="form-group col-4" has-validation>
                             <label for="tiempo_minimo">Tiempo minimo<span class="text-danger">
                                     *</span></label>
                             <input v-model="tiempo_minimo" type="number" class="form-control" id="tiempo_minimo"
@@ -537,12 +553,63 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-6" has-validation>
+                        <div class="form-group col-4" has-validation>
                             <label for="tiempo_maximo">Tiempo Maximo<span class="text-danger">
                                     *</span></label>
                             <input v-model="tiempo_maximo" type="number" class="form-control" id="tiempo_maximo"
                                 aria-describedby="tiempo_maximo" autocomplete="off">
                             <div v-if="tiempo_maximo == ''" class="invalid-feedback d-block">El
+                                campo es
+                                requerido
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4" has-validation>
+                            <label for="nombre">Tipo de amortizacion<span class="text-danger">
+                                    *</span></label>
+                            <select id="inputState" class="form-control" v-model="tipo_amortizacion">
+                                <option value="" selected>Seleccione...</option>
+                                <option value="Francés">Francés</option>
+                                <option value="Alemán">Alemán</option>
+                                <option value="Inglés">Inglés</option>
+
+                            </select>
+                            <div v-if="nombre == ''" class="invalid-feedback d-block">El
+                                campo es
+                                requerido
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4" has-validation>
+                            <label for="nombre">Cobro intereses<span class="text-danger">
+                                    *</span></label>
+                            <select id="inputState" class="form-control" v-model="cobro_intereses">
+                                <option value="" selected>Seleccione...</option>
+                                <option value="Mensual">Mensual</option>
+                                <option value="Periodico">Periodico</option>
+
+                            </select>
+                            <div v-if="nombre == ''" class="invalid-feedback d-block">El
+                                campo es
+                                requerido
+                            </div>
+                        </div>
+
+                        <div class="form-group col-4" has-validation>
+                            <label for="nombre">Periodicidad permitida<span class="text-danger">
+                                    *</span></label>
+                            <select id="inputState" class="form-control" v-model="periodicidad">
+                                <option value="" selected>Seleccione...</option>
+                                <option value="Bimestral">Bimestral</option>
+                                <option value="Trimestral">Trimestral</option>
+                                <option value="Cuatrimestral">Cuatrimestral</option>
+                                <option value="Semestral">Semestral</option>
+                                <option value="Anual">Anual</option>
+                                <option value="Pago unico">Pago unico</option>
+                                <option value="Pago personalizado">Pago personalizado</option>
+
+                            </select>
+                            <div v-if="nombre == ''" class="invalid-feedback d-block">El
                                 campo es
                                 requerido
                             </div>

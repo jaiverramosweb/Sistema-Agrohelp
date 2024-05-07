@@ -21,8 +21,10 @@ onMounted(() => {
 
 <template style="height: auto;">
     <div class="preloader flex-column justify-content-center align-items-center" v-if="loader">
-        <img class="animation__shake" src="/assets/admin-lte/dist/img/sufondos.png" alt="AdminLTELogo" height="60"
+        <img class="animation__shake" src="https://play-lh.googleusercontent.com/IL5kcim7yAHkP1WtooLFdTDgDujb0ZcW65m4160WY86PM896U_x1hAAfpQ28Mgrsb_8" alt="AdminLTELogo" height="60"
             width="60">
+            <!-- <img class="animation__shake" src="/assets/admin-lte/dist/img/sufondos.png" alt="AdminLTELogo" height="60"
+            width="60"> -->
     </div>
 
     <div class="wrapper">

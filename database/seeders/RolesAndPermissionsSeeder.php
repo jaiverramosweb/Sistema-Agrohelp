@@ -68,6 +68,10 @@ class RolesAndPermissionsSeeder extends Seeder
             {
                 "name": "Documentación",
                 "module": "documentacion"
+            },
+            {
+                "name": "Solicitudes",
+                "module": "solicitudes"
             }
         ]';
 

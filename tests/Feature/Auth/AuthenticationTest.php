@@ -28,7 +28,23 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+
+        $roleID = auth()->user()->role_id;
+
+        // dd($roleID);
+
+        if ($roleID == 4) {
+            // return redirect()->intended(RouteServiceProvider::CLIENT);
+            $response->assertRedirect(RouteServiceProvider::CLIENT);
+        } elseif ($roleID == 5) {
+            // return redirect()->intended(RouteServiceProvider::CLIENT);
+            $response->assertRedirect(RouteServiceProvider::CLIENT);
+        } else {
+            // return redirect()->intended(RouteServiceProvider::HOME);
+            $response->assertRedirect(RouteServiceProvider::HOME);
+        }
+
+        // $response->assertRedirect(RouteServiceProvider::HOME);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

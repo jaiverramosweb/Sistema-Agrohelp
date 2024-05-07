@@ -22,18 +22,21 @@ class CaracteristicasRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'productos_id'  => ['required'],
-            'nombre'        => ['required'],
-            'interes'       => ['required'],
-            'mora'          => ['required'],
-            'indicador'     => ['nullable'],
-            'codigo'        => ['required'],
-            'monto_minimo'  => ['required'],
-            'monto_maximo'  => ['required'],
-            'tiempo_minimo' => ['required'],
-            'tiempo_maximo' => ['required'],
-            'garantias'     => ['nullable'],
-            'documentos'    => ['nullable']
+            'productos_id'      => ['required'],
+            'nombre'            => ['required'],
+            'interes'           => ['required'],
+            'mora'              => ['required'],
+            'indicador'         => ['nullable'],
+            'codigo'            => ['required'],
+            'monto_minimo'      => ['required'],
+            'monto_maximo'      => ['required'],
+            'tiempo_minimo'     => ['required'],
+            'tiempo_maximo'     => ['required'],
+            'tipo_amortizacion' => ['nullable'],
+            'cobro_intereses'   => ['nullable'],
+            'periodicidad'      => ['nullable'],
+            'garantias'         => ['nullable'],
+            'documentos'        => ['nullable']
 
         ];
     }

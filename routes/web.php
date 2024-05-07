@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CaracteristicasController;
 use App\Http\Controllers\ClientAuthController;
+use App\Http\Controllers\CreditosController;
 use App\Http\Controllers\DocumentacionController;
 use App\Http\Controllers\GarantiaController;
 use App\Http\Controllers\keller\ClientsController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\keller\PruebasController;
 use App\Http\Controllers\keller\UsersController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SolicitudController;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
@@ -147,6 +149,24 @@ Route::middleware('auth')->group(function () {
     Route::post('/caracteristica',                  [CaracteristicasController::class, 'saveCaracteristica'])->name('catacteristica.saveCaracteristica');
     Route::put('/caracteristica/{id}',              [CaracteristicasController::class, 'updateCaracteristica'])->name('catacteristica.updateCaracteristica');
     Route::delete('/caracteristica/{id}',           [CaracteristicasController::class, 'deletePCaracteristica'])->name('catacteristica.deletePCaracteristica');
+    //
+
+
+    // Solicitudes 
+    Route::get('/primera-solicitud/{client_id}/{monto}/{timepo}/{producto}',   [SolicitudController::class, 'primeraSolicitud'])->name('solicitud.primeraSolicitud');
+
+    Route::get('/editar-solicitud/{id}',            [SolicitudController::class, 'editarSolicitud'])->name('solicitud.editarSolicitud');
+    Route::get('/get-solicitud/{id}',               [SolicitudController::class, 'getSolicitud'])->name('solicitud.getSolicitud');
+    Route::put('/update-solicitud/{id}',            [SolicitudController::class, 'updateStateSolicitud'])->name('solicitud.updateStateSolicitud');
+    Route::post('/primera-solicitud',               [SolicitudController::class, 'saveSolicitud'])->name('solicitud.saveSolicitud');
+
+    Route::get('/solicitudes',                      [SolicitudController::class, 'index'])->name('solicitud.index');
+    Route::get('/solicitudes-detalle/{id}',         [SolicitudController::class, 'show'])->name('solicitud.show');
+    //
+
+    // Creditos
+    Route::post('/get-info-credito',                [CreditosController::class, 'show'])->name('credito.show');
+    Route::post('/creditos-pagination',             [CreditosController::class, 'pagination'])->name('credito.pagination');
     //
 
 });

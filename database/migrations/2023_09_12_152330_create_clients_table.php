@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
 
+            $table->integer('users_id')->nullable();
             $table->string('nombre')->nullable();
             $table->string('apellido')->nullable();
             $table->string('segundo_nombre')->nullable();
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->date('fecha_nacimiento')->nullable();
             $table->string('estado_persona')->nullable();
             $table->string('indicador_persona')->nullable();
+            $table->integer('role_id')->nullable();
 
             $table->string('profile_photo_url')->nullable()->default('/assets/admin-lte/dist/img/default-150x150.png');
 

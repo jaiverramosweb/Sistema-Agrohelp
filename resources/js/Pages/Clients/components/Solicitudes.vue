@@ -311,18 +311,6 @@ watch(caracteristica_id, () => {
 
                         </div>
 
-                        <div class="col-12 mb-4">
-                            <div class="row">
-                                <div class="col-6">
-                                    <b>Tasa de interes:</b> {{ caracteristica.interes }} %
-                                </div>
-                                <div class="col-6">
-                                    <b>Tasa de mora:</b> {{ caracteristica.mora }} %
-                                </div>
-                            </div>
-
-                        </div>
-
 
                         <div class="form-group col-6" has-validation>
                             <label for="nombre">Valor a solicitar<span class="text-danger">
@@ -358,7 +346,7 @@ watch(caracteristica_id, () => {
                         </div>
 
                         <div class="form-group col-6" has-validation>
-                            <label for="nombre">Tipo decclarante<span class="text-danger">
+                            <label for="nombre">Tipo declarante<span class="text-danger">
                                     *</span></label>
                             <input v-model="nombre" type="text" class="form-control" id="nombre"
                                 aria-describedby="nombre" autocomplete="off">

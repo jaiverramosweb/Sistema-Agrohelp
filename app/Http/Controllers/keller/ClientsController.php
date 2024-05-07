@@ -81,9 +81,9 @@ class ClientsController extends Controller
     public function store(ClientSaveRequest $request)
     {
 
-        // dd('entre');
+        $user = '';
         if (isset($request->password)) {
-            User::create([
+            $user = User::create([
                 'email' => $request->email,
                 'password' => $request->password,
                 'role_id' => 5
@@ -91,6 +91,7 @@ class ClientsController extends Controller
         }
 
         $client = new Client();
+        $client->users_id           = $user->id;
         $client->nombre             = $request->nombre;
         $client->segundo_nombre     = isset($request->segundo_nombre) ? $request->segundo_nombre : '';
         $client->apellido           = isset($request->apellido) ? $request->apellido : '';
@@ -103,6 +104,7 @@ class ClientsController extends Controller
         $client->fecha_nacimiento   = isset($request->fecha_nacimiento) ? $request->fecha_nacimiento : null;
         $client->estado_persona     = 'Activo';
         $client->indicador_persona  = 'En espara';
+        $client->role_id            = 5;
 
         $client->save();
 

@@ -8,9 +8,9 @@ onMounted(() => {
 })
 
 const getClient = () => {
-    axios.get('/info-cliente').then(res => {
-        console.log(res.data)
-    })
+    // axios.get('/info-cliente').then(res => {
+    //     console.log(res.data)
+    // })
 }
 </script>
 
@@ -32,7 +32,7 @@ const getClient = () => {
 
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a href="/dashboard-client" class="nav-link">Inicio</a>
+                        <a href="/inicio" class="nav-link">Inicio</a>
                     </li>
                     <!-- <li class="nav-item">
                         <a href="/pqr" class="nav-link">PQR</a>

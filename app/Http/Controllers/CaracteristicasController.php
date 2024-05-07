@@ -128,16 +128,19 @@ class CaracteristicasController extends Controller
     {
         $carac = new CaracteristicasProducto();
 
-        $carac->productos_id  = $request->productos_id;
-        $carac->nombre        = $request->nombre;
-        $carac->interes       = $request->interes;
-        $carac->mora          = $request->mora;
-        $carac->codigo        = $request->codigo;
-        $carac->monto_minimo  = $request->monto_minimo;
-        $carac->monto_maximo  = $request->monto_maximo;
-        $carac->tiempo_minimo = $request->tiempo_minimo;
-        $carac->tiempo_maximo = $request->tiempo_maximo;
-        $carac->indicador     = 'En espera';
+        $carac->productos_id        = $request->productos_id;
+        $carac->nombre              = $request->nombre;
+        $carac->interes             = $request->interes;
+        $carac->mora                = $request->mora;
+        $carac->codigo              = $request->codigo;
+        $carac->monto_minimo        = $request->monto_minimo;
+        $carac->monto_maximo        = $request->monto_maximo;
+        $carac->tiempo_minimo       = $request->tiempo_minimo;
+        $carac->tiempo_maximo       = $request->tiempo_maximo;
+        $carac->tipo_amortizacion   = $request->tipo_amortizacion;
+        $carac->cobro_intereses     = $request->cobro_intereses;
+        $carac->periodicidad        = $request->periodicidad;
+        $carac->indicador           = 'En espera';
 
         $carac->save();
 
@@ -168,15 +171,19 @@ class CaracteristicasController extends Controller
     public function updateCaracteristica(CaracteristicasRequest $request, $id)
     {
         $catacte = CaracteristicasProducto::find($id);
-        $catacte->productos_id  = $request->productos_id;
-        $catacte->nombre        = $request->nombre;
-        $catacte->interes       = $request->interes;
-        $catacte->mora          = $request->mora;
-        $catacte->codigo        = $request->codigo;
-        $catacte->monto_minimo  = $request->monto_minimo;
-        $catacte->monto_maximo  = $request->monto_maximo;
-        $catacte->tiempo_minimo = $request->tiempo_minimo;
-        $catacte->tiempo_maximo = $request->tiempo_maximo;
+        $catacte->productos_id          = $request->productos_id;
+        $catacte->nombre                = $request->nombre;
+        $catacte->interes               = $request->interes;
+        $catacte->mora                  = $request->mora;
+        $catacte->codigo                = $request->codigo;
+        $catacte->monto_minimo          = $request->monto_minimo;
+        $catacte->monto_maximo          = $request->monto_maximo;
+        $catacte->tiempo_minimo         = $request->tiempo_minimo;
+        $catacte->tiempo_maximo         = $request->tiempo_maximo;
+        $catacte->tipo_amortizacion     = $request->tipo_amortizacion;
+        $catacte->cobro_intereses       = $request->cobro_intereses;
+        $catacte->periodicidad          = $request->periodicidad;
+
 
         $catacte->save();
 

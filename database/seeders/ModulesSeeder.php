@@ -95,11 +95,22 @@ class ModulesSeeder extends Seeder
         DB::table('modules')->insert([
             'jerarquia'             => 5,
             'name'                  => "Productos",
-            'icon'                  => "fas fa-product-hunt",
+            'icon'                  => "fab fa-product-hunt",
             'route'                 => "/productos",
             'module_permissions'    => "productos",
             'module_group'          => "0",
         ]);
+
+        // Productos
+        DB::table('modules')->insert([
+            'jerarquia'             => 6,
+            'name'                  => "Solicitudes",
+            'icon'                  => "fas fa-money-bill-alt",
+            'route'                 => "/solicitudes",
+            'module_permissions'    => "solicitudes",
+            'module_group'          => "0",
+        ]);
+
         // DB::table('modules')->insert([
         //     'jerarquia'             => 10,
         //     'group'                 => true,

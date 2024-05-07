@@ -25,6 +25,9 @@ return new class extends Migration
             $table->string('monto_maximo')->nullable();
             $table->integer('tiempo_minimo')->nullable();
             $table->integer('tiempo_maximo')->nullable();
+            $table->string('tipo_amortizacion')->nullable();
+            $table->string('cobro_intereses')->nullable();
+            $table->string('periodicidad')->nullable();
             $table->date('inactivacion')->nullable();
 
             $table->timestamps();
