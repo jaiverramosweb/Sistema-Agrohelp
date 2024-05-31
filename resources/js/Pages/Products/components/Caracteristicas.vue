@@ -108,9 +108,10 @@ const monto_maximo = ref('');
 const tiempo_minimo = ref('');
 const tiempo_maximo = ref('');
 
-const tipo_amortizacion = ref('');
+const tipo_amortizacion = ref('Francés');
 const cobro_intereses = ref('');
 const periodicidad = ref('');
+const terminos_condiciones = ref('');
 
 const garantia = ref('');
 const garantias = ref([]);
@@ -161,10 +162,13 @@ const save = () => {
     if (interes.value.length == 0) return
     if (mora.value.length == 0) return
     if (codigo.value.length == 0) return
-    if (monto_minimo.value.length == 0) return
+    // if (monto_minimo.value.length == 0) return
     if (monto_maximo.value.length == 0) return
-    if (tiempo_minimo.value.length == 0) return
+    // if (tiempo_minimo.value.length == 0) return
     if (tiempo_maximo.value.length == 0) return
+    if (terminos_condiciones.value.length == 0) return
+
+
 
     axios.post('/caracteristica', {
         productos_id: productos_id.value,
@@ -172,13 +176,14 @@ const save = () => {
         interes: interes.value,
         mora: mora.value,
         codigo: codigo.value,
-        monto_minimo: monto_minimo.value,
+        // monto_minimo: monto_minimo.value,
         monto_maximo: monto_maximo.value,
-        tiempo_minimo: tiempo_minimo.value,
+        // tiempo_minimo: tiempo_minimo.value,
         tiempo_maximo: tiempo_maximo.value,
         tipo_amortizacion: tipo_amortizacion.value,
         cobro_intereses: cobro_intereses.value,
         periodicidad: periodicidad.value,
+        terminos_condiciones: terminos_condiciones.value,
 
         garantias: garantias.value,
         documentos: documentos.value
@@ -202,13 +207,15 @@ const editItem = (item) => {
     interes.value = item.interes
     mora.value = item.mora
     codigo.value = item.codigo
-    monto_minimo.value = item.monto_minimo
+    // monto_minimo.value = item.monto_minimo
     monto_maximo.value = item.monto_maximo
-    tiempo_minimo.value = item.tiempo_minimo
+    // tiempo_minimo.value = item.tiempo_minimo
     tiempo_maximo.value = item.tiempo_maximo
     tipo_amortizacion.value = item.tipo_amortizacion
+    terminos_condiciones.value = item.terminos_condiciones
     cobro_intereses.value = item.cobro_intereses
     periodicidad.value = item.periodicidad
+
 
     $("#modalCatacteristica").modal("show");
 }
@@ -225,8 +232,10 @@ const update = () => {
         tiempo_minimo: tiempo_minimo.value,
         tiempo_maximo: tiempo_maximo.value,
         tipo_amortizacion: tipo_amortizacion.value,
+        terminos_condiciones: terminos_condiciones.value,
         cobro_intereses: cobro_intereses.value,
         periodicidad: periodicidad.value
+
     }).then(res => {
         Swal.fire({
             icon: 'success',
@@ -268,6 +277,7 @@ const clear = () => {
     tiempo_maximo.value = ''
     tipo_amortizacion.value = ''
     cobro_intereses.value = ''
+    terminos_condiciones.value = ''
     periodicidad.value = ''
     garantias.value = [];
     documentos.value = [];
@@ -334,7 +344,7 @@ const isLouding = () => {
                                         #
                                     </th>
                                     <th>
-                                        Producto
+                                        Línea de crédito
                                     </th>
                                     <th>
                                         Nombre
@@ -375,13 +385,14 @@ const isLouding = () => {
                                     <td>
                                         <div class='d-flex flex-row justify-content-center'>
 
-                                            <Link class="btn mr-1 btn-xs bg-info btn-round" data-toggle="tooltip"
-                                                title="Editar" @click='editItem(item_data)' v-if="permissions.update">
+                                            <Link class="btn mr-1 btn-sm btn-outline-info btn-round"
+                                                data-toggle="tooltip" title="Editar" @click='editItem(item_data)'
+                                                v-if="permissions.update">
                                             <i class="fas fa-edit"></i>
                                             </Link>
 
-                                            <button class="btn mr-1 btn-xs bg-danger btn-round" data-toggle="tooltip"
-                                                title="Eliminar" @click='deleteItem(item_data.id)'
+                                            <button class="btn mr-1 btn-sm btn-outline-danger btn-round"
+                                                data-toggle="tooltip" title="Eliminar" @click='deleteItem(item_data.id)'
                                                 v-if="permissions.delete">
                                                 <i class='fas fa-trash'></i>
                                             </button>
@@ -476,7 +487,7 @@ const isLouding = () => {
 
                         </div>
 
-                        <div class="form-group col-4" has-validation>
+                        <div class="form-group col-3" has-validation>
                             <label for="nombre">Nombre<span class="text-danger">
                                     *</span></label>
                             <input v-model="nombre" type="text" class="form-control" id="nombre"
@@ -487,29 +498,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-4" has-validation>
-                            <label for="interes">Interes<span class="text-danger">
-                                    *</span></label>
-                            <input v-model="interes" type="text" class="form-control" id="interes"
-                                aria-describedby="interes" autocomplete="off">
-                            <div v-if="interes == ''" class="invalid-feedback d-block">El
-                                campo es
-                                requerido
-                            </div>
-                        </div>
-
-                        <div class="form-group col-4" has-validation>
-                            <label for="mora">Mora<span class="text-danger">
-                                    *</span></label>
-                            <input v-model="mora" type="text" class="form-control" id="mora" aria-describedby="mora"
-                                autocomplete="off">
-                            <div v-if="mora == ''" class="invalid-feedback d-block">El
-                                campo es
-                                requerido
-                            </div>
-                        </div>
-
-                        <div class="form-group col-4" has-validation>
+                        <div class="form-group col-3" has-validation>
                             <label for="codigo">Código<span class="text-danger">
                                     *</span></label>
                             <input v-model="codigo" type="text" class="form-control" id="codigo"
@@ -520,7 +509,31 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-4" has-validation>
+                        <div class="form-group col-3" has-validation>
+                            <label for="interes">Interes<span class="text-danger">
+                                    *</span></label>
+                            <input v-model="interes" type="text" class="form-control" id="interes"
+                                aria-describedby="interes" autocomplete="off">
+                            <div v-if="interes == ''" class="invalid-feedback d-block">El
+                                campo es
+                                requerido
+                            </div>
+                        </div>
+
+                        <div class="form-group col-3" has-validation>
+                            <label for="mora">Mora<span class="text-danger">
+                                    *</span></label>
+                            <input v-model="mora" type="text" class="form-control" id="mora" aria-describedby="mora"
+                                autocomplete="off">
+                            <div v-if="mora == ''" class="invalid-feedback d-block">El
+                                campo es
+                                requerido
+                            </div>
+                        </div>
+
+
+
+                        <!-- <div class="form-group col-4" has-validation>
                             <label for="tiempo_minimo">Monto minimo<span class="text-danger">
                                     *</span></label>
                             <input v-model="monto_minimo" type="text" class="form-control" id="monto_minimo"
@@ -529,9 +542,9 @@ const isLouding = () => {
                                 campo es
                                 requerido
                             </div>
-                        </div>
+                        </div> -->
 
-                        <div class="form-group col-4" has-validation>
+                        <div class="form-group col-3" has-validation>
                             <label for="monto_maximo">Monto Maximo<span class="text-danger">
                                     *</span></label>
                             <input v-model="monto_maximo" type="text" class="form-control" id="monto_maximo"
@@ -541,7 +554,7 @@ const isLouding = () => {
                                 requerido
                             </div>
                         </div>
-
+                        <!-- 
                         <div class="form-group col-4" has-validation>
                             <label for="tiempo_minimo">Tiempo minimo<span class="text-danger">
                                     *</span></label>
@@ -551,9 +564,9 @@ const isLouding = () => {
                                 campo es
                                 requerido
                             </div>
-                        </div>
+                        </div> -->
 
-                        <div class="form-group col-4" has-validation>
+                        <div class="form-group col-3" has-validation>
                             <label for="tiempo_maximo">Tiempo Maximo<span class="text-danger">
                                     *</span></label>
                             <input v-model="tiempo_maximo" type="number" class="form-control" id="tiempo_maximo"
@@ -564,29 +577,14 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-4" has-validation>
-                            <label for="nombre">Tipo de amortizacion<span class="text-danger">
-                                    *</span></label>
-                            <select id="inputState" class="form-control" v-model="tipo_amortizacion">
-                                <option value="" selected>Seleccione...</option>
-                                <option value="Francés">Francés</option>
-                                <option value="Alemán">Alemán</option>
-                                <option value="Inglés">Inglés</option>
-
-                            </select>
-                            <div v-if="nombre == ''" class="invalid-feedback d-block">El
-                                campo es
-                                requerido
-                            </div>
-                        </div>
-
-                        <div class="form-group col-4" has-validation>
-                            <label for="nombre">Cobro intereses<span class="text-danger">
+                        <div class="form-group col-3" has-validation>
+                            <label for="nombre">Periocidad de pagos<span class="text-danger">
                                     *</span></label>
                             <select id="inputState" class="form-control" v-model="cobro_intereses">
                                 <option value="" selected>Seleccione...</option>
                                 <option value="Mensual">Mensual</option>
-                                <option value="Periodico">Periodico</option>
+                                <option value="Trimestral">Trimestral</option>
+                                <option value="Semestral">Semestral</option>
 
                             </select>
                             <div v-if="nombre == ''" class="invalid-feedback d-block">El
@@ -595,7 +593,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-4" has-validation>
+                        <!-- <div v-if="cobro_intereses == 'Periodico'" class="form-group col-4" has-validation>
                             <label for="nombre">Periodicidad permitida<span class="text-danger">
                                     *</span></label>
                             <select id="inputState" class="form-control" v-model="periodicidad">
@@ -605,15 +603,22 @@ const isLouding = () => {
                                 <option value="Cuatrimestral">Cuatrimestral</option>
                                 <option value="Semestral">Semestral</option>
                                 <option value="Anual">Anual</option>
-                                <option value="Pago unico">Pago unico</option>
-                                <option value="Pago personalizado">Pago personalizado</option>
 
                             </select>
                             <div v-if="nombre == ''" class="invalid-feedback d-block">El
                                 campo es
                                 requerido
                             </div>
+                        </div> -->
+
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1">términos y condiciones </label>
+                                <textarea v-model="terminos_condiciones" class="form-control"
+                                    id="exampleFormControlTextarea1" rows="3"></textarea>
+                            </div>
                         </div>
+
 
                         <div class="col-12">
                             <label for="monto_maximo">Agregar Garantias<span class="text-danger">

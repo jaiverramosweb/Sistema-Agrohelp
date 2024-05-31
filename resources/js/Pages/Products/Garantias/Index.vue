@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, computed, watch } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/dist/sweetalert2.css'
@@ -272,13 +272,13 @@ const isLouding = () => {
                                                 <td>
                                                     <div class='d-flex flex-row justify-content-center'>
 
-                                                        <Link class="btn mr-1 btn-xs bg-info btn-round"
+                                                        <Link class="btn mr-1 btn-sm btn-outline-info btn-round"
                                                             data-toggle="tooltip" title="Editar"
                                                             @click='editItem(item_data)' v-if="permissions.update">
                                                         <i class="fas fa-edit"></i>
                                                         </Link>
 
-                                                        <button class="btn mr-1 btn-xs bg-danger btn-round"
+                                                        <button class="btn mr-1 btn-sm btn-outline-danger btn-round"
                                                             data-toggle="tooltip" title="Eliminar"
                                                             @click='deleteItem(item_data.id)' v-if="permissions.delete">
                                                             <i class='fas fa-trash'></i>

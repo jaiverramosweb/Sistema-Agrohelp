@@ -16,18 +16,18 @@ return new class extends Migration
 
             $table->integer('sol_servicios_id');
 
-            $table->string('salario')->nullable();
-            $table->string('honorarios')->nullable();
-            $table->string('otros_ingresos')->nullable();
-            $table->string('otros_ingresos_describe')->nullable();
-            $table->string('total_ingresos')->nullable();
+            $table->string('salario')->default('');
+            $table->string('honorarios')->default('');
+            $table->string('otros_ingresos')->default('');
+            $table->string('otros_ingresos_describe')->default('');
+            $table->string('total_ingresos')->default('');
 
-            $table->string('alquiler')->nullable();
-            $table->string('amortizacion')->nullable();
-            $table->string('amortizacion_hipoteca')->nullable();
-            $table->string('pago_tarjetas')->nullable();
-            $table->string('otros_gastos')->nullable();
-            $table->string('total_egresos')->nullable();
+            $table->string('alquiler')->default('');
+            $table->string('amortizacion')->default('');
+            $table->string('amortizacion_hipoteca')->default('');
+            $table->string('pago_tarjetas')->default('');
+            $table->string('otros_gastos')->default('');
+            $table->string('total_egresos')->default('');
 
             $table->timestamps();
         });

@@ -91,15 +91,13 @@ const asyncFind = () => {
 const dataProducts = ref('');
 
 const id = ref(0);
-const tipo_producto = ref('');
+const tipo_producto = ref('null');
 const nombre = ref('');
 const descripcion = ref('');
 const codigo = ref('');
 
 const save = () => {
-    if (tipo_producto.value.length == 0) return
     if (nombre.value.length == 0) return
-    if (descripcion.value.length == 0) return
     if (codigo.value.length == 0) return
 
     axios.post('/producto', {
@@ -165,7 +163,6 @@ const deleteItem = (id) => {
 
 const clear = () => {
     id.value = 0
-    tipo_producto.value = ''
     nombre.value = ''
     descripcion.value = ''
     codigo.value = ''
@@ -235,9 +232,6 @@ const isLouding = () => {
                                         Nombre
                                     </th>
                                     <th>
-                                        Tipo
-                                    </th>
-                                    <th>
                                         estado
                                     </th>
 
@@ -258,22 +252,20 @@ const isLouding = () => {
                                         {{ item_data.nombre }}
                                     </td>
                                     <td>
-                                        {{ item_data.tipo_producto }}
-                                    </td>
-                                    <td>
                                         {{ item_data.estado }}
                                     </td>
 
                                     <td>
                                         <div class='d-flex flex-row justify-content-center'>
 
-                                            <Link class="btn mr-1 btn-xs bg-info btn-round" data-toggle="tooltip"
-                                                title="Editar" @click='editItem(item_data)' v-if="permissions.update">
+                                            <Link class="btn mr-1 btn-sm btn-outline-info btn-round"
+                                                data-toggle="tooltip" title="Editar" @click='editItem(item_data)'
+                                                v-if="permissions.update">
                                             <i class="fas fa-edit"></i>
                                             </Link>
 
-                                            <button class="btn mr-1 btn-xs bg-danger btn-round" data-toggle="tooltip"
-                                                title="Eliminar" @click='deleteItem(item_data.id)'
+                                            <button class="btn mr-1 btn-sm btn-outline-danger btn-round"
+                                                data-toggle="tooltip" title="Eliminar" @click='deleteItem(item_data.id)'
                                                 v-if="permissions.delete">
                                                 <i class='fas fa-trash'></i>
                                             </button>
@@ -284,7 +276,7 @@ const isLouding = () => {
                                 </tr>
 
                                 <tr v-show='dataProducts.length == 0'>
-                                    <td colspan="5">
+                                    <td colspan="4">
                                         <center>No existen registros</center>
                                     </td>
                                 </tr>
@@ -352,7 +344,7 @@ const isLouding = () => {
                 <div class="modal-body">
 
                     <div class="row">
-
+                        <!-- 
                         <div class="form-group col-12" has-validation>
                             <label for="tipo_producto">Tipo Producto<span class="text-danger">
                                     *</span></label>
@@ -366,7 +358,7 @@ const isLouding = () => {
                                 requerido
                             </div>
 
-                        </div>
+                        </div> -->
 
                         <div class="form-group col-12" has-validation>
                             <label for="nombre">Nombre<span class="text-danger">
@@ -380,14 +372,9 @@ const isLouding = () => {
                         </div>
 
                         <div class="form-group col-12" has-validation>
-                            <label for="descripcion">Descripción <span class="text-danger">
-                                    *</span></label>
+                            <label for="descripcion">Descripción </label>
                             <input v-model="descripcion" type="text" class="form-control" id="descripcion"
                                 aria-describedby="descripcion" autocomplete="off">
-                            <div v-if="descripcion == ''" class="invalid-feedback d-block">El
-                                campo es
-                                requerido
-                            </div>
                         </div>
 
                         <div class="form-group col-12" has-validation>

@@ -16,27 +16,27 @@ return new class extends Migration
 
             $table->integer('sol_servicios_id');
 
-            $table->string('banco')->nullable();
-            $table->string('sucursal')->nullable();
-            $table->string('banco_numero')->nullable();
-            $table->string('banco_dos')->nullable();
-            $table->string('sucursal_dos')->nullable();
-            $table->string('banco_numero_dos')->nullable();
+            $table->string('banco')->default('');
+            $table->string('sucursal')->default('');
+            $table->string('banco_numero')->default('');
+            $table->string('banco_dos')->default('');
+            $table->string('sucursal_dos')->default('');
+            $table->string('banco_numero_dos')->default('');
 
 
-            $table->string('nombre_comercal')->nullable();
-            $table->string('direccion_comercal')->nullable();
-            $table->string('telefono_comercal')->nullable();
-            $table->string('nombre_comercal_dos')->nullable();
-            $table->string('direccion_comercal_dos')->nullable();
-            $table->string('telefono_comercal_dos')->nullable();
+            $table->string('nombre_comercal')->default('');
+            $table->string('direccion_comercal')->default('');
+            $table->string('telefono_comercal')->default('');
+            $table->string('nombre_comercal_dos')->default('');
+            $table->string('direccion_comercal_dos')->default('');
+            $table->string('telefono_comercal_dos')->default('');
 
-            $table->string('nombre_familiar')->nullable();
-            $table->string('direccion_familiar')->nullable();
-            $table->string('telefono_familiar')->nullable();
-            $table->string('nombre_familiar_dos')->nullable();
-            $table->string('direccion_familiar_dos')->nullable();
-            $table->string('telefono_familiar_dos')->nullable();
+            $table->string('nombre_familiar')->default('');
+            $table->string('direccion_familiar')->default('');
+            $table->string('telefono_familiar')->default('');
+            $table->string('nombre_familiar_dos')->default('');
+            $table->string('direccion_familiar_dos')->default('');
+            $table->string('telefono_familiar_dos')->default('');
             $table->timestamps();
         });
     }

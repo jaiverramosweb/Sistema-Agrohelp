@@ -407,7 +407,7 @@ const transforDate = (date) => {
                                                             <i class='fas fa-eye'></i>
                                                         </button> -->
 
-                                                        <Link class="btn mr-1 btn-xs bg-info btn-round"
+                                                        <Link class="btn mr-1 btn-sm btn-outline-info btn-round"
                                                             data-toggle="tooltip" title="Info"
                                                             :href="route('client.show', { client: item_data.id })"
                                                             @click="isLouding" v-if="permissions.read">

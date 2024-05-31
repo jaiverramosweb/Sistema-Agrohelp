@@ -7,17 +7,15 @@
     <div class="">
 
       <div class="preloader flex-column justify-content-center align-items-center" v-if="loader">
-        <img class="animation__shake"
-          src="https://play-lh.googleusercontent.com/IL5kcim7yAHkP1WtooLFdTDgDujb0ZcW65m4160WY86PM896U_x1hAAfpQ28Mgrsb_8"
-          alt="AdminLTELogo" height="60" width="60">
+        <img class="animation__shake" src="/assets/images/agrohelp.png" alt="LogoAgroHELP" height="60" width="60">
       </div>
 
-      <div class="row">
+      <div class="row ">
 
         <div class="col-md-6 d-none d-sm-none d-md-block">
-          <img class="img_resposive"
-            src="https://infonegocios.info/content/images/2022/07/21/124804/conversions/mirada-agro-2021-campo-maquinaria-agricola-medium-size.jpg">
+          <img class="img_resposive" src="/assets/images/maquinaria.jpeg">
         </div>
+
         <div class="col-12 col-md-6">
 
           <div class="contenedor">
@@ -50,7 +48,7 @@
                     </div>
 
                   </div>
-                  <InputError class="mt-2" :message="form.errors.email" />
+
 
                   <div class="input-group mb-3">
 
@@ -65,7 +63,15 @@
                   </div>
                   <InputError class="mt-2" :message="form.errors.password" />
 
+
                   <div class="row">
+
+                    <div class="col-11 mb-3">
+                      <RecaptchaV2 @widget-id="handleWidgetId" @error-callback="handleErrorCalback"
+                        @expired-callback="handleExpiredCallback" @load-callback="handleLoadCallback"
+                        :size="comapact" />
+
+                    </div>
 
                     <div class="col-7">
                       <div class="icheck-primary">
@@ -121,6 +127,7 @@
 
 import InputError from '@/Components/InputError.vue';
 
+import { RecaptchaV2 } from "vue3-recaptcha-v2";
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 
@@ -135,6 +142,8 @@ defineProps({
 
 const loader = ref(true);
 
+const validateCaptcha = ref(false)
+
 onMounted(() => {
   // var element = document.getElementById("body_id");
   // element.classList.add("hold-transition");
@@ -148,16 +157,38 @@ onMounted(() => {
   }, 3000);
 });
 
+const handleWidgetId = (widgetId) => {
+  console.log("Widget ID: ", widgetId);
+};
+const handleErrorCalback = () => {
+  console.log("Error callback");
+  validateCaptcha.value = false
+};
+const handleExpiredCallback = () => {
+  console.log("Expired callback");
+  validateCaptcha.value = false
+};
+const handleLoadCallback = (response) => {
+  validateCaptcha.value = true
+  console.log("Load callback", response);
+};
+
 const form = useForm({
   email: '',
   password: '',
   remember: false,
 });
 
-const submit = () => {
-  form.post(route('login'), {
-    onFinish: () => form.reset('password'),
-  });
+const submit = async () => {
+
+  if (validateCaptcha.value == true) {
+    form.post(route('login'), {
+      onFinish: () => form.reset('password'),
+    });
+  } else {
+    console.log(' Requiere el captcha')
+  }
+
 };
 
 </script>

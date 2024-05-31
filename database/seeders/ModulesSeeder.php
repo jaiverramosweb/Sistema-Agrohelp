@@ -78,6 +78,15 @@ class ModulesSeeder extends Seeder
             'module_permissions'    => "documentacion",
             'module_group'          => "config_group",
         ]);
+        DB::table('modules')->insert([
+            'jerarquia'             => 3,
+            'name'                  => "Medios de pago",
+            'module_group'          => "0",
+            'icon'                  => "fas fa-wallet",
+            'route'                 => "/config/metodo-pago",
+            'module_permissions'    => "medio-pagos",
+            'module_group'          => "config_group",
+        ]);
 
 
         // Cientes
@@ -94,8 +103,8 @@ class ModulesSeeder extends Seeder
         // Productos
         DB::table('modules')->insert([
             'jerarquia'             => 5,
-            'name'                  => "Productos",
-            'icon'                  => "fab fa-product-hunt",
+            'name'                  => "Línea de crédito",
+            'icon'                  => "fas fa-credit-card",
             'route'                 => "/productos",
             'module_permissions'    => "productos",
             'module_group'          => "0",

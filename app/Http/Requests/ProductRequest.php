@@ -23,7 +23,7 @@ class ProductRequest extends FormRequest
     {
         return [
             'nombre'          => ['required', 'string'],
-            'tipo_producto'   => ['required', 'string'],
+            'tipo_producto'   => ['nullable', 'string'],
             'descripcion'     => ['nullable', 'string'],
             'codigo'          => ['nullable', 'string'],
         ];

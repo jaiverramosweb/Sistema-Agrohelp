@@ -70,6 +70,10 @@ class RolesAndPermissionsSeeder extends Seeder
                 "module": "documentacion"
             },
             {
+                "name": "Medio de pagos",
+                "module": "medio-pagos"
+            },
+            {
                 "name": "Solicitudes",
                 "module": "solicitudes"
             }

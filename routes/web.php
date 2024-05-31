@@ -11,6 +11,7 @@ use App\Http\Controllers\keller\ModulesController;
 use App\Http\Controllers\keller\PermissionsController;
 use App\Http\Controllers\keller\PruebasController;
 use App\Http\Controllers\keller\UsersController;
+use App\Http\Controllers\MetodoPagoController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SolicitudController;
@@ -61,6 +62,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
 
     Route::get('/inicio', [ClientAuthController::class, 'index'])->name('client.inicio');
+    Route::get('/creditos', [ClientAuthController::class, 'creditos'])->name('client.creditos');
     Route::get('/dashboard', [ClientAuthController::class, 'dashboard'])->name('dashboard');
 
     Route::get('/pruebas-johann', [PruebasController::class, 'index'])->name('pruebas.johann');
@@ -114,6 +116,16 @@ Route::middleware('auth')->group(function () {
     //
 
 
+    // Metodo Pago 
+    Route::get('/config/metodo-pago',             [MetodoPagoController::class, 'index'])->name('metodoPago.index');
+    Route::get('/get-metodo-pago',                [MetodoPagoController::class, 'getmetodoPago'])->name('metodoPago.getmetodoPago');
+    Route::post('/metodo-pago-pagination',        [MetodoPagoController::class, 'pagination'])->name('metodoPago.pagination');
+    Route::post('/metodo-pago',                   [MetodoPagoController::class, 'save'])->name('metodoPago.save');
+    Route::put('/metodo-pago/{id}',               [MetodoPagoController::class, 'update'])->name('metodoPago.update');
+    Route::delete('/metodo-pago/{id}',            [MetodoPagoController::class, 'delete'])->name('metodoPago.delete');
+    //
+
+
     // Modules  
     Route::get('/config/modules',                   [ModulesController::class, 'index'])->name('modules.index');
     Route::get('/modules',                          [ModulesController::class, 'list'])->name('modules.list');
@@ -155,13 +167,34 @@ Route::middleware('auth')->group(function () {
     // Solicitudes 
     Route::get('/primera-solicitud/{client_id}/{monto}/{timepo}/{producto}',   [SolicitudController::class, 'primeraSolicitud'])->name('solicitud.primeraSolicitud');
 
-    Route::get('/editar-solicitud/{id}',            [SolicitudController::class, 'editarSolicitud'])->name('solicitud.editarSolicitud');
-    Route::get('/get-solicitud/{id}',               [SolicitudController::class, 'getSolicitud'])->name('solicitud.getSolicitud');
-    Route::put('/update-solicitud/{id}',            [SolicitudController::class, 'updateStateSolicitud'])->name('solicitud.updateStateSolicitud');
-    Route::post('/primera-solicitud',               [SolicitudController::class, 'saveSolicitud'])->name('solicitud.saveSolicitud');
+    Route::get('/editar-solicitud/{id}',                    [SolicitudController::class, 'editarSolicitud'])->name('solicitud.editarSolicitud');
+    Route::get('/ver-amortizacion/{monto}/{tiempo}/{taza}/{tipo}', [SolicitudController::class, 'verAmortizacion'])->name('solicitud.verAmortizacion');
+    Route::get('/ver-aprobado/{id}',                        [SolicitudController::class, 'verAprobado'])->name('solicitud.verAprobado');
+    Route::get('/get-solicitud/{id}',                       [SolicitudController::class, 'getSolicitud'])->name('solicitud.getSolicitud');
+    Route::put('/update-solicitud/{id}',                    [SolicitudController::class, 'updateStateSolicitud'])->name('solicitud.updateStateSolicitud');
+    Route::post('/primera-solicitud',                       [SolicitudController::class, 'saveSolicitud'])->name('solicitud.saveSolicitud');
+
+    Route::post('/save-referencias',                [SolicitudController::class, 'saveReferencias'])->name('solicitud.saveReferencias');
 
     Route::get('/solicitudes',                      [SolicitudController::class, 'index'])->name('solicitud.index');
     Route::get('/solicitudes-detalle/{id}',         [SolicitudController::class, 'show'])->name('solicitud.show');
+
+    Route::post('/updload-files',                   [SolicitudController::class, 'uploadFile'])->name('solicitud.uploadFile');
+    Route::get('/get-files/{id}',                   [SolicitudController::class, 'getFiles'])->name('solicitud.getFiles');
+    Route::get('/download-files/{id}',              [SolicitudController::class, 'downloadFile'])->name('solicitud.downloadFile');
+    Route::delete('/delete-file/{id}',              [SolicitudController::class, 'deleteFile'])->name('solicitud.deleteFile');
+
+
+    Route::get('/save-preaprovado/{id}',            [SolicitudController::class, 'savePreaprovado'])->name('solicitud.savePreaprovado');
+    Route::put('/update-estado-solicitud/{id}',     [SolicitudController::class, 'updateEstadoSolicitud'])->name('solicitud.updateEstadoSolicitud');
+    Route::put('/update-valores-solicitud/{id}',    [SolicitudController::class, 'updateValoresSolicitud'])->name('solicitud.updateValoresSolicitud');
+    Route::put('/solicitud-aprobada/{id}',          [SolicitudController::class, 'solicitudAprobada'])->name('solicitud.solicitudAprobada');
+    Route::get('/amortizacion-all/{id}',            [SolicitudController::class, 'AmortizacionAll'])->name('solicitud.AmortizacionAll');
+    Route::put('/realizar-pago/{id}',               [SolicitudController::class, 'realizarPago'])->name('solicitud.realizarPago');
+
+
+    Route::get('/download-solicitud/{id}',          [SolicitudController::class, 'downloadSolicitud'])->name('solicitud.downloadSolicitud');
+    Route::get('/download-pre/{id}',                [SolicitudController::class, 'downloadPre'])->name('solicitud.downloadPre');
     //
 
     // Creditos

@@ -16,11 +16,11 @@ return new class extends Migration
 
             $table->integer('sol_servicios_id');
 
-            $table->string('tipo_credito')->nullable();
-            $table->string('oficina_credito')->nullable();
-            $table->string('vendedor_credito')->nullable();
-            $table->string('monto_solicitado_credito')->nullable();
-            $table->string('forma_pago_credito')->nullable();
+            $table->string('tipo_credito')->default('');
+            $table->string('oficina_credito')->default('');
+            $table->string('vendedor_credito')->default('');
+            $table->string('monto_solicitado_credito')->default('');
+            $table->string('forma_pago_credito')->default('');
 
             $table->timestamps();
         });

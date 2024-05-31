@@ -16,7 +16,6 @@ onMounted(() => {
     if (props.info) {
         if (props.info.tipo_documento) {
             getCaracteristicas()
-            getSolicitudes()
         }
     }
 
@@ -41,30 +40,28 @@ const creado = ref(false)
 const monto_solicitar = ref('')
 const tiempo_pagar = ref('')
 const tasa = ref('')
+const terminos = ref('')
 const tablaAmortizacion = ref([])
 const product_id = ref(0)
 const tipoAmortizacion = ref('')
 
 const getCaracteristicas = () => {
     axios.get('/get-product-caract').then(({ data }) => {
-        console.log('data', data)
         productos.value = data
-    })
-}
-
-const getSolicitudes = () => {
-    axios.get('/get-solicitud/' + infoCliente.value.id).then(({ data }) => {
-        console.log('Solicitudes', data)
-        solicitudes.value = data
     })
 }
 
 const simuladorMonto = (producto) => {
 
+    console.log(producto)
+
     tasa.value = producto.interes
+    terminos.value = producto.terminos_condiciones
     product_id.value = producto.id
-    tipoAmortizacion.value = producto.tipo_amortizacion
+    tipoAmortizacion.value = producto.cobro_intereses
     // tipoAmortizacion.value = 'Inglés'
+
+    console.log(producto)
 
     $("#modalMontoSimulador").modal("show");
 }
@@ -72,18 +69,7 @@ const simuladorMonto = (producto) => {
 const simulador = () => {
     $("#modalMontoSimulador").modal("hide");
 
-    // periodisida de pago
-    // si es 12 => Mes
-    // si es 6 => Vi
-    // si es 4 => Tre
-    // si es 3 => cuati
-    // si es 2 => semes
-    // si es 1 => anual
-
-    if (tipoAmortizacion.value == 'Francés') metodoFrances()
-    if (tipoAmortizacion.value == 'Alemán') metodoAleman()
-    if (tipoAmortizacion.value == 'Inglés') metodoIngles()
-
+    metodoFrances()
 
     setInterval(() => {
         $("#modalSimulador").modal("show");
@@ -91,26 +77,74 @@ const simulador = () => {
 
 }
 
-const metodoFrances = () => {
+// const metodoFrances = () => {
 
-    const tasaMensual = tasa.value / 100 / 12;
-    const cuota = (monto_solicitar.value * tasaMensual) / (1 - Math.pow(1 + tasaMensual, - tiempo_pagar.value));
-    let saldoPendiente = monto_solicitar.value;
-    tablaAmortizacion.value = [];
-    let fecha = new Date();
-    for (let i = 1; i <= tiempo_pagar.value; i++) {
-        const interes = saldoPendiente * tasaMensual;
-        const amortizacion = cuota - interes;
-        saldoPendiente -= amortizacion;
-        tablaAmortizacion.value.push({
-            fecha: fecha.toLocaleDateString(),
-            cuota: cuota.toFixed(2),
-            interes: interes.toFixed(2),
-            amortizacion: amortizacion.toFixed(2),
-            saldoPendiente: saldoPendiente.toFixed(2)
-        });
-        fecha.setMonth(fecha.getMonth() + 1);
+//     const tasaMensual = tasa.value / 100 / 12;
+//     const cuota = (monto_solicitar.value * tasaMensual) / (1 - Math.pow(1 + tasaMensual, - tiempo_pagar.value));
+//     let saldoPendiente = monto_solicitar.value;
+//     tablaAmortizacion.value = [];
+//     let fecha = new Date();
+//     for (let i = 1; i <= tiempo_pagar.value; i++) {
+//         const interes = saldoPendiente * tasaMensual;
+//         const amortizacion = cuota - interes;
+//         saldoPendiente -= amortizacion;
+//         tablaAmortizacion.value.push({
+//             fecha: fecha.toLocaleDateString(),
+//             cuota: cuota.toFixed(2),
+//             interes: interes.toFixed(2),
+//             amortizacion: amortizacion.toFixed(2),
+//             saldoPendiente: saldoPendiente.toFixed(2)
+//         });
+//         fecha.setMonth(fecha.getMonth() + 1);
+//     }
+// }
+
+function metodoFrances() {
+
+    let tipoCuotras = 1
+
+    if (tipoAmortizacion.value == 'Trimestral') {
+        tipoCuotras = 3
     }
+    if (tipoAmortizacion.value == 'Semestral') {
+        tipoCuotras = 6
+    }
+
+    // Parámetros
+    const r_mensual = tasa.value / 12 / 100; // Tasa de interés mensual
+    const capital_trimestral = monto_solicitar.value / (tiempo_pagar.value / tipoCuotras); // Pago de capital trimestral
+    const fecha_inicial = new Date(); // Fecha actual
+    let saldo_pendiente = monto_solicitar.value;
+
+    // Array para almacenar los pagos
+    tablaAmortizacion.value = [];
+
+    for (let i = 0; i < tiempo_pagar.value; i++) {
+        let pago_interes = saldo_pendiente * r_mensual;
+        let pago_capital = 0;
+
+        // Si es el último mes del trimestre, se paga el capital
+        if ((i + 1) % tipoCuotras === 0) {
+            pago_capital = capital_trimestral;
+        }
+
+        let cuota = pago_interes + pago_capital;
+        saldo_pendiente -= pago_capital;
+
+        // Generar la fecha del pago
+        let fecha_pago = new Date(fecha_inicial);
+        fecha_pago.setMonth(fecha_inicial.getMonth() + i);
+
+        // Añadir al array de amortización
+        tablaAmortizacion.value.push({
+            fecha: fecha_pago.toLocaleDateString(),
+            cuota: cuota.toFixed(2),
+            interes: pago_interes.toFixed(2),
+            amortizacion: pago_capital.toFixed(2),
+            saldoPendiente: saldo_pendiente.toFixed(2)
+        });
+    }
+
 }
 
 const metodoAleman = () => {
@@ -162,12 +196,9 @@ const solicitarCredito = () => {
     window.location.href = `/primera-solicitud/${infoCliente.value.id}/${monto_solicitar.value}/${tiempo_pagar.value}/${product_id.value}`;
 }
 
-const editarCredito = (id) => {
-    window.location.href = `/editar-solicitud/${id}`;
-}
-
-const crearSolicitud = () => {
-    mostrarSolicitud.value = true
+const formatearMoneda = (numero) => {
+    const num = parseFloat(numero)
+    return '$ ' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 const limpiar = () => {
@@ -207,13 +238,14 @@ const save = () => {
     })
 }
 
+
 </script>
 
 <template>
     <LayoutCLient>
         <div class="row">
 
-            <div v-if="creado == false && !infoCliente.tipo_documento" class="col-lg-12 mt-4">
+            <div v-if="creado == false && !infoCliente" class="col-lg-12 mt-4">
                 <div class="card">
                     <div class="card-header">
                         Información del cliente
@@ -250,7 +282,7 @@ const save = () => {
                             </div>
 
                             <div class="form-group col-12" has-validation>
-                                <label for="nombre">Nombre <span class="text-danger">
+                                <label for="nombre">Nombre y Apellidos<span class="text-danger">
                                         *</span></label>
                                 <input v-model="nombre" type="text" class="form-control" id="nombre"
                                     aria-describedby="nombre" autocomplete="off">
@@ -273,228 +305,34 @@ const save = () => {
 
             </div>
 
-            <div v-if="infoCliente.tipo_documento && solicitudes.length < 1" class="col-lg-12 mt-4">
+            <div v-if="infoCliente" class="col-lg-12 mt-4">
                 <div class="row">
                     <div v-for="product in productos" :key="product.id" class="m-2 col-12 col-md-3 ">
 
                         <div class="card card-widget widget-user">
 
-                            <div class="widget-user-header bg-info">
-                                <h3 class="widget-user-username">{{ product.producto }}</h3>
-                                <h5 class="widget-user-desc">{{ product.nombre }}</h5>
+                            <div class="bg-secondary text-center p-2">
+                                <h3 class="widget-user-username">{{ product.producto }} {{ product.nombre }}
+                                </h3>
                             </div>
 
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-sm-6 border-right">
-                                        <div class="description-block">
-                                            <h5 class="description-header">M. Minimo</h5>
-                                            <span class="description-text">$ {{ product.monto_minimo }}</span>
-                                        </div>
 
-                                        <div class="description-block">
-                                            <h5 class="description-header">T. Minimo</h5>
-                                            <span class="description-text">{{ product.tiempo_minimo }}</span>
-                                        </div>
-
+                                    <div class="col-12 mb-4 text-center">
+                                        <span class="h4">Monto hasta</span> <br>
+                                        <span class="description-text h5">{{ formatearMoneda(product.monto_maximo)
+                                            }}</span> <br>
+                                        <span>O segun cuerdos</span>
                                     </div>
 
-                                    <div class="col-sm-6 border-right">
-                                        <div class="description-block">
-                                            <h5 class="description-header">M. Maximo</h5>
-                                            <span class="description-text">$ {{ product.monto_maximo }}</span>
-                                        </div>
-
-                                        <div class="description-block">
-                                            <h5 class="description-header">T. Maximo</h5>
-                                            <span class="description-text">{{ product.tiempo_maximo }}</span>
-                                        </div>
+                                    <div class="col-12  text-center">
+                                        <span class="h4">Tiempo hasta</span> <br>
+                                        <span class="description-text h5">{{ product.tiempo_maximo }} meses</span> <br>
+                                        <span>O segun cuerdos</span>
                                     </div>
 
-                                </div>
-
-                            </div>
-                            <div class="card-footer">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <button @click="simuladorMonto(product.interes, product.id)"
-                                            class="btn btn-block btn-success">Simular</button>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            <div v-if="solicitudes.length > 0 && mostrarSolicitud == false" class="col-lg-12 mt-4">
-
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">Lista de solictudes</h4>
-                        <div class="card-tools">
-                            <button class="btn btn-sm btn-primary" @click="crearSolicitud">
-                                <i class="fas fa-plus"></i> Crear solicitud </button>
-                        </div>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="row">
-                            <div class='col-12'>
-                                <div class='table-responsive'>
-                                    <table class='table table-bordered table-striped table-hover table-title'>
-                                        <thead style='background-color: black; color: white'>
-                                            <tr>
-                                                <th>
-                                                    #
-                                                </th>
-                                                <th>
-                                                    Nombre del producto
-                                                </th>
-                                                <th>
-                                                    Monto solicitado
-                                                </th>
-                                                <th>
-                                                    Tiempo en meses
-                                                </th>
-                                                <th>
-                                                    Rstado solicitud
-                                                </th>
-
-                                                <th class="border text-center">
-                                                    <i class='fa fa-cogs '></i>
-                                                </th>
-                                            </tr>
-
-                                        </thead>
-
-                                        <tbody>
-                                            <tr v-for=" ( item_data, i ) in solicitudes " :key='i'>
-
-                                                <td>
-                                                    {{ i + 1 }}
-                                                </td>
-                                                <td>
-                                                    {{ item_data.producto.nombre_producto }} {{
-                item_data.producto.nombre }}
-                                                </td>
-                                                <td>
-                                                    {{ item_data.monto }}
-                                                </td>
-                                                <td>
-                                                    {{ item_data.tiempo }}
-                                                </td>
-
-                                                <td class=" text-center">
-                                                    <span v-if="item_data.estado_solicitud == 'En Tramite'"
-                                                        class="badge badge-warning p-2">
-                                                        {{ item_data.estado_solicitud }}
-                                                    </span>
-                                                    <span v-if="item_data.estado_solicitud == 'Solicitado'"
-                                                        class="badge badge-info p-2">
-                                                        {{ item_data.estado_solicitud }}
-                                                    </span>
-                                                    <span v-if="item_data.estado_solicitud == 'Aceptado'"
-                                                        class="badge badge-success p-2">
-                                                        {{ item_data.estado_solicitud }}
-                                                    </span>
-                                                    <span v-if="item_data.estado_solicitud == 'Denegado'"
-                                                        class="badge badge-danger p-2">
-                                                        {{ item_data.estado_solicitud }}
-                                                    </span>
-                                                </td>
-
-                                                <td>
-                                                    <div class='d-flex flex-row justify-content-center'>
-
-                                                        <button class="btn mr-1 btn-xs bg-info btn-round"
-                                                            data-toggle="tooltip" title="Ver"
-                                                            @click="editarCredito(item_data.id)">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-
-                                                        <!-- <Link class="btn mr-1 btn-xs bg-info btn-round" data-toggle="tooltip"
-                                                            title="Editar" @click='editItem(item_data)' v-if="permissions.update">
-                                                        <i class="fas fa-edit"></i>
-                                                        </Link> -->
-
-                                                        <!-- <button class="btn mr-1 btn-xs bg-danger btn-round"
-                                                            data-toggle="tooltip" title="Eliminar"
-                                                            @click='deleteItem(item_data.id)' v-if="permissions.delete">
-                                                            <i class='fas fa-trash'></i>
-                                                        </button> -->
-
-                                                    </div>
-                                                </td>
-
-                                            </tr>
-
-                                            <tr v-show='solicitudes.length == 0'>
-                                                <td colspan="6">
-                                                    <center>No existen registros</center>
-                                                </td>
-                                            </tr>
-
-                                        </tbody>
-
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-
-            </div>
-
-            <div v-if="mostrarSolicitud" class="col-lg-12 mt-4">
-                <div class="row">
-                    <div v-for="product in productos" :key="product.id" class="m-2 col-12 col-md-3 ">
-
-                        <div class="card card-widget widget-user">
-
-                            <div class="widget-user-header bg-info">
-                                <h3 class="widget-user-username">{{ product.producto }}</h3>
-                                <h5 class="widget-user-desc">{{ product.nombre }}</h5>
-                            </div>
-
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-sm-6 border-right">
-                                        <div class="description-block">
-                                            <h5 class="description-header">M. Minimo</h5>
-                                            <span class="description-text">$ {{ product.monto_minimo }}</span>
-                                        </div>
-
-                                        <div class="description-block">
-                                            <h5 class="description-header">T. Minimo</h5>
-                                            <span class="description-text">{{ product.tiempo_minimo }}</span>
-                                        </div>
-
-                                    </div>
-
-                                    <div class="col-sm-6 border-right">
-                                        <div class="description-block">
-                                            <h5 class="description-header">M. Maximo</h5>
-                                            <span class="description-text">$ {{ product.monto_maximo }}</span>
-                                        </div>
-
-                                        <div class="description-block">
-                                            <h5 class="description-header">T. Maximo</h5>
-                                            <span class="description-text">{{ product.tiempo_maximo }}</span>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <div class="card-footer">
-                                <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-12 mt-3">
                                         <button @click="simuladorMonto(product)"
                                             class="btn btn-block btn-success">Simular</button>
                                     </div>
@@ -502,12 +340,12 @@ const save = () => {
                                 </div>
 
                             </div>
+
                         </div>
 
                     </div>
                 </div>
             </div>
-
 
             <!-- Modal Monto -->
             <div class="modal fade" id="modalMontoSimulador" data-backdrop="static" tabindex="-1"
@@ -560,33 +398,36 @@ const save = () => {
                         </div>
                         <div class="modal-body">
 
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Mes</th>
-                                        <th scope="col">Cuota</th>
-                                        <th scope="col">Interés</th>
-                                        <th scope="col">Valor Capital</th>
-                                        <th scope="col">Saldo Pendiente</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- <tr>
-                                        <th scope="row">1</th>
-                                        <td>$475,124</td>
-                                        <td>$104,000</td>
-                                        <td>$371,124</td>
-                                        <td>$4,628,876</td>
-                                    </tr> -->
-                                    <tr v-for="fila in tablaAmortizacion" :key="fila.fecha">
-                                        <td scope="row">{{ fila.fecha }}</td>
-                                        <td>{{ fila.cuota }}</td>
-                                        <td>{{ fila.interes }}</td>
-                                        <td>{{ fila.amortizacion }}</td>
-                                        <td>{{ fila.saldoPendiente }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Mes</th>
+                                            <th scope="col">Valor Capital</th>
+                                            <th scope="col">Interés</th>
+                                            <th scope="col">Cuota</th>
+                                            <th scope="col">Saldo Pendiente</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="fila in tablaAmortizacion" :key="fila.fecha">
+                                            <td scope="row">{{ fila.fecha }}</td>
+                                            <td>{{ formatearMoneda(fila.amortizacion) }}</td>
+                                            <td>{{ formatearMoneda(fila.interes) }}</td>
+                                            <td>{{ formatearMoneda(fila.cuota) }}</td>
+                                            <td>{{ formatearMoneda(fila.saldoPendiente) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <span class="mt-4">
+                                <h5>Terminos y condiciones</h5>
+                                <p>
+                                    {{ terminos }}
+                                </p>
+                            </span>
                         </div>
 
 
@@ -620,3 +461,25 @@ const save = () => {
         </div>
     </LayoutCLient>
 </template>
+
+<style scoped>
+.badge-yellow {
+    background-color: white;
+    border: 2px solid rgb(233, 233, 29);
+}
+
+.badge-green {
+    background-color: white;
+    border: 2px solid rgb(18, 183, 18);
+}
+
+.badge-red {
+    background-color: white;
+    border: 2px solid rgb(231, 64, 64);
+}
+
+.badge-blue {
+    background-color: white;
+    border: 2px solid rgb(71, 71, 243);
+}
+</style>

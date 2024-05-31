@@ -9,6 +9,7 @@ import Linea from './components/Linea.vue';
 import Patrimonio from './components/Patrimonio.vue';
 import Ingreso from './components/Ingreso.vue';
 import Credito from './components/Credito.vue';
+import Producto from './components/Producto.vue';
 
 const props = defineProps(['solicitud', 'cliente'])
 
@@ -17,7 +18,7 @@ onMounted(() => {
 
     cliente.value = props.cliente
     solicitud.value = props.solicitud
-
+    getFiles();
     console.log(props.solicitud)
 
 })
@@ -46,6 +47,7 @@ const Toast = Swal.mixin({
 
 const cliente = ref('')
 const solicitud = ref('')
+const documents_list = ref([])
 
 
 const updateStateSolicitud = (valor) => {
@@ -55,6 +57,31 @@ const updateStateSolicitud = (valor) => {
             title: 'Solicitud realizada'
         })
     })
+}
+
+const getFiles = () => {
+    axios.get(`/get-files/${solicitud.value.id}`).then(({ data }) => {
+        console.log(data.data)
+        documents_list.value = data.data
+    })
+}
+
+const transforDate = (date) => {
+    var fecha = new Date(date);
+
+    var año = fecha.getFullYear();
+    var mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    var dia = fecha.getDate().toString().padStart(2, '0');
+
+    var fechaFormateada = `${año}-${mes}-${dia}`;
+
+    return fechaFormateada
+
+}
+
+const downloadFile = (id) => {
+    let url = '/download-files/' + id;
+    window.open(url, '_blank');
 }
 
 </script>
@@ -74,7 +101,27 @@ const updateStateSolicitud = (valor) => {
                         data-target="#modalClient">
                         + Nuevo Cliente
                     </button> -->
-                    <h4>Resumen de solicitudes</h4>
+                    <h4>Resumen de la solicitud</h4>
+
+                    <span v-if="solicitud.estado_solicitud == 'En tramite'" class="badge badge-wellow p-2">
+                        {{ solicitud.estado_solicitud }}
+                    </span>
+                    <span v-if="solicitud.estado_solicitud == 'En estudio'" class="badge badge-wellow p-2">
+                        {{ solicitud.estado_solicitud }}
+                    </span>
+                    <span v-if="solicitud.estado_solicitud == 'Preaprobado'" class="badge badge-blue p-2">
+                        {{ solicitud.estado_solicitud }}
+                    </span>
+                    <span v-if="solicitud.estado_solicitud == 'Aprobado'" class="badge badge-green p-2">
+                        {{ solicitud.estado_solicitud }}
+                    </span>
+                    <span v-if="solicitud.estado_solicitud == 'No aprobado'" class="badge badge-red p-2">
+                        {{ solicitud.estado_solicitud }}
+                    </span>
+                    <span v-if="solicitud.estado_solicitud == 'Condiciones no aceptadas'" class="badge badge-red p-2">
+                        {{ solicitud.estado_solicitud }}
+                    </span>
+
                 </div>
 
                 <div class="col-sm-6">
@@ -111,7 +158,11 @@ const updateStateSolicitud = (valor) => {
                             </li>
                             <li class="nav-item"><a class="nav-link" href="#tarjeta" data-toggle="tab">Tarjetas y
                                     créditos
-                                    vigentes</a></li>
+                                    vigentes</a>
+                            </li>
+                            <li class="nav-item"><a class="nav-link" href="#solicitud"
+                                    data-toggle="tab">Amortización</a>
+                            </li>
                         </ul>
                     </div>
 
@@ -299,6 +350,51 @@ const updateStateSolicitud = (valor) => {
                                     </div>
 
                                 </div>
+
+                                <div class="mt-4">
+                                    <div class="row">
+
+                                        <div class='table-responsive'>
+
+                                            <div class="col-12">
+
+                                                <table class="table ">
+
+                                                    <thead class="thead-dark">
+                                                        <tr>
+                                                            <th scope="col"># </th>
+                                                            <th scope="col">Nombre </th>
+                                                            <th scope="col">Fecha</th>
+                                                            <th scope="col">Acciones</th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody>
+                                                        <tr v-for=" ( item, i ) in documents_list " :key="i">
+                                                            <td>{{ i + 1 }}</td>
+                                                            <td>{{ item.name }}</td>
+                                                            <td>{{ transforDate(item.created_at) }}</td>
+                                                            <td>
+                                                                <button class="btn mr-1 btn-xs bg-warning  btn-round"
+                                                                    @click='downloadFile(item.id)'>
+                                                                    <i class='fas fa-download'></i>
+                                                                </button>
+                                                                <!-- <button :class="'btn mr-1 btn-xs bg-danger btn-round'"
+                                                        @click='destroyFile(item.id)'>
+                                                        <i class='fas fa-trash'></i>
+                                                    </button> -->
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
 
                             <div v-if="solicitud.referencias" class="tab-pane" id="referencia">
@@ -321,15 +417,43 @@ const updateStateSolicitud = (valor) => {
                                 <Credito :creditos="solicitud.creditos" />
                             </div>
 
+                            <div v-if="solicitud.creditos" class="tab-pane" id="solicitud">
+                                <Producto :producto="solicitud.producto" :interes="solicitud.tasa_interes"
+                                    :monto_solicitar="solicitud.monto" :tiempo_pagar="solicitud.tiempo"
+                                    :estado="solicitud.estado_solicitud" :solicitud_id="solicitud.id"
+                                    :tipo="solicitud.cobro_intereses" :mora="solicitud.tasa_mora"
+                                    :capital="solicitud.valor" />
+                            </div>
+
+
+
                         </div>
+
                     </div>
 
-                    <div class="card-footer">
+                    <!-- <div v-if="solicitud.estado_solicitud == 'Solicitado'" class="card-footer">
                         <button class="btn btn-success float-right ml-4"
                             @click="updateStateSolicitud('Aceptado')">Aceptar</button>
                         <button class="btn btn-danger float-right"
                             @click="updateStateSolicitud('Denegado')">Denegar</button>
-                    </div>
+                    </div> -->
+
+                    <!-- <form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
+                        <input name="merchantId" type="hidden" value="508029">
+                        <input name="accountId" type="hidden" value="512321">
+                        <input name="description" type="hidden" value="Produnto data">
+                        <input name="referenceCode" type="hidden" value="ESTEPAGOESUNICO01">
+                        <input name="amount" type="hidden" value="22500">
+                        <input name="tax" type="hidden" value="0">
+                        <input name="taxReturnBase" type="hidden" value="0">
+                        <input name="currency" type="hidden" value="COP">
+                        <input name="signature" type="hidden" value="8a7bdacf308a638a3f0d906441dc32a2">
+                        <input name="test" type="hidden" value="1">
+                        <input name="buyerEmail" type="hidden" value="jramos@wolke.com.co">
+                        <input name="responseUrl" type="hidden" value="http://agrohelp.test/response">
+                        <input name="confirmationUrl" type="hidden" value="http://agrohelp.test/confirmation">
+                        <input name="Submit" type="submit" value="Enviar">
+                    </form> -->
 
                 </div>
 
@@ -347,5 +471,25 @@ hr {
     margin-bottom: 1rem;
     border: 0;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.badge-wellow {
+    background-color: white;
+    border: 2px solid rgb(233, 233, 29);
+}
+
+.badge-green {
+    background-color: white;
+    border: 2px solid rgb(18, 183, 18);
+}
+
+.badge-red {
+    background-color: white;
+    border: 2px solid rgb(231, 64, 64);
+}
+
+.badge-blue {
+    background-color: white;
+    border: 2px solid rgb(71, 71, 243);
 }
 </style>

@@ -18,6 +18,7 @@
         "vue": "^3.2.41"
     },
     "dependencies": {
-        "sweetalert2": "^11.7.12"
+        "sweetalert2": "^11.7.12",
+        "vue3-recaptcha-v2": "^2.0.2"
     }
 }

@@ -37,7 +37,7 @@ const isLouding = () => {
 </script>
 
 <template>
-    <AuthenticatedLayout title="Productos">
+    <AuthenticatedLayout title="Linea de credito">
 
         <div class="preloader flex-column justify-content-center align-items-center" v-if="loader">
             <img class="animation__shake" src="/assets/img/CGRLogo.png" alt="AdminLTELogo" height="100" width="200">
@@ -67,11 +67,11 @@ const isLouding = () => {
                                 <ul class="nav nav-pills">
                                     <li class="nav-item">
                                         <a class="nav-link active" href="#producto" @click="isTag('producto')"
-                                            data-toggle="tab">Productos</a>
+                                            data-toggle="tab">Líneas de Crédito</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="#caracteristicas" @click="isTag('caracteristicas')"
-                                            data-toggle="tab">Caracteristicas</a>
+                                            data-toggle="tab">Parametrización</a>
                                     </li>
                                 </ul>
                             </div>

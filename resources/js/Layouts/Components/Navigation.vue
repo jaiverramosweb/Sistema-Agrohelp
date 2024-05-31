@@ -1,7 +1,7 @@
 <template>
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    
+  <nav class="main-header navbar navbar-expand navbar-light navbar-light" style="background-color: #025c11;">
+
     <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars icon-nav"></i></a>
@@ -12,7 +12,7 @@
     <ul class="navbar-nav ml-auto">
 
       <!-- Notifications Dropdown Menu -->
-      
+
       <!-- <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="far fa-bell"></i>
@@ -55,7 +55,7 @@
 
       <li class="nav-item">
         <Link :href="route('logout')" method="post" class="nav-link">
-          <i class="fas fa-sign-out-alt icon-nav"></i>
+        <i class="fas fa-sign-out-alt icon-nav"></i>
         </Link>
       </li>
     </ul>
@@ -64,5 +64,5 @@
 </template>
 
 <script setup>
-  import { Link  } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 </script>

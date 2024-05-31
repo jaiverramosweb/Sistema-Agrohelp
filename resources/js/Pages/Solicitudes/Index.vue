@@ -143,17 +143,14 @@ const changePage = (page) => {
 
 const dataSolicitudes = ref([])
 
+const formatDate = (date) => {
+    let dateString = date.substring(0, 10);
+    return dateString
+}
 
-const transforDate = (date) => {
-    let fecha = new Date(date);
-
-    let fechaFormateada = fecha.toISOString().slice(0, 10);
-
-    let horaFormateada = fecha.toISOString().slice(11, 16);
-
-    let resultado = fechaFormateada + ", " + horaFormateada;
-
-    return resultado;
+const formatearMoneda = (numero) => {
+    const num = parseFloat(numero)
+    return '$ ' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 </script>
@@ -249,7 +246,7 @@ const transforDate = (date) => {
                                                     Solicitante
                                                 </th>
                                                 <th>
-                                                    Nombre del producto
+                                                    Línea de crédito
                                                 </th>
                                                 <th>
                                                     Monto solicitado
@@ -282,31 +279,40 @@ const transforDate = (date) => {
                                                     {{ item_data.nombre_producto }} {{ item_data.nombre_caract }}
                                                 </td>
                                                 <td>
-                                                    {{ item_data.monto }}
+                                                    {{ formatearMoneda(item_data.monto) }}
                                                 </td>
-                                                <td>
-                                                    {{ item_data.tiempo }}
+                                                <td class="text-center">
+                                                    {{ item_data.tiempo }} meses
                                                 </td>
                                                 <td class=" text-center">
-                                                    <span v-if="item_data.estado_solicitud == 'En Tramite'"
-                                                        class="badge badge-warning p-2">
+                                                    <span v-if="item_data.estado_solicitud == 'En tramite'"
+                                                        class="badge badge-wellow p-2">
                                                         {{ item_data.estado_solicitud }}
                                                     </span>
-                                                    <span v-if="item_data.estado_solicitud == 'Solicitado'"
-                                                        class="badge badge-info p-2">
+                                                    <span v-if="item_data.estado_solicitud == 'En estudio'"
+                                                        class="badge badge-wellow p-2">
                                                         {{ item_data.estado_solicitud }}
                                                     </span>
-                                                    <span v-if="item_data.estado_solicitud == 'Aceptado'"
-                                                        class="badge badge-success p-2">
+                                                    <span v-if="item_data.estado_solicitud == 'Preaprobado'"
+                                                        class="badge badge-blue p-2">
                                                         {{ item_data.estado_solicitud }}
                                                     </span>
-                                                    <span v-if="item_data.estado_solicitud == 'Denegado'"
-                                                        class="badge badge-danger p-2">
+                                                    <span v-if="item_data.estado_solicitud == 'Aprobado'"
+                                                        class="badge badge-green p-2">
+                                                        {{ item_data.estado_solicitud }}
+                                                    </span>
+                                                    <span v-if="item_data.estado_solicitud == 'No aprobado'"
+                                                        class="badge badge-red p-2">
+                                                        {{ item_data.estado_solicitud }}
+                                                    </span>
+                                                    <span
+                                                        v-if="item_data.estado_solicitud == 'Condiciones no aceptadas'"
+                                                        class="badge badge-red p-2">
                                                         {{ item_data.estado_solicitud }}
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    {{ transforDate(item_data.created_at) }}
+                                                    {{ formatDate(item_data.created_at) }}
                                                 </td>
 
                                                 <td>
@@ -323,7 +329,7 @@ const transforDate = (date) => {
                                                         </Link> -->
 
                                                         <Link :href="route('solicitud.show', { id: item_data.id })"
-                                                            class="btn mr-1 btn-xs bg-info btn-round"
+                                                            class="btn mr-1 btn-sm btn-outline-info btn-round"
                                                             data-toggle="tooltip" title="Ver detalle">
                                                         <i class='fas fa-eye'></i>
                                                         </Link>
@@ -631,5 +637,25 @@ hr {
     margin-bottom: 1rem;
     border: 0;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.badge-wellow {
+    background-color: white;
+    border: 2px solid rgb(233, 233, 29);
+}
+
+.badge-green {
+    background-color: white;
+    border: 2px solid rgb(18, 183, 18);
+}
+
+.badge-red {
+    background-color: white;
+    border: 2px solid rgb(231, 64, 64);
+}
+
+.badge-blue {
+    background-color: white;
+    border: 2px solid rgb(71, 71, 243);
 }
 </style>

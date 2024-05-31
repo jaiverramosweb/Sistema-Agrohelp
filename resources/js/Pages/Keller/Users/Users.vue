@@ -130,7 +130,7 @@
 
                             <template v-if="col.name == 'name_file_'">
 
-                              <button :class="'btn mr-1 btn-xs bg-info btn-round '" @click='preview(item_data)'
+                              <button :class="'btn mr-1 btn-sm btn-outline-info btn-round '" @click='preview(item_data)'
                                 v-if="fieldValue(col, item_data) != 'Sin contrato'">
                                 <i class='fas fa-eye pr-2'></i> Ver contrato
                               </button>
@@ -149,18 +149,18 @@
                         <td>
                           <div class='text-center  d-flex flex-row'>
 
-                            <Link class="btn mr-1 btn-xs bg-info btn-round"
+                            <Link class="btn mr-1 btn-sm btn-outline-info btn-round"
                               :href="'/users/' + item_data.id + '/details'" v-if="permissions.read">
                             <i class='fas fa-eye'></i>
                             </Link>
 
-                            <Link class="btn mr-1 btn-xs bg-warning  btn-round"
+                            <Link class="btn mr-1 btn-sm btn-outline-warning  btn-round"
                               :href="'/users/' + item_data.id + '/edit'" v-if="permissions.update">
                             <i class='fas fa-edit'></i>
                             </Link>
 
-                            <button :class="'btn mr-1 btn-xs bg-danger btn-round'" @click='destroy(item_data.id)'
-                              v-if="permissions.delete">
+                            <button :class="'btn mr-1 btn-sm btn-outline-danger btn-round'"
+                              @click='destroy(item_data.id)' v-if="permissions.delete">
                               <i class='fas fa-trash'></i>
                             </button>
 

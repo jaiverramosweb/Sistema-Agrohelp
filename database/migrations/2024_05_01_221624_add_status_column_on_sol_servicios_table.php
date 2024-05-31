@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('sol_servicios', function (Blueprint $table) {
             $table->string('edad')->nullable();
-            $table->string('estado_solicitud')->default('En Tramite');
+            $table->string('estado_solicitud')->default('En tramite');
         });
     }
 

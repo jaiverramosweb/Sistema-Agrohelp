@@ -88,7 +88,11 @@ class ClientsController extends Controller
                 'password' => $request->password,
                 'role_id' => 5
             ]);
+        } else {
+            $user = auth()->user();
         }
+
+        // dd($user);
 
         $client = new Client();
         $client->users_id           = $user->id;

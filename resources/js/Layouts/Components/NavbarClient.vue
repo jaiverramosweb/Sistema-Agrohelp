@@ -18,8 +18,8 @@ const getClient = () => {
     <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
         <div class="container">
             <a href="#" class="navbar-brand">
-                <img src="https://play-lh.googleusercontent.com/IL5kcim7yAHkP1WtooLFdTDgDujb0ZcW65m4160WY86PM896U_x1hAAfpQ28Mgrsb_8"
-                    alt="Sufondos Logo" class="elevation-1" style="opacity: .8" width="160" height="80">
+                <img src="/assets/images/agrohelp.png" alt="Sufondos Logo" class="elevation-1" style="opacity: .8"
+                    width="160" height="80">
                 <!-- <img src="/assets/admin-lte/dist/img/sufondos.png" alt="Sufondos Logo" class="elevation-1"
                     style="opacity: .8" width="160" height="80"> -->
                 <!-- <span class="brand-text font-weight-light">AdminLTE 3</span> -->
@@ -34,23 +34,26 @@ const getClient = () => {
                     <li class="nav-item">
                         <a href="/inicio" class="nav-link">Inicio</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="/creditos" class="nav-link">Mis créditos</a>
+                    </li>
                     <!-- <li class="nav-item">
                         <a href="/pqr" class="nav-link">PQR</a>
                     </li> -->
 
                 </ul>
 
+                <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+
+                    <li class="nav-item">
+                        <Link :href="route('logout')" method="post" class="nav-link">
+                        <i class="fas fa-sign-out-alt icon-nav"></i>
+                        </Link>
+                    </li>
+
+                </ul>
             </div>
 
-            <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
-
-                <li class="nav-item">
-                    <Link :href="route('logout')" method="post" class="nav-link">
-                    <i class="fas fa-sign-out-alt icon-nav"></i>
-                    </Link>
-                </li>
-
-            </ul>
         </div>
     </nav>
 </template>

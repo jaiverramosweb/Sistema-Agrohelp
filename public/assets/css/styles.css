@@ -11,3 +11,43 @@ legend.bordesito {
   padding:0 10px; /* To give a bit of padding on the left and right */
   border-bottom:none;
 }
+
+.nav-link.active{
+  color: #1a1919;
+  border-right: 5px solid #025c11;
+  background: #e6e6e6 !important;
+}
+
+.icon-nav {
+  color: #cecaca !important;
+}
+
+.icon-nav:hover {
+  color: white !important;
+}
+
+.nav-link:hover {
+  background-color: #F0EEEE;
+}
+
+.main-header > .navbar-nav > .nav-item > .nav-link:hover {
+  background-color: transparent;
+  color: white;
+}
+
+.nav-link > p {
+  color:#444343;
+}
+
+.nav-link > i {
+  color:#444343;
+}
+
+.acti
+
+.multiselect__tag {
+  background: #001f3f !important;
+}
+.multiselect__option--highlight {
+  background: #001f3f !important;
+}

@@ -151,7 +151,7 @@ const transforDate = (date) => {
                     <thead style='background-color: black; color: white'>
                         <tr>
                             <th>
-                                Nombre del producto
+                                Línea de crédito
                             </th>
                             <th>
                                 Monto solicitado
@@ -186,16 +186,23 @@ const transforDate = (date) => {
                                 {{ item_data.tiempo }}
                             </td>
                             <td class=" text-center">
-                                <span v-if="item_data.estado_solicitud == 'En Tramite'" class="badge badge-warning p-2">
+                                <span v-if="item_data.estado_solicitud == 'En tramite'" class="badge badge-warning p-2">
                                     {{ item_data.estado_solicitud }}
                                 </span>
-                                <span v-if="item_data.estado_solicitud == 'Solicitado'" class="badge badge-info p-2">
+                                <span v-if="item_data.estado_solicitud == 'En estudio'" class="badge badge-warning p-2">
                                     {{ item_data.estado_solicitud }}
                                 </span>
-                                <span v-if="item_data.estado_solicitud == 'Aceptado'" class="badge badge-success p-2">
+                                <span v-if="item_data.estado_solicitud == 'Preaprobado'" class="badge badge-info p-2">
                                     {{ item_data.estado_solicitud }}
                                 </span>
-                                <span v-if="item_data.estado_solicitud == 'Denegado'" class="badge badge-danger p-2">
+                                <span v-if="item_data.estado_solicitud == 'Aprobado'" class="badge badge-success p-2">
+                                    {{ item_data.estado_solicitud }}
+                                </span>
+                                <span v-if="item_data.estado_solicitud == 'No aprobado'" class="badge badge-danger p-2">
+                                    {{ item_data.estado_solicitud }}
+                                </span>
+                                <span v-if="item_data.estado_solicitud == 'Condiciones no aceptadas'"
+                                    class="badge badge-danger p-2">
                                     {{ item_data.estado_solicitud }}
                                 </span>
                             </td>

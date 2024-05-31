@@ -16,23 +16,23 @@ return new class extends Migration
 
             $table->integer('sol_servicios_id');
 
-            $table->string('acreedor')->nullable();
-            $table->string('acreedor_dos')->nullable();
-            $table->string('acreedor_telefono')->nullable();
-            $table->string('acreedor_telefono_dos')->nullable();
-            $table->string('acreedor_valor')->nullable();
-            $table->string('acreedor_valor_dos')->nullable();
-            $table->string('acreedor_saldo')->nullable();
-            $table->string('acreedor_saldo_dos')->nullable();
+            $table->string('acreedor')->default('');
+            $table->string('acreedor_dos')->default('');
+            $table->string('acreedor_telefono')->default('');
+            $table->string('acreedor_telefono_dos')->default('');
+            $table->string('acreedor_valor')->default('');
+            $table->string('acreedor_valor_dos')->default('');
+            $table->string('acreedor_saldo')->default('');
+            $table->string('acreedor_saldo_dos')->default('');
 
-            $table->string('banco_tarjeta')->nullable();
-            $table->string('banco_tarjeta_dos')->nullable();
-            $table->string('banco_antoguedad')->nullable();
-            $table->string('banco_antoguedad_dos')->nullable();
-            $table->string('banco_numero_antoguedad')->nullable();
-            $table->string('banco_numero_antoguedad_dos')->nullable();
-            $table->string('banco_cupo')->nullable();
-            $table->string('banco_cupo_dos')->nullable();
+            $table->string('banco_tarjeta')->default('');
+            $table->string('banco_tarjeta_dos')->default('');
+            $table->string('banco_antoguedad')->default('');
+            $table->string('banco_antoguedad_dos')->default('');
+            $table->string('banco_numero_antoguedad')->default('');
+            $table->string('banco_numero_antoguedad_dos')->default('');
+            $table->string('banco_cupo')->default('');
+            $table->string('banco_cupo_dos')->default('');
 
             $table->timestamps();
         });
