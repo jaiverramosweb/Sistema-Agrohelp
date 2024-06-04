@@ -181,10 +181,10 @@ const form = useForm({
 
 const submit = async () => {
 
+  form.post(route('login'), {
+    onFinish: () => form.reset('password'),
+  });
   if (validateCaptcha.value == true) {
-    form.post(route('login'), {
-      onFinish: () => form.reset('password'),
-    });
   } else {
     console.log(' Requiere el captcha')
   }

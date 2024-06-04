@@ -27,15 +27,19 @@ class RolesAndPermissionsSeeder extends Seeder
             'description'  => "Administrador del sistema ",
         ]);
         DB::table('roles')->insert([
-            'name'          => "Operativo",
+            'name'          => "Gerente",
             'description'  => "Usuario operativo del sistema",
         ]);
         DB::table('roles')->insert([
-            'name'          => "Cliente",
+            'name'          => "Asistente de cartera",
             'description'  => "Usuario cliente del sistema",
         ]);
         DB::table('roles')->insert([
-            'name'          => "Nuevo Usuario",
+            'name'          => "Cliente",
+            'description'  => "Nuevo usuario no cliente",
+        ]);
+        DB::table('roles')->insert([
+            'name'          => "Contabilidad",
             'description'  => "Nuevo usuario no cliente",
         ]);
 

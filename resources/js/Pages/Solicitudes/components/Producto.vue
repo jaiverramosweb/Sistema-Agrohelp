@@ -432,7 +432,7 @@ const formatearMoneda = (numero) => {
             <p>{{ producto.nombre }}</p>
         </div>
         <div class="col-3">
-            <b>tasa de interés</b>
+            <b>Tasa de interés</b>
             <p>{{ tasa }}%</p>
         </div>
         <div class="col-3">
@@ -440,7 +440,7 @@ const formatearMoneda = (numero) => {
             <p>{{ producto.cobro_intereses }}</p>
         </div>
         <div class="col-3">
-            <b>Moto solicitado</b>
+            <b>Monto solicitado</b>
             <p>{{ formatearMoneda(monto_solicitar) }}</p>
         </div>
 
@@ -495,7 +495,7 @@ const formatearMoneda = (numero) => {
             <p>{{ producto.nombre }}</p>
         </div>
         <div class="col-3">
-            <b>tasa de interés</b>
+            <b>Tasa de interés</b>
             <p>{{ tasa }}%</p>
         </div>
 
@@ -505,7 +505,7 @@ const formatearMoneda = (numero) => {
         </div>
 
         <div class="col-3">
-            <b>Moto solicitado</b>
+            <b>Monto solicitado</b>
             <p>{{ formatearMoneda(monto_solicitar) }}</p>
         </div>
 
@@ -590,13 +590,13 @@ const formatearMoneda = (numero) => {
                 <div class="modal-body">
                     <div class="row">
                         <div class="form-group col-12">
-                            <label for="tasa">tasa de interés</label>
+                            <label for="tasa">Tasa de interés</label>
                             <input v-model="tasa" type="number" class="form-control" id="tasa" aria-describedby="tasa"
                                 autocomplete="off">
                         </div>
 
                         <div class="form-group col-12">
-                            <label for="monto_solicitar">Moto solicitado</label>
+                            <label for="monto_solicitar">Monto solicitado</label>
                             <input v-model="monto_solicitar" type="number" class="form-control" id="monto_solicitar"
                                 aria-describedby="monto_solicitar" autocomplete="off">
                         </div>
