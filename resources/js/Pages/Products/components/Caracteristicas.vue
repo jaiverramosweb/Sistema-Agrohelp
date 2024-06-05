@@ -352,9 +352,6 @@ const isLouding = () => {
                                     <th>
                                         Código
                                     </th>
-                                    <th>
-                                        Interes
-                                    </th>
 
                                     <th class="border text-center">
                                         <i class='fa fa-cogs '></i>
@@ -377,9 +374,6 @@ const isLouding = () => {
                                     </td>
                                     <td>
                                         {{ item_data.codigo }}
-                                    </td>
-                                    <td>
-                                        {{ item_data.interes }}
                                     </td>
 
                                     <td>
@@ -460,8 +454,8 @@ const isLouding = () => {
     <!-- Modal -->
     <div class="modal fade" id="modalCatacteristica" data-backdrop="static" tabindex="-1"
         aria-labelledby="modalCatacteristicaLabel" aria-hidden="true">
-        <!-- <div class="modal-dialog"> -->
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
+            <!-- <div class="modal-dialog modal-lg"> -->
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 v-if="id == 0" class="modal-title" id="modalCatacteristicaLabel">+ Nuevo Caracteristica</h5>
@@ -487,7 +481,7 @@ const isLouding = () => {
 
                         </div>
 
-                        <div class="form-group col-3" has-validation>
+                        <div class="form-group col-12" has-validation>
                             <label for="nombre">Nombre<span class="text-danger">
                                     *</span></label>
                             <input v-model="nombre" type="text" class="form-control" id="nombre"
@@ -498,7 +492,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-3" has-validation>
+                        <div class="form-group col-12" has-validation>
                             <label for="codigo">Código<span class="text-danger">
                                     *</span></label>
                             <input v-model="codigo" type="text" class="form-control" id="codigo"
@@ -509,7 +503,7 @@ const isLouding = () => {
                             </div>
                         </div>
 
-                        <div class="form-group col-3" has-validation>
+                        <!-- <div class="form-group col-3" has-validation>
                             <label for="interes">Interes<span class="text-danger">
                                     *</span></label>
                             <input v-model="interes" type="text" class="form-control" id="interes"
@@ -518,9 +512,9 @@ const isLouding = () => {
                                 campo es
                                 requerido
                             </div>
-                        </div>
+                        </div> -->
 
-                        <div class="form-group col-3" has-validation>
+                        <!-- <div class="form-group col-3" has-validation>
                             <label for="mora">Mora<span class="text-danger">
                                     *</span></label>
                             <input v-model="mora" type="text" class="form-control" id="mora" aria-describedby="mora"
@@ -529,7 +523,7 @@ const isLouding = () => {
                                 campo es
                                 requerido
                             </div>
-                        </div>
+                        </div> -->
 
 
 
@@ -544,7 +538,7 @@ const isLouding = () => {
                             </div>
                         </div> -->
 
-                        <div class="form-group col-3" has-validation>
+                        <!-- <div class="form-group col-3" has-validation>
                             <label for="monto_maximo">Monto Maximo<span class="text-danger">
                                     *</span></label>
                             <input v-model="monto_maximo" type="text" class="form-control" id="monto_maximo"
@@ -553,7 +547,7 @@ const isLouding = () => {
                                 campo es
                                 requerido
                             </div>
-                        </div>
+                        </div> -->
                         <!-- 
                         <div class="form-group col-4" has-validation>
                             <label for="tiempo_minimo">Tiempo minimo<span class="text-danger">
@@ -566,7 +560,7 @@ const isLouding = () => {
                             </div>
                         </div> -->
 
-                        <div class="form-group col-3" has-validation>
+                        <!-- <div class="form-group col-3" has-validation>
                             <label for="tiempo_maximo">Tiempo Maximo<span class="text-danger">
                                     *</span></label>
                             <input v-model="tiempo_maximo" type="number" class="form-control" id="tiempo_maximo"
@@ -575,9 +569,9 @@ const isLouding = () => {
                                 campo es
                                 requerido
                             </div>
-                        </div>
+                        </div> -->
 
-                        <div class="form-group col-3" has-validation>
+                        <!-- <div class="form-group col-3" has-validation>
                             <label for="nombre">Periocidad de pagos<span class="text-danger">
                                     *</span></label>
                             <select id="inputState" class="form-control" v-model="cobro_intereses">
@@ -591,7 +585,7 @@ const isLouding = () => {
                                 campo es
                                 requerido
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- <div v-if="cobro_intereses == 'Periodico'" class="form-group col-4" has-validation>
                             <label for="nombre">Periodicidad permitida<span class="text-danger">
@@ -611,16 +605,16 @@ const isLouding = () => {
                             </div>
                         </div> -->
 
-                        <div class="col-12">
+                        <!-- <div class="col-12">
                             <div class="form-group">
                                 <label for="exampleFormControlTextarea1">términos y condiciones </label>
                                 <textarea v-model="terminos_condiciones" class="form-control"
                                     id="exampleFormControlTextarea1" rows="3"></textarea>
                             </div>
-                        </div>
+                        </div> -->
 
 
-                        <div class="col-12">
+                        <!-- <div class="col-12">
                             <label for="monto_maximo">Agregar Garantias<span class="text-danger">
                                     *</span></label>
                             <select id="inputState" class="form-control" @change="onGarantias" v-model="garantia">
@@ -660,7 +654,7 @@ const isLouding = () => {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                     </div>
                 </div>

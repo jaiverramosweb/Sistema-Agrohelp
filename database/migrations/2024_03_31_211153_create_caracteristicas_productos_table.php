@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('productos_id');
 
             $table->string('nombre');
-            $table->string('interes');
+            $table->string('interes')->nullable();
             $table->string('mora')->nullable();
             $table->string('indicador')->nullable();
             $table->string('codigo')->nullable();

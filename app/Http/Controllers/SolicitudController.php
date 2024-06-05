@@ -160,26 +160,26 @@ class SolicitudController extends Controller
         ]);
     }
 
-    public function primeraSolicitud($client_id, $monto, $tiempo, $producto_id)
+    public function primeraSolicitud(Request $request)
     {
-        $cliente = Client::find($client_id);
+        $cliente = Client::find($request->client_id);
 
-        $documentos = CaracteristicasDocumentacion::select([
-            'documentacions.nombre'
-        ])->where('caracteristicas_productos_id', $producto_id)
-            ->join('documentacions', 'caracteristicas_documentacions.documentacions_id', 'documentacions.id')
-            ->get();
+        // $documentos = CaracteristicasDocumentacion::select([
+        //     'documentacions.nombre'
+        // ])->where('caracteristicas_productos_id', $producto_id)
+        //     ->join('documentacions', 'caracteristicas_documentacions.documentacions_id', 'documentacions.id')
+        //     ->get();
 
-        $producto = CaracteristicasProducto::find($producto_id);
+        // $producto = CaracteristicasProducto::find($producto_id);
 
         $sol = new SolServicio();
-        $sol->clientes_id     = $client_id;
-        $sol->producto_id     = $producto_id;
-        $sol->monto           = $monto;
-        $sol->tiempo          = $tiempo;
-        $sol->tasa_interes    = $producto->interes;
-        $sol->tasa_mora       = $producto->mora;
-        $sol->cobro_intereses = $producto->cobro_intereses;
+        $sol->clientes_id     = $request->client_id;
+        $sol->producto_id     = 0;
+        $sol->monto           = $request->monto_solicitar;
+        $sol->tiempo          = $request->tiempo_pagar;
+        $sol->tasa_interes    = 2.3;
+        $sol->tasa_mora       = 2.4;
+        $sol->cobro_intereses = 2.3;
         $sol->save();
 
         $referencias = new ReferenciaCredito();
@@ -202,20 +202,7 @@ class SolicitudController extends Controller
         $creditos->sol_servicios_id = $sol->id;
         $creditos->save();
 
-        // $sol = SolServicio::find($id);
-        // $cliente = Client::find($sol->clientes_id);
-
-        $sol->referencias = ReferenciaCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->linea = LineaCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->parimonio = PatrimonioCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->ingreso = IngresoEgresoCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->creditos = TarjetasCredito::where('sol_servicios_id', $sol->id)->first();
-
-        return Inertia::render('Clients/PrimeraSolicitud', [
-            'cliente'       => $cliente,
-            'documentos'    => $documentos,
-            'producto'      => $sol,
-        ]);
+        return response()->json($sol, 201);
     }
 
     public function editarSolicitud($id)

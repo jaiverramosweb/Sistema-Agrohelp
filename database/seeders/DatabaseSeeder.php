@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             ModulesSeeder::class,
             FormEntitiesSeeder::class,
-            CustomFieldsSeeder::class
+            CustomFieldsSeeder::class,
+            InteresSeeder::class
         ]);
     }
 }

@@ -165,7 +165,7 @@ Route::middleware('auth')->group(function () {
 
 
     // Solicitudes 
-    Route::get('/primera-solicitud/{client_id}/{monto}/{timepo}/{producto}',   [SolicitudController::class, 'primeraSolicitud'])->name('solicitud.primeraSolicitud');
+    Route::post('/solicitud-inicial',                       [SolicitudController::class, 'primeraSolicitud'])->name('solicitud.primeraSolicitud');
 
     Route::get('/editar-solicitud/{id}',                    [SolicitudController::class, 'editarSolicitud'])->name('solicitud.editarSolicitud');
     Route::get('/ver-amortizacion/{monto}/{tiempo}/{taza}/{tipo}', [SolicitudController::class, 'verAmortizacion'])->name('solicitud.verAmortizacion');

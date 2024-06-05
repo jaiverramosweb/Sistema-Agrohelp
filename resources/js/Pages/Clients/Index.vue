@@ -8,11 +8,12 @@ import 'sweetalert2/dist/sweetalert2.css'
 import Solicitudes from './components/Solicitudes.vue'
 import axios from 'axios';
 
-const props = defineProps(['cliente', 'info'])
+const props = defineProps(['cliente', 'info', 'solicitudes'])
 
 onMounted(() => {
     infoUser.value = props.cliente
     infoCliente.value = props.info
+    solicitudes.value = props.solicitudes
     if (props.info) {
         if (props.info.tipo_documento) {
             getCaracteristicas()
@@ -38,6 +39,7 @@ const solicitudes = ref([])
 const creado = ref(false)
 
 const monto_solicitar = ref('')
+const monto_aprobar = ref('')
 const tiempo_pagar = ref('')
 const tasa = ref('')
 const terminos = ref('')
@@ -55,10 +57,10 @@ const simuladorMonto = (producto) => {
 
     console.log(producto)
 
-    tasa.value = producto.interes
-    terminos.value = producto.terminos_condiciones
-    product_id.value = producto.id
-    tipoAmortizacion.value = producto.cobro_intereses
+    tasa.value = 2.3
+    // terminos.value = producto.terminos_condiciones
+    // product_id.value = producto.id
+    tipoAmortizacion.value = 'Mensual'
     // tipoAmortizacion.value = 'Inglés'
 
     console.log(producto)
@@ -77,28 +79,6 @@ const simulador = () => {
 
 }
 
-// const metodoFrances = () => {
-
-//     const tasaMensual = tasa.value / 100 / 12;
-//     const cuota = (monto_solicitar.value * tasaMensual) / (1 - Math.pow(1 + tasaMensual, - tiempo_pagar.value));
-//     let saldoPendiente = monto_solicitar.value;
-//     tablaAmortizacion.value = [];
-//     let fecha = new Date();
-//     for (let i = 1; i <= tiempo_pagar.value; i++) {
-//         const interes = saldoPendiente * tasaMensual;
-//         const amortizacion = cuota - interes;
-//         saldoPendiente -= amortizacion;
-//         tablaAmortizacion.value.push({
-//             fecha: fecha.toLocaleDateString(),
-//             cuota: cuota.toFixed(2),
-//             interes: interes.toFixed(2),
-//             amortizacion: amortizacion.toFixed(2),
-//             saldoPendiente: saldoPendiente.toFixed(2)
-//         });
-//         fecha.setMonth(fecha.getMonth() + 1);
-//     }
-// }
-
 function metodoFrances() {
 
     let tipoCuotras = 1
@@ -110,11 +90,12 @@ function metodoFrances() {
         tipoCuotras = 6
     }
 
+    monto_aprobar.value = monto_solicitar.value * 0.7
     // Parámetros
     const r_mensual = tasa.value / 12 / 100; // Tasa de interés mensual
-    const capital_trimestral = monto_solicitar.value / (tiempo_pagar.value / tipoCuotras); // Pago de capital trimestral
+    const capital_trimestral = monto_aprobar.value / (tiempo_pagar.value / tipoCuotras); // Pago de capital trimestral
     const fecha_inicial = new Date(); // Fecha actual
-    let saldo_pendiente = monto_solicitar.value;
+    let saldo_pendiente = monto_aprobar.value;
 
     // Array para almacenar los pagos
     tablaAmortizacion.value = [];
@@ -192,8 +173,28 @@ const metodoIngles = () => {
 }
 
 const solicitarCredito = () => {
-    $("#modalSimulador").modal("hide");
-    window.location.href = `/primera-solicitud/${infoCliente.value.id}/${monto_solicitar.value}/${tiempo_pagar.value}/${product_id.value}`;
+    axios.post('/solicitud-inicial', {
+        client_id: infoCliente.value.id,
+        monto_solicitar: monto_aprobar.value,
+        tiempo_pagar: tiempo_pagar.value,
+    }).then(({ data }) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Registro creado con exito'
+        })
+        getCreditos()
+        $("#modalSimulador").modal("hide");
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
+    })
+    // window.location.href = `/primera-solicitud/${infoCliente.value.id}/${monto_solicitar.value}/${tiempo_pagar.value}/${product_id.value}`;
+}
+
+const getCreditos = () => {
+    axios.get('/creditos').then(({ data }) => {
+        solicitudes.value = data
+    })
 }
 
 const formatearMoneda = (numero) => {
@@ -236,6 +237,23 @@ const save = () => {
         }, 2000);
         // creado.value = false
     })
+}
+
+const editarCredito = (id) => {
+    window.location.href = `/editar-solicitud/${id}`;
+}
+
+const verAmortizacion = (monto, tiempo, taza, tipo) => {
+    window.location.href = `/ver-amortizacion/${monto}/${tiempo}/${taza}/${tipo}`;
+}
+
+const verAprobado = (id) => {
+    window.location.href = `/ver-aprobado/${id}`;
+}
+
+const descargarPre = (id) => {
+    let url = '/download-pre/' + id;
+    window.open(url, '_blank');
 }
 
 
@@ -306,7 +324,7 @@ const save = () => {
             </div>
 
             <div v-if="infoCliente" class="col-lg-12 mt-4">
-                <div class="row">
+                <!-- <div class="row">
                     <div v-for="product in productos" :key="product.id" class="m-2 col-12 col-md-3 ">
 
                         <div class="card card-widget widget-user">
@@ -343,6 +361,150 @@ const save = () => {
 
                         </div>
 
+                    </div>
+                </div> -->
+
+                <div class="row">
+                    <div class="card col-12 mt-4">
+                        <div class="card-header">
+                            <h4 class="card-title">Lista de solictudes</h4>
+                            <div class="card-tools">
+                                <button class="btn btn-sm btn-primary" @click="simuladorMonto">
+                                    <i class="fas fa-plus"></i> Hacer solicitud </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class='col-12'>
+                                    <div class='table-responsive'>
+                                        <table class='table table-bordered table-striped table-hover table-title'>
+                                            <thead style='background-color: black; color: white'>
+                                                <tr>
+                                                    <th>
+                                                        #
+                                                    </th>
+                                                    <th>
+                                                        Monto solicitado
+                                                    </th>
+                                                    <th>
+                                                        Tiempo en meses
+                                                    </th>
+                                                    <th>
+                                                        Estado solicitud
+                                                    </th>
+
+                                                    <th class="border text-center">
+                                                        <i class='fa fa-cogs '></i>
+                                                    </th>
+                                                </tr>
+
+                                            </thead>
+
+                                            <tbody>
+                                                <tr v-for=" ( item_data, i ) in solicitudes " :key='i'
+                                                    class="text-center">
+
+                                                    <td>
+                                                        {{ i + 1 }}
+                                                    </td>
+                                                    <td>
+                                                        {{ formatearMoneda(item_data.monto) }}
+                                                    </td>
+                                                    <td>
+                                                        {{ item_data.tiempo }} meses
+                                                    </td>
+
+                                                    <td class=" text-center">
+                                                        <span v-if="item_data.estado_solicitud == 'En tramite'"
+                                                            class="badge badge-yellow p-2">
+                                                            {{ item_data.estado_solicitud }}
+                                                        </span>
+                                                        <span v-if="item_data.estado_solicitud == 'En estudio'"
+                                                            class="badge badge-yellow p-2">
+                                                            {{ item_data.estado_solicitud }}
+                                                        </span>
+                                                        <span v-if="item_data.estado_solicitud == 'Preaprobado'"
+                                                            class="badge badge-blue p-2">
+                                                            {{ item_data.estado_solicitud }}
+                                                        </span>
+                                                        <span v-if="item_data.estado_solicitud == 'Aprobado'"
+                                                            class="badge badge-green p-2">
+                                                            {{ item_data.estado_solicitud }}
+                                                        </span>
+                                                        <span v-if="item_data.estado_solicitud == 'No aprobado'"
+                                                            class="badge badge-red p-2">
+                                                            {{ item_data.estado_solicitud }}
+                                                        </span>
+                                                        <span
+                                                            v-if="item_data.estado_solicitud == 'Condiciones no aceptadas'"
+                                                            class="badge badge-red p-2">
+                                                            {{ item_data.estado_solicitud }}
+                                                        </span>
+                                                    </td>
+
+                                                    <td>
+                                                        <div class='d-flex flex-row justify-content-center'>
+
+                                                            <button v-if="item_data.estado_solicitud == 'En tramite'"
+                                                                class="btn mr-1 btn-xs btn-outline-info btn-round"
+                                                                data-toggle="tooltip" title="Ver"
+                                                                @click="editarCredito(item_data.id)">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+
+                                                            <button v-if="item_data.estado_solicitud == 'Preaprobado'"
+                                                                class="btn mr-1 btn-xs btn-outline-danger btn-round"
+                                                                data-toggle="tooltip" title="Ver"
+                                                                @click="descargarPre(item_data.id)">
+                                                                <i class="fas fa-download"></i>
+                                                            </button>
+
+                                                            <button
+                                                                v-if="item_data.estado_solicitud == 'En estudio' || item_data.estado_solicitud == 'Preaprobado'"
+                                                                class="btn mr-1 btn-xs btn-outline-info btn-round"
+                                                                data-toggle="tooltip" title="Ver"
+                                                                @click="verAmortizacion(item_data.monto, item_data.tiempo, item_data.producto.interes, item_data.producto.cobro_intereses)">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+
+                                                            <button v-if="item_data.estado_solicitud == 'Aprobado'"
+                                                                class="btn mr-1 btn-xs btn-outline-info btn-round"
+                                                                data-toggle="tooltip" title="Ver"
+                                                                @click="verAprobado(item_data.id)">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+
+                                                            <!-- <Link class="btn mr-1 btn-xs bg-info btn-round" data-toggle="tooltip"
+                                                                    title="Editar" @click='editItem(item_data)' v-if="permissions.update">
+                                                                <i class="fas fa-edit"></i>
+                                                                </Link> -->
+
+                                                            <!-- <button class="btn mr-1 btn-xs bg-danger btn-round"
+                                                                    data-toggle="tooltip" title="Eliminar"
+                                                                    @click='deleteItem(item_data.id)' v-if="permissions.delete">
+                                                                    <i class='fas fa-trash'></i>
+                                                                </button> -->
+
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+
+                                                <tr v-show='solicitudes.length == 0'>
+                                                    <td colspan="6">
+                                                        <center>No existen registros</center>
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -392,8 +554,9 @@ const save = () => {
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalSimuladorLabel">Simulador Valor a solicitar $ {{
-                monto_solicitar }}</h5>
+                            <h5 class="modal-title" id="modalSimuladorLabel">Simulador Valor a solicitar {{
+                formatearMoneda(monto_solicitar) }} y el monto aprobar {{ formatearMoneda(monto_aprobar)
+                                }}</h5>
 
                         </div>
                         <div class="modal-body">
@@ -425,7 +588,8 @@ const save = () => {
                             <span class="mt-4">
                                 <h5>Terminos y condiciones</h5>
                                 <p>
-                                    {{ terminos }}
+                                    Todas las amortizaciones vistas aquí son sujetas a cambios, el valor mostrado es el
+                                    70% de lo solicitado.
                                 </p>
                             </span>
                         </div>
