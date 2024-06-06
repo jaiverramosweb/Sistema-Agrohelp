@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->integer('users_id')->nullable();
+            $table->string('id_user_sap')->nullable();
+            $table->string('id_prove_sap')->nullable();
             $table->string('nombre')->nullable();
             $table->string('apellido')->nullable();
             $table->string('segundo_nombre')->nullable();

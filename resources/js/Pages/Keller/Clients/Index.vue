@@ -71,25 +71,14 @@ const dataClients = ref('')
 
 const id = ref(0)
 const tipo_identificacion = ref('')
-const numero_identificacion = ref('')
+const documento = ref('')
 const nombre = ref('')
-const segundo_nombre = ref('')
-const apellido = ref('')
-const segundo_apellido = ref('')
 const email = ref('')
 const password = ref('')
-const genero = ref('')
-const tipo_persona = ref('')
-const fecha_nacimiento = ref('')
+const id_user_sap = ref('')
+const id_prove_sap = ref('')
 
-
-const tipo_direccion = ref('')
-const direccion = ref('')
-const ciudad = ref('')
-const departamento = ref('')
-
-const direcciones = ref([])
-
+const view = ref(false)
 
 
 // Metodos Requeridos para iniciar modulo
@@ -170,62 +159,40 @@ const changePage = (page) => {
 
 // Modulos a crear
 
-const agregarDirecciones = () => {
-    const direc = {
-        tipo_direccion: tipo_direccion.value,
-        direccion: direccion.value,
-        ciudad: ciudad.value,
-        departamento: departamento.value
-    }
-
-    direcciones.value.push(direc)
-
-    tipo_direccion.value = ''
-    direccion.value = ''
-    ciudad.value = ''
-    departamento.value = ''
-}
 
 const save = () => {
     if (tipo_identificacion.value.length == 0) return
-    if (numero_identificacion.value.length == 0) return
+    if (documento.value.length == 0) return
     if (nombre.value.length == 0) return
-    if (segundo_nombre.value.length == 0) return
-    if (apellido.value.length == 0) return
-    if (segundo_apellido.value.length == 0) return
-    if (genero.value.length == 0) return
-    if (tipo_persona.value.length == 0) return
-    if (fecha_nacimiento.value.length == 0) return
 
-    if (direcciones.value.length == 0) return
 
     axios.post('/clients', {
         email: email.value,
         password: password.value,
-        tipo_identificacion: tipo_identificacion.value,
-        numero_identificacion: numero_identificacion.value,
+        tipo_documento: tipo_identificacion.value,
+        documento: documento.value,
         nombre: nombre.value,
-        segundo_nombre: segundo_nombre.value,
-        apellido: apellido.value,
-        segundo_apellido: segundo_apellido.value,
-        genero: genero.value,
-        tipo_persona: tipo_persona.value,
-        fecha_nacimiento: fecha_nacimiento.value,
-
-        direcciones: direcciones.value
+        id_user_sap: id_user_sap.value,
+        id_prove_sap: id_prove_sap.value
 
     }).then(res => {
         Toast.fire({
             icon: 'success',
             title: 'Registro creado con exito'
         })
-
         clear()
-
         paginationList()
 
         $("#modalClient").modal("hide");
     })
+}
+
+const viewPass = () => {
+    if(view.value == true){
+        view.value = false
+    } else {
+        view.value = true
+    }
 }
 
 const clear = () => {
@@ -233,18 +200,45 @@ const clear = () => {
     email.value = ''
     password.value = ''
     tipo_identificacion.value = ''
-    numero_identificacion.value = ''
+    documento.value = ''
     nombre.value = ''
-    segundo_nombre.value = ''
-    apellido.value = ''
-    segundo_apellido.value = ''
-    genero.value = ''
-    tipo_persona.value = ''
-    fecha_nacimiento.value = ''
-
-    direcciones.value = []
+    id_user_sap.value = ''
+    id_prove_sap.value = ''
 }
 
+const edit = (item) =>{
+    id.value = item.id
+    email.value = item.email
+    tipo_identificacion.value = item.tipo_documento
+    documento.value = item.documento
+    nombre.value = item.nombre
+    id_user_sap.value = item.id_user_sap
+    id_prove_sap.value = item.id_prove_sap
+
+    $("#modalClient").modal("show");
+}
+
+const updated = () => {
+    axios.put(`/clients/${id.value}`, {
+        email: email.value,
+        tipo_documento: tipo_identificacion.value,
+        documento: documento.value,
+        nombre: nombre.value,
+        id_user_sap: id_user_sap.value,
+        id_prove_sap: id_prove_sap.value
+
+    }).then(res => {
+        Toast.fire({
+            icon: 'success',
+            title: 'Registro actualizado con exito'
+        })
+        clear()
+        paginationList()
+
+        $("#modalClient").modal("hide");
+    })
+}
+ 
 const deleteItem = (id) => {
     Swal.fire({
         title: 'Estas seguro de eliminarlo?',
@@ -407,6 +401,12 @@ const transforDate = (date) => {
                                                             <i class='fas fa-eye'></i>
                                                         </button> -->
 
+                                                        <button 
+                                                            @click="edit(item_data)" 
+                                                            class="btn mr-1 btn-xs btn-outline-warning  btn-round" data-toggle="tooltip" title="Editar"  v-if="permissions.update">
+                                                            <i class="fas fa-user-edit"></i>
+                                                        </button>
+
                                                         <Link class="btn mr-1 btn-sm btn-outline-info btn-round"
                                                             data-toggle="tooltip" title="Info"
                                                             :href="route('client.show', { client: item_data.id })"
@@ -417,10 +417,6 @@ const transforDate = (date) => {
                                                         <!-- <Link :href="route('info.sensor',{id: item_data.serial} )" @click="isLouding" class="btn mr-1 btn-xs bg-info btn-round" data-toggle="tooltip" title="Ir a piezometro">
                                                             <i class='fas fa-eye'></i>
                                                         </Link> -->
-
-                                                        <!-- <button @click="edit(item_data)" class="btn mr-1 btn-xs bg-warning  btn-round" data-toggle="tooltip" title="Editar"  v-if="permissions.update">
-                                                            <i class='fas fa-edit'></i>
-                                                        </button> -->
 
                                                         <!-- <button class="btn mr-1 btn-xs bg-danger btn-round"
                                                             data-toggle="tooltip" title="Eliminar"
@@ -490,8 +486,8 @@ const transforDate = (date) => {
                 <!-- Modal -->
                 <div class="modal fade" id="modalClient" data-backdrop="static" tabindex="-1"
                     aria-labelledby="modalClientLabel" aria-hidden="true">
-                    <!-- <div class="modal-dialog"> -->
-                    <div class="modal-dialog modal-xl">
+                    <div class="modal-dialog">
+                    <!-- <div class="modal-dialog modal-xl"> -->
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="modalClientLabel">+ Nuevo cliente</h5>
@@ -510,187 +506,84 @@ const transforDate = (date) => {
                                         <div v-if="zonas_id.length == 0" class="invalid-feedback d-block">El campo es requerido</div>
                                     </div> -->
 
-                                    <div class="form-group col-4" has-validation>
+                                    <div class="form-group col-6" has-validation>
                                         <label for="tipo_identificacion">Tipo de Identificación <span
                                                 class="text-danger">
                                                 *</span></label>
                                         <select id="inputState" class="form-control" v-model="tipo_identificacion">
                                             <option value="" selected>Seleccione...</option>
                                             <option value="CC">CC</option>
-                                            <option value="Pasaporte">Pasaporte</option>
+                                            <option value="NIT">NIT</option>
                                         </select>
                                         <div v-if="tipo_identificacion == ''" class="invalid-feedback d-block">El
                                             campo es
                                             requerido
                                         </div>
-
                                     </div>
 
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="numero_identificacion">Numero de Identificación <span
+                                    <div class="form-group col-6" has-validation>
+                                        <label for="documento">Numero de Identificación <span
                                                 class="text-danger">
                                                 *</span></label>
-                                        <input v-model="numero_identificacion" type="text" class="form-control"
-                                            id="numero_identificacion" aria-describedby="numero_identificacion"
-                                            autocomplete="off">
-                                        <div v-if="numero_identificacion == ''" class="invalid-feedback d-block">El
+                                        <input type="number" class="form-control" v-model="documento">
+                                        <div v-if="documento == ''" class="invalid-feedback d-block">El
                                             campo es
                                             requerido
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="nombre">Primer Nombre <span class="text-danger">
+                                    <div class="form-group col-12" has-validation>
+                                        <label for="nombre">Nombre completo <span
+                                                class="text-danger">
                                                 *</span></label>
-                                        <input v-model="nombre" type="text" class="form-control" id="nombre"
-                                            aria-describedby="nombre" autocomplete="off">
-                                        <div v-if="nombre == ''" class="invalid-feedback d-block">El campo es
-                                            requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="segundo_nombre">Segundo Nombre <span class="text-danger">
-                                                *</span></label>
-                                        <input v-model="segundo_nombre" type="text" class="form-control"
-                                            id="segundo_nombre" aria-describedby="segundo_nombre" autocomplete="off">
-                                        <div v-if="segundo_nombre == ''" class="invalid-feedback d-block">El campo
-                                            es
-                                            requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="apellido">Primer Apellido <span class="text-danger">*</span></label>
-                                        <input v-model="apellido" type="text" class="form-control" id="apellido"
-                                            aria-describedby="apellido" autocomplete="off">
-                                        <div v-if="apellido == ''" class="invalid-feedback d-block">El campo es
-                                            requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="segundo_apellido">Segundo Apellido <span
-                                                class="text-danger">*</span></label>
-                                        <input v-model="segundo_apellido" type="text" class="form-control"
-                                            id="segundo_apellido" aria-describedby="segundo_apellido"
-                                            autocomplete="off">
-                                        <div v-if="segundo_apellido == ''" class="invalid-feedback d-block">El campo
-                                            es
-                                            requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-md-4">
-                                        <label for="inputState">Genero <span class="text-danger">*</span></label>
-                                        <select id="inputState" class="form-control" v-model="genero">
-                                            <option value="" selected>Seleccione...</option>
-                                            <option value="Masculino">Masculino</option>
-                                            <option value="Femenino">Femenino</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group col-md-4">
-                                        <label for="inputState">Tipo de Persona <span
-                                                class="text-danger">*</span></label>
-                                        <select id="inputState" class="form-control" v-model="tipo_persona">
-                                            <option value="" selected>Seleccione...</option>
-                                            <option value="Tipo uno">Tipo uno</option>
-                                            <option value="Tipo dos">Tipo dos</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="fecha_nacimiento">Fecha de Nacimiento <span
-                                                class="text-danger">*</span></label>
-                                        <input v-model="fecha_nacimiento" type="date" class="form-control"
-                                            id="fecha_nacimiento" aria-describedby="fecha_nacimiento"
-                                            autocomplete="off">
-                                        <div v-if="fecha_nacimiento == ''" class="invalid-feedback d-block">El campo
-                                            es
+                                        <input type="text" class="form-control" v-model="nombre">
+                                        <div v-if="nombre == ''" class="invalid-feedback d-block">El
+                                            campo es
                                             requerido
                                         </div>
                                     </div>
 
                                     <div class="form-group col-6" has-validation>
-                                        <label for="email">Correo electrónico<span class="text-danger">*</span></label>
-                                        <input v-model="email" type="email" class="form-control" id="email"
-                                            aria-describedby="email" autocomplete="off">
-                                        <div v-if="email == ''" class="invalid-feedback d-block">El campo
-                                            es
-                                            requerido
-                                        </div>
+                                        <label for="id_user_sap">ID Cliente SAP</label>
+                                        <input type="text" class="form-control" v-model="id_user_sap">
                                     </div>
 
                                     <div class="form-group col-6" has-validation>
-                                        <label for="password">Contraseña<span class="text-danger">*</span></label>
-                                        <input v-model="password" type="password" class="form-control" id="password"
-                                            aria-describedby="password" autocomplete="off">
-                                        <div v-if="password == ''" class="invalid-feedback d-block">El campo
-                                            es
+                                        <label for="id_prove_sap">ID Proveedor SAP</label>
+                                        <input type="text" class="form-control" v-model="id_prove_sap">
+                                    </div>
+
+                                    <div class="form-group col-12" has-validation>
+                                        <label for="nombre">Correo electrónico <span
+                                                class="text-danger">
+                                                *</span></label>
+                                        <input type="email" class="form-control" v-model="email">
+                                        <div v-if="email == ''" class="invalid-feedback d-block">El
+                                            campo es
                                             requerido
                                         </div>
                                     </div>
 
-                                    <hr>
-                                    <h4 class="col-12">Direcciones</h4>
-                                    <hr>
-
-                                    <div class="form-group col-md-3">
-                                        <label for="tipo_direccion">Tipo Dirección</label>
-                                        <select id="tipo_direccion" class="form-control" v-model="tipo_direccion">
-                                            <option value="" selected>Seleccione...</option>
-                                            <option value="Tipo uno">Tipo uno</option>
-                                            <option value="Tipo dos">Tipo dos</option>
-                                        </select>
+                                    <div  v-if="id == 0" class="form-group col-12" has-validation>
+                                        <label for="nombre">Contraseña <span
+                                                class="text-danger">
+                                                *</span></label>
+                                        <div class="input-group col-12 is-invalid" has-validation>
+                                            <input :type="view == false ? 'password' : 'text'" class="form-control" v-model="password">
+                                            <div class="input-group-append">
+                                                <button @click="viewPass" class="btn btn-outline-secondary" type="button">
+                                                    <i v-if="view == false" class="far fa-eye"></i>
+                                                    <i v-else class="far fa-eye-slash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div v-if="password == ''" class="invalid-feedback d-block">El
+                                            campo es
+                                            requerido
+                                        </div>
                                     </div>
 
-                                    <div class="form-group col-3" has-validation>
-                                        <label for="direccion">Dirección</label>
-                                        <input v-model="direccion" type="text" class="form-control" id="direccion"
-                                            aria-describedby="direccion" autocomplete="off">
-                                    </div>
-
-                                    <div class="form-group col-3" has-validation>
-                                        <label for="ciudad">Ciudad</label>
-                                        <input v-model="ciudad" type="text" class="form-control" id="ciudad"
-                                            aria-describedby="ciudad" autocomplete="off">
-                                    </div>
-
-                                    <div class="form-group col-3" has-validation>
-                                        <label for="departamento">Departamento</label>
-                                        <input v-model="departamento" type="text" class="form-control" id="departamento"
-                                            aria-describedby="departamento" autocomplete="off">
-                                    </div>
-
-                                    <div class="col-12">
-                                        <button class="btn btn-success float-right"
-                                            @click="agregarDirecciones">Agregar</button>
-                                    </div>
-
-                                    <div class="col-12 mt-4">
-                                        <table class="table">
-                                            <thead class="thead-dark">
-                                                <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">Tipo Dirección</th>
-                                                    <th scope="col">Dirección</th>
-                                                    <th scope="col">Ciudad</th>
-                                                    <th scope="col">Departamento</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(direc, index) in direcciones" :key="index">
-                                                    <th scope="row">{{ index }}</th>
-                                                    <td>{{ direc.tipo_direccion }}</td>
-                                                    <td>{{ direc.direccion }}</td>
-                                                    <td>{{ direc.ciudad }}</td>
-                                                    <td>{{ direc.departamento }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                    </div>
+                                    
 
 
                                 </div>
@@ -701,7 +594,8 @@ const transforDate = (date) => {
 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button @click="save" type="button" class="btn btn-primary">Guardar</button>
+                                <button v-if="id == 0" @click="save" type="button" class="btn btn-primary">Guardar</button>
+                                <button v-else @click="updated" type="button" class="btn btn-primary">Actualizar</button>
                             </div>
                         </div>
                     </div>

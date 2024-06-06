@@ -159,34 +159,24 @@ const deleteDoc = (id) => {
 const save = () => {
     if (productos_id.value.length == 0) return
     if (nombre.value.length == 0) return
-    if (interes.value.length == 0) return
-    if (mora.value.length == 0) return
-    if (codigo.value.length == 0) return
-    // if (monto_minimo.value.length == 0) return
-    if (monto_maximo.value.length == 0) return
-    // if (tiempo_minimo.value.length == 0) return
-    if (tiempo_maximo.value.length == 0) return
-    if (terminos_condiciones.value.length == 0) return
-
-
 
     axios.post('/caracteristica', {
         productos_id: productos_id.value,
         nombre: nombre.value,
-        interes: interes.value,
-        mora: mora.value,
         codigo: codigo.value,
+        // interes: interes.value,
+        // mora: mora.value,
         // monto_minimo: monto_minimo.value,
-        monto_maximo: monto_maximo.value,
+        // monto_maximo: monto_maximo.value,
         // tiempo_minimo: tiempo_minimo.value,
-        tiempo_maximo: tiempo_maximo.value,
-        tipo_amortizacion: tipo_amortizacion.value,
-        cobro_intereses: cobro_intereses.value,
-        periodicidad: periodicidad.value,
-        terminos_condiciones: terminos_condiciones.value,
+        // tiempo_maximo: tiempo_maximo.value,
+        // tipo_amortizacion: tipo_amortizacion.value,
+        // cobro_intereses: cobro_intereses.value,
+        // periodicidad: periodicidad.value,
+        // terminos_condiciones: terminos_condiciones.value,
 
-        garantias: garantias.value,
-        documentos: documentos.value
+        // garantias: garantias.value,
+        // documentos: documentos.value
 
     }).then(res => {
         Swal.fire({

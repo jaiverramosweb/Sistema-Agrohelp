@@ -14,9 +14,16 @@ class InteresSeeder extends Seeder
     public function run(): void
     {
         DB::table('interes')->insert([
-            'ibr'       => 2.4,
-            'corriente' => 2.3,
-            'mora'      => 2.6
+            'name'  => 'ibr',
+            'valor' => 2.4
+        ]);
+        DB::table('interes')->insert([
+            'name'  => 'corriente',
+            'valor' => 2.3
+        ]);
+        DB::table('interes')->insert([
+            'name'  => 'mora',
+            'valor' => 2.5
         ]);
     }
 }

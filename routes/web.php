@@ -5,6 +5,7 @@ use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\CreditosController;
 use App\Http\Controllers\DocumentacionController;
 use App\Http\Controllers\GarantiaController;
+use App\Http\Controllers\InteresController;
 use App\Http\Controllers\keller\ClientsController;
 use App\Http\Controllers\keller\CustomFieldsController;
 use App\Http\Controllers\keller\ModulesController;
@@ -115,6 +116,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/documentacion/{id}',            [DocumentacionController::class, 'delete'])->name('documentacion.delete');
     //
 
+    // Intereses
+    Route::get('/config/intereses',                 [InteresController::class, 'index'])->name('interes.index');
+    Route::get('/get-intereses',                    [InteresController::class, 'getAll'])->name('interes.getAll');
+    Route::post('/intereses-pagination',            [InteresController::class, 'pagination'])->name('interes.pagination');
+    Route::put('/intereses/{id}',                   [InteresController::class, 'update'])->name('interes.update');
+    //
+
 
     // Metodo Pago 
     Route::get('/config/metodo-pago',             [MetodoPagoController::class, 'index'])->name('metodoPago.index');
@@ -138,6 +146,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/clients',                          [ClientsController::class, 'index'])->name('clients.index');
     Route::post('/clients-pagination',              [ClientsController::class, 'pagination'])->name('clients.pagination');
     Route::post('/clients',                         [ClientsController::class, 'store'])->name('clients.store');
+    Route::post('/clients-pasword-update',          [ClientsController::class, 'passwordUpdate'])->name('clients.passwordUpdate');
     Route::get('/client/{client}',                  [ClientsController::class, 'show'])->name('client.show');
     Route::put('/clients/{client}',                 [ClientsController::class, 'update'])->name('clients.update');
     Route::delete('/clients/{client}',              [ClientsController::class, 'destroy'])->name('clients.destroy');

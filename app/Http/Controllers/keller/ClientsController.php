@@ -4,10 +4,11 @@ namespace App\Http\Controllers\keller;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ClientSaveRequest;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 use App\Models\Client;
 use App\Models\Direccion;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ClientsController extends Controller
@@ -85,7 +86,7 @@ class ClientsController extends Controller
         if (isset($request->password)) {
             $user = User::create([
                 'email' => $request->email,
-                'password' => $request->password,
+                'password' => Hash::make($request->password),
                 'role_id' => 5
             ]);
         } else {
@@ -96,35 +97,19 @@ class ClientsController extends Controller
 
         $client = new Client();
         $client->users_id           = $user->id;
+        $client->id_user_sap        = isset($request->id_user_sap) ? $request->id_user_sap : '';
+        $client->id_prove_sap       = isset($request->id_prove_sap) ? $request->id_prove_sap : '';
         $client->nombre             = $request->nombre;
-        $client->segundo_nombre     = isset($request->segundo_nombre) ? $request->segundo_nombre : '';
         $client->apellido           = isset($request->apellido) ? $request->apellido : '';
-        $client->segundo_apellido   = isset($request->segundo_apellido) ? $request->segundo_apellido : '';
         $client->tipo_documento     = $request->tipo_documento;
         $client->documento          = $request->documento;
         $client->email              = $request->email;
-        $client->genero             = isset($request->genero) ? $request->genero : '';
-        $client->tipo_persona       = isset($request->tipo_persona) ? $request->tipo_persona : '';
-        $client->fecha_nacimiento   = isset($request->fecha_nacimiento) ? $request->fecha_nacimiento : null;
         $client->estado_persona     = 'Activo';
         $client->indicador_persona  = 'En espara';
         $client->role_id            = 5;
 
         $client->save();
 
-        // foreach ($request->direcciones as $direccion) {
-        //     $direcc = new Direccion();
-
-        //     $direcc->clients_id      = $client->id;
-        //     $direcc->tipo_direccion  = $direccion['tipo_direccion'];
-        //     $direcc->direccion       = $direccion['direccion'];
-        //     $direcc->ciudad          = $direccion['ciudad'];
-        //     $direcc->departamento    = $direccion['departamento'];
-        //     $direcc->estado          = 'Activo';
-        //     $direcc->indicador       = 'En espara';
-
-        //     $direcc->save();
-        // }
 
         return response()->json([
             "status"    => true,
@@ -155,16 +140,13 @@ class ClientsController extends Controller
             return to_route('dashboard');
         }
 
+        $client->id_user_sap        = isset($request->id_user_sap) ? $request->id_user_sap : '';
+        $client->id_prove_sap       = isset($request->id_prove_sap) ? $request->id_prove_sap : '';
         $client->nombre             = $request->nombre;
-        $client->segundo_nombre     = $request->segundo_nombre;
-        $client->apellido           = $request->apellido;
-        $client->segundo_apellido   = $request->segundo_apellido;
-        $client->tipo_documento     = $request->tipo_identificacion;
-        $client->documento          = $request->numero_identificacion;
+        $client->apellido           = isset($request->apellido) ? $request->apellido : '';
+        $client->tipo_documento     = $request->tipo_documento;
+        $client->documento          = $request->documento;
         $client->email              = $request->email;
-        $client->genero             = $request->genero;
-        $client->tipo_persona       = $request->tipo_persona;
-        $client->fecha_nacimiento   = $request->fecha_nacimiento;
 
         $client->save();
 
@@ -190,5 +172,16 @@ class ClientsController extends Controller
             "status" => true,
             "msj"   => "Eliminado con exito"
         ]);
+    }
+
+    public function passwordUpdate(Request $request)
+    {
+        $client = Client::where('users_id', $request->id)->first();
+
+        User::find($request->id)->update([
+            'password' => Hash::make($client->documento),
+        ]);
+
+        return response()->json('Restaurado con exito', 200);
     }
 }

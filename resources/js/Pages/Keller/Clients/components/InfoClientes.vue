@@ -1,10 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/dist/sweetalert2.css'
 
 const props = defineProps(['client', 'direcciones'])
 
 onMounted(() => {
     id.value = props.client.id
+    id.value = props.client.users_id
     nombre.value = props.client.nombre
 
     tipo_identificacion.value = props.client.tipo_documento
@@ -13,11 +16,12 @@ onMounted(() => {
     estado_persona.value = props.client.estado_persona
     indicador_persona.value = props.client.indicador_persona
 
-    direcciones.value = props.direcciones
+
 })
 
 
 const id = ref(0)
+const users_id = ref(0)
 const nombre = ref('')
 const tipo_identificacion = ref('')
 const numero_identificacion = ref('')
@@ -25,7 +29,27 @@ const email = ref('')
 const estado_persona = ref('')
 const indicador_persona = ref('')
 
-const direcciones = ref('')
+
+const restore = () => {
+    Swal.fire({
+        title: 'Estas seguro de restaurar?',
+        showCancelButton: true,
+        confirmButtonText: 'Restaurar',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.post('/clients-pasword-update', {
+                id: users_id.value
+            }).then(({data}) =>{
+                console.log(data)
+                Swal.fire('Restaurado!', '', 'success')
+            })
+
+        } else if (result.isDenied) {
+            Swal.fire('No se pudo restaurar', '', 'info')
+        }
+    })
+    
+}
 </script>
 
 <template>
@@ -57,7 +81,7 @@ const direcciones = ref('')
             <label for="tipo_identificacion">Restrableser Contraseña</label>
             <p class="text-warning">Esta opción restablese la contraseña y coloca el numero de identificación
                 de la persona..</p>
-            <button class="btn btn-warning">Restaurar</button>
+            <button @click="restore" class="btn btn-warning">Restaurar</button>
         </div>
 
         <!-- 

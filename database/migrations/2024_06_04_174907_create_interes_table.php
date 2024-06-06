@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('interes', function (Blueprint $table) {
             $table->id();
-            $table->integer('ibr');
-            $table->integer('corriente');
-            $table->integer('mora');
+            $table->string('name');
+            $table->float('valor', 5, 2);
             $table->timestamps();
         });
     }

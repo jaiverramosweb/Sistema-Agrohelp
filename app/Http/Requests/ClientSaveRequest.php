@@ -23,6 +23,8 @@ class ClientSaveRequest extends FormRequest
     {
         return [
             'email'                     => ['nullable'],
+            'id_user_sap'               => ['nullable'],
+            'id_prove_sap'              => ['nullable'],
             'password'                  => ['nullable'],
             'nombre'                    => ['required', 'string'],
             'segundo_nombre'            => ['nullable'],

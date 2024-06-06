@@ -80,11 +80,20 @@ class ModulesSeeder extends Seeder
         ]);
         DB::table('modules')->insert([
             'jerarquia'             => 3,
-            'name'                  => "Medios de pago",
+            'name'                  => "Medios de pagos",
             'module_group'          => "0",
             'icon'                  => "fas fa-wallet",
             'route'                 => "/config/metodo-pago",
             'module_permissions'    => "medio-pagos",
+            'module_group'          => "config_group",
+        ]);
+        DB::table('modules')->insert([
+            'jerarquia'             => 4,
+            'name'                  => "Intereses",
+            'module_group'          => "0",
+            'icon'                  => "fas fa-money-check-alt",
+            'route'                 => "/config/intereses",
+            'module_permissions'    => "intereses",
             'module_group'          => "config_group",
         ]);
 

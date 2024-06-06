@@ -66,15 +66,19 @@ class RolesAndPermissionsSeeder extends Seeder
                 "module": "config"
             },
             {
-                "name": "Garantias",
+                "name": "Config/Garantias",
                 "module": "garantias"
             },
             {
-                "name": "Documentación",
+                "name": "Config/Documentación",
                 "module": "documentacion"
             },
             {
-                "name": "Medio de pagos",
+                "name": "Config/Intereces",
+                "module": "intereses"
+            },
+            {
+                "name": "Config/Medio de pagos",
                 "module": "medio-pagos"
             },
             {
