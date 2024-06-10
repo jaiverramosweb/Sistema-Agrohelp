@@ -24,6 +24,8 @@ return new class extends Migration
             $table->float('valor', 15, 2)->nullable();
             $table->string('tiempo_financiacion')->default('');
             $table->string('tasa_interes')->default('');
+            $table->string('tipo_interes')->default('');
+            $table->float('interes_mas', 15, 2)->nullable();
             $table->string('tasa_mora')->default('');
             $table->string('cobro_intereses')->default('');
 

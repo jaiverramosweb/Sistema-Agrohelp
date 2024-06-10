@@ -177,6 +177,9 @@ const solicitarCredito = () => {
         client_id: infoCliente.value.id,
         monto_solicitar: monto_aprobar.value,
         tiempo_pagar: tiempo_pagar.value,
+        tipo_interes: 'Corriente',
+        cobro_intereses: 'Mensual',
+        ineteres: tasa.value,
     }).then(({ data }) => {
         Swal.fire({
             icon: 'success',

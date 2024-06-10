@@ -17,6 +17,7 @@ onMounted(() => {
     }, 222);
 
     solicitud_id.value = props.solicitud_id
+
 })
 
 const active = ref(false)

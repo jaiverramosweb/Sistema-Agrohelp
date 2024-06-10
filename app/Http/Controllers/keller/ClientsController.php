@@ -184,4 +184,10 @@ class ClientsController extends Controller
 
         return response()->json('Restaurado con exito', 200);
     }
+
+    public function getClients()
+    {
+        $clients = Client::all('id', 'nombre');
+        return response()->json($clients, 200);
+    }
 }

@@ -15,7 +15,7 @@ onMounted(() => {
     tipo.value = props.tipo
     solicitudId.value = props.solicitud_id
     capital.value = props.capital
-    // console.log('estado', props.estado)
+    // console.log('producto', props.producto)
     metodoFrances()
 
     getAmortizacionAll()
@@ -48,83 +48,155 @@ const capital = ref('')
 const monto_solicitar = ref('')
 const tiempo_pagar = ref('')
 const tablaAmortizacion = ref([])
-
+const tipo_interes = ref('')
+const descripcion_pago = ref('')
 const tablaPagos = ref([])
 
 const metodoFrances = () => {
 
-    let tipoCuotras = 1
-
-    if (tipo.value == 'Trimestral') {
-        tipoCuotras = 3
-    }
-    if (tipo.value == 'Semestral') {
-        tipoCuotras = 6
-    }
-
-    // Parámetros
-    const r_mensual = tasa.value / 12 / 100; // Tasa de interés mensual
-    const capital_trimestral = monto_solicitar.value / (tiempo_pagar.value / tipoCuotras); // Pago de capital trimestral
-    let saldo_pendiente = monto_solicitar.value;
-
-    // Array para almacenar los pagos
-    tablaAmortizacion.value = [];
-    const fecha_inicial = new Date(); // Fecha actual
-
-    for (let i = 0; i < tiempo_pagar.value; i++) {
-        let pago_interes = saldo_pendiente * r_mensual;
-        let pago_capital = 0;
-
-        // Si es el último mes del trimestre, se paga el capital
-        if ((i + 1) % tipoCuotras === 0) {
-            pago_capital = capital_trimestral;
-        }
-
-        let cuota = pago_interes + pago_capital;
-        saldo_pendiente -= pago_capital;
-
-        // Generar la fecha del pago
-        let fecha_pago = new Date(fecha_inicial);
-        fecha_pago.setMonth(fecha_inicial.getMonth() + i);
-
-        // Añadir al array de amortización
-        tablaAmortizacion.value.push({
-            fecha: fecha_pago.toLocaleDateString(),
-            cuota: cuota.toFixed(2),
-            interes: pago_interes.toFixed(2),
-            amortizacion: pago_capital.toFixed(2),
-            saldoPendiente: saldo_pendiente.toFixed(2)
-        });
+    if(tipo.value == 'Mensual'){
+        amortizacionMensual()
+    } else {
+        amortizacionVariable()
     }
 }
 
-const metodoFrances2 = () => {
-    const tasaMensual = tasa.value / 100 / 12;
-    let cuotasPorAno = 12;
-    if (periodo.value === 'bimestral') cuotasPorAno = 6;
-    else if (periodo.value === 'trimestral') cuotasPorAno = 4;
-    else if (periodo.value === 'cuatrimestral') cuotasPorAno = 3;
-    else if (periodo.value === 'semestral') cuotasPorAno = 2;
-    else if (periodo.value === 'anual') cuotasPorAno = 1;
+const aprobado = () => {
+    axios.put(`/solicitud-aprobada/${solicitudId.value}`, {
+        state: 'Aprobado',
+        tasa: tasa.value,
+        mora: mora.value,
+        tipo: tipo.value,
+        monto_solicitar: monto_solicitar.value,
+        tiempo_pagar: tiempo_pagar.value,
+        tablaAmortizacion: tablaAmortizacion.value
+    }).then(({ data }) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Aprobado'
+        })
+        location.reload();
+    })
+}
 
-    const cuota = (monto_solicitar.value * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -tiempo_pagar.value * cuotasPorAno));
-    let saldoPendiente = monto_solicitar.value;
+const savePreaprobado = () => {
+    axios.get(`/save-preaprovado/${solicitudId.value}`).then(({ data }) => {
+        // console.log(data)
+        estado.value = 'Preaprobado'
+    })
+}
+
+const cambiarEstado = (state) => {
+    axios.put(`/update-estado-solicitud/${solicitudId.value}`, { state }).then(({ data }) => {
+        // console.log(data)
+        estado.value = state
+    })
+}
+
+
+const amortizacionVariable = () => {
+
+let tipoCuotras = 1
+let taza_interes = 0
+
+if (tipo.value == 'Trimestral') {
+    tipoCuotras = 3
+}
+if (tipo.value == 'Semestral') {
+    tipoCuotras = 6
+}
+
+if(tipo_interes.value == 'ibr'){
+    taza_interes = interes_mas.value + tasa.value
+} else {
+    taza_interes =  tasa.value
+}
+
+// monto_aprobar.value = monto_solicitar.value * 0.7
+
+// Parámetros
+const r_mensual = taza_interes / 100; // Tasa de interés mensual
+const capital = monto_solicitar.value / (tiempo_pagar.value / tipoCuotras); // Pago de capital trimestral
+const fecha_inicial = new Date(); // Fecha actual
+let saldo_pendiente = monto_solicitar.value;
+
+// Array para almacenar los pagos
+tablaAmortizacion.value = [];
+
+for (let i = 0; i < tiempo_pagar.value; i++) {
+    let pago_interes = saldo_pendiente * r_mensual;
+    let pago_capital = 0;
+
+    // Si es el último mes del trimestre, se paga el capital
+    if ((i + 1) % tipoCuotras === 0) {
+        pago_capital = capital;
+    }
+
+    let cuota = pago_interes + pago_capital;
+    // const cuota = (r_mensual * monto.value) / (1- Math.pow((1 + r_mensual), -tiempo))
+    saldo_pendiente -= pago_capital;
+
+    // Generar la fecha del pago
+    let fecha_pago = new Date(fecha_inicial);
+    fecha_pago.setMonth(fecha_inicial.getMonth() + i);
+
+    // Añadir al array de amortización
+    tablaAmortizacion.value.push({
+        mes:i + 1,
+        fecha: fecha_pago.toLocaleDateString(),
+        cuota: cuota.toFixed(2),
+        interes: pago_interes.toFixed(2),
+        amortizacion: pago_capital.toFixed(2),
+        saldoPendiente: saldo_pendiente.toFixed(2)
+    });
+}
+
+}
+
+const amortizacionMensual = () => {
+    const r_mensual = tasa.value / 100;
+    const fecha_inicial = new Date();
+
+    // Calcular la tasa efectiva para el período seleccionado
+    const r_periodica = Math.pow(1 + r_mensual, 1) - 1;
+
+    // Calcular la cuota periódica ajustada para la periodicidad
+    const n_periodos = Math.ceil(tiempo_pagar.value / 1);
+    const cuota_periodica = monto_solicitar.value * r_periodica / (1 - Math.pow(1 + r_periodica, -n_periodos));
+
     tablaAmortizacion.value = [];
-    let fecha = new Date();
-    for (let i = 1; i <= tiempo_pagar.value * cuotasPorAno; i++) {
-        const interes = saldoPendiente * tasaMensual;
-        const amortizacion = cuota - interes;
-        saldoPendiente -= amortizacion;
-        tablaAmortizacion.value.push({
-            fecha: fecha.toLocaleDateString(),
-            cuota: cuota.toFixed(2),
-            interes: interes.toFixed(2),
-            amortizacion: amortizacion.toFixed(2),
-            saldoPendiente: saldoPendiente.toFixed(2)
-        });
-        if (i % cuotasPorAno === 0) {
-            fecha.setMonth(fecha.getMonth() + 1);
+    let saldo_pendiente = parseFloat(monto_solicitar.value);
+
+    for (let mes = 1; mes <= tiempo_pagar.value; mes++) {
+        let pago_interes = saldo_pendiente * r_mensual;
+        let pago_principal = 0;
+        let cuota_actual = 0;
+
+        // Realizar el pago de capital solo en los meses correspondientes a la periodicidad seleccionada
+        if (mes % 1 === 0 || mes === tiempo_pagar.value) {
+            cuota_actual = cuota_periodica;
+            pago_principal = cuota_actual - pago_interes;
+            saldo_pendiente -= pago_principal;
+
+            // Ajustar el saldo pendiente al final para corregir pequeños errores de redondeo
+            if (mes === tiempo_pagar.value && Math.abs(saldo_pendiente) < 1) {
+                saldo_pendiente = 0;
+            }
+        } else {
+            cuota_actual = pago_interes;
         }
+
+        let fecha_pago = new Date(fecha_inicial);
+        fecha_pago.setMonth(fecha_inicial.getMonth() + mes);
+
+        tablaAmortizacion.value.push({
+            mes: mes,
+            fecha: fecha_pago.toLocaleDateString(),
+            cuota: cuota_actual.toFixed(2),
+            amortizacion: pago_principal.toFixed(2),
+            interes: pago_interes.toFixed(2),
+            saldoPendiente: saldo_pendiente.toFixed(2)
+        });
     }
 }
 
@@ -170,38 +242,6 @@ const metodoIngles = () => {
         });
         fecha.setMonth(fecha.getMonth() + 1);
     }
-}
-
-const savePreaprobado = () => {
-    axios.get(`/save-preaprovado/${solicitudId.value}`).then(({ data }) => {
-        // console.log(data)
-        estado.value = 'Preaprobado'
-    })
-}
-
-const cambiarEstado = (state) => {
-    axios.put(`/update-estado-solicitud/${solicitudId.value}`, { state }).then(({ data }) => {
-        // console.log(data)
-        estado.value = state
-    })
-}
-
-const aprobado = () => {
-    axios.put(`/solicitud-aprobada/${solicitudId.value}`, {
-        state: 'Aprobado',
-        tasa: tasa.value,
-        mora: mora.value,
-        tipo: tipo.value,
-        monto_solicitar: monto_solicitar.value,
-        tiempo_pagar: tiempo_pagar.value,
-        tablaAmortizacion: tablaAmortizacion.value
-    }).then(({ data }) => {
-        Swal.fire({
-            icon: 'success',
-            title: 'Aprobado'
-        })
-        location.reload();
-    })
 }
 
 const mostrarModal = () => {
@@ -278,8 +318,10 @@ const calcularPago = () => {
             id: id_cuota,
             numero: numero_cuota.value,
             interes: interes,
+            interes2: 0,
             cuota: 0,
             amortizacion: capital,
+            amortizacion2: 0,
             saldo_pagar: 0,
             saldo_pendiente: saldo_pendiente
         }
@@ -311,8 +353,10 @@ const calcularPago = () => {
             id: id_cuota,
             numero: numero_cuota.value,
             interes: interes,
+            interes2: inte,
             cuota: parseFloat(cuot).toFixed(2),
             amortizacion: capital,
+            amortizacion2: capi,
             saldo_pagar: parseFloat(saldo_pendiente - valor).toFixed(2),
             saldo_pendiente: saldo_pendiente
         }
@@ -329,8 +373,10 @@ const calcularPago = () => {
             id: id_cuota,
             numero: numero_cuota.value,
             interes: interes,
+            interes2: 0,
             cuota: 0,
             amortizacion: capital,
+            amortizacion2: 0,
             saldo_pagar: 0,
             saldo_pendiente: saldo_pendiente
         }
@@ -370,10 +416,11 @@ const calcularPago = () => {
             const p2 = {
                 id: nueva.id,
                 numero: numero_cuota.value + 1,
-                interes2: parseFloat(nueva.interes).toFixed(2),
-                interes: interes,
+                interes2: parseFloat(inte2).toFixed(2),
+                interes: parseFloat(nueva.interes).toFixed(2),
                 cuota: parseFloat(cuot2).toFixed(2),
-                amortizacion: capital,
+                amortizacion: parseFloat(nueva.amortizacion).toFixed(2),
+                amortizacion2: parseFloat(amor2).toFixed(2),
                 saldo_pagar: parseFloat(saldo_pendiente - cuot2).toFixed(2),
                 saldo_pendiente: saldo_pendiente
             }
@@ -389,13 +436,16 @@ const calcularPago = () => {
     console.log('cuotas a actualizar', cuotas)
 
     tablaPagos.value = cuotas
+
+    console.log('pagar', cuotas)
 }
 
 const pagarCuota = () => {
     axios.put(`/realizar-pago/${solicitudId.value}`, {
         pagos: valor_pagar.value,
         tabla_pagos: tablaPagos.value,
-        metodo_pago: metodo_pago.value
+        metodo_pago: metodo_pago.value,
+        descripcion_pago: metodo_pago.descripcion_pago,
 
     }).then(({ data }) => {
         // console.log(data)
@@ -408,6 +458,16 @@ const pagarCuota = () => {
             title: 'Salgo agregado'
         })
         $("#modalPago").modal("hide");
+    })
+}
+
+const updateStateSolicitud = (valor) => {
+    axios.put('/update-solicitud/' + solicitudId.value, { accion: valor }).then(({ data }) => {
+        estado.value = 'En estudio'
+        Swal.fire({
+            icon: 'success',
+            title: 'Solicitud realizada'
+        })
     })
 }
 
@@ -427,17 +487,17 @@ const formatearMoneda = (numero) => {
 
     <div v-if="dataAmortizacion.length == 0" class="row">
 
-        <div class="col-3">
+        <!-- <div class="col-3">
             <b>Tipo de crédito</b>
             <p>{{ producto.nombre }}</p>
-        </div>
+        </div> -->
         <div class="col-3">
             <b>Tasa de interés</b>
             <p>{{ tasa }}%</p>
         </div>
         <div class="col-3">
-            <b>Tipo de pago</b>
-            <p>{{ producto.cobro_intereses }}</p>
+            <b>Periocidad de pagos</b>
+            <p>{{ tipo }}</p>
         </div>
         <div class="col-3">
             <b>Monto solicitado</b>
@@ -468,6 +528,9 @@ const formatearMoneda = (numero) => {
         </table>
 
         <div class="col-12">
+            <button  v-if="estado == 'En tramite'"  @click="updateStateSolicitud('En estudio')"
+                class="btn btn-success float-right">Solicitar</button>
+
             <button v-if="estado == 'En estudio'" @click="savePreaprobado"
                 class="btn btn-success float-right">Preaprobado</button>
 
@@ -490,10 +553,10 @@ const formatearMoneda = (numero) => {
 
     <div v-else class="row">
 
-        <div class="col-3">
+        <!-- <div class="col-3">
             <b>Tipo de crédito solicitado</b>
             <p>{{ producto.nombre }}</p>
-        </div>
+        </div> -->
         <div class="col-3">
             <b>Tasa de interés</b>
             <p>{{ tasa }}%</p>
@@ -501,7 +564,7 @@ const formatearMoneda = (numero) => {
 
         <div class="col-3">
             <b>Tipo de pago</b>
-            <p>{{ producto.cobro_intereses }}</p>
+            <p>{{ tipo }}</p>
         </div>
 
         <div class="col-3">
@@ -556,6 +619,9 @@ const formatearMoneda = (numero) => {
         </table>
 
         <div class="col-12">
+            <button  v-if="estado == 'En tramite'"  @click="updateStateSolicitud('En estudio')"
+                class="btn btn-success float-right">Solicitar</button>
+
             <button v-if="estado == 'En estudio'" @click="savePreaprobado"
                 class="btn btn-success float-right">Preaprobado</button>
 
@@ -589,6 +655,17 @@ const formatearMoneda = (numero) => {
                 </div>
                 <div class="modal-body">
                     <div class="row">
+
+                        <div class="form-group col-12">
+                            <label for="inputState">Periocidad de pagos <span class="text-danger">*</span></label>
+                            <select id="inputState" class="form-control" v-model="tipo">
+                                <option value="" selected>Seleccione...</option>
+                                <option value="Mensual">Mensual</option>
+                                <option value="Trimestral">Trimestral</option>
+                                <option value="Semestral">Semestral</option>
+                            </select>
+                        </div>
+
                         <div class="form-group col-12">
                             <label for="tasa">Tasa de interés</label>
                             <input v-model="tasa" type="number" class="form-control" id="tasa" aria-describedby="tasa"
@@ -672,18 +749,27 @@ const formatearMoneda = (numero) => {
                                         <th scope="col">Nro. cuota</th>
                                         <th scope="col">Cuota</th>
                                         <th scope="col">Interés</th>
+                                        <th scope="col">Interés pagado</th>
                                         <th scope="col">Valor Capital</th>
+                                        <th scope="col">Valor Capital pagado</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr class="text-center" v-for="(fila, i) in tablaPagos" :key="i">
                                         <td scope="row">{{ fila.numero }}</td>
-                                        <td>{{ fila.cuota }}</td>
+                                        <td><input type="text" v-model="tablaPagos[i].cuota"></td>
                                         <td>{{ fila.interes }}</td>
+                                        <td><input type="text" v-model="tablaPagos[i].interes2"></td>
                                         <td>{{ fila.amortizacion }}</td>
+                                        <td><input type="text" v-model="tablaPagos[i].amortizacion2"></td>
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+
+                        <div v-if="tablaPagos.length > 0" class="col-12">
+                            <label for="">Descripción del pago</label>
+                            <textarea class="form-control" v-model="descripcion_pago" name="descripcion_pago" id="descripcion_pago" rows="5"></textarea>
                         </div>
                     </div>
                 </div>

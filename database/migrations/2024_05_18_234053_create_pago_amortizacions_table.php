@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('amortizations_id');
             $table->integer('factura_pagos_id');
             $table->integer('metodo_pago_id');
+            $table->text('descripcion_pago')->nullable();
             $table->timestamps();
         });
     }

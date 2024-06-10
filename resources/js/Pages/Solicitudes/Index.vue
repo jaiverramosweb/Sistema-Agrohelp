@@ -12,7 +12,6 @@ onMounted(() => {
 
     dataSolicitudes.value = props.solicitudes.data.data
     pagination.value = props.solicitudes.pagination
-
 })
 
 
@@ -141,7 +140,35 @@ const changePage = (page) => {
 }
 // FIN de metodos Requeridos para iniciar modulo
 
+const client_id = ref(0)
+const monto = ref(50000000)
+const tiempo = ref(0)
+const tipo_interes = ref('')
+const interes = ref(0)
+const interes_mas = ref(0)
+const tipo_amortizacion = ref('')
+
+const dataIntereses = ref([])
+const dataClient = ref([])
 const dataSolicitudes = ref([])
+const tablaAmortizacion = ref([])
+
+const newCredit = () => {
+    axios.get('/get-intereses').then(({data}) => {
+        const d = data.filter(f => f.name !== 'Mora')
+        dataIntereses.value = d
+    })
+
+    getClient()
+
+    $('#modalSolicitud').modal('show')
+}
+
+const getClient = () => {
+    axios.get('/get-clients').then(({data}) => {
+        dataClient.value = data
+    })
+}
 
 const formatDate = (date) => {
     let dateString = date.substring(0, 10);
@@ -152,6 +179,192 @@ const formatearMoneda = (numero) => {
     const num = parseFloat(numero)
     return '$ ' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
+const amortizacion = () => {
+    if(tipo_amortizacion.value == 'Mensual'){
+        amortizacionMensual()
+    } else {
+        amortizacionVariable()
+    }
+}
+
+const amortizacionVariable = () => {
+
+    let tipoCuotras = 1
+    let taza_interes = 0
+
+    if (tipo_amortizacion.value == 'Trimestral') {
+        tipoCuotras = 3
+    }
+    if (tipo_amortizacion.value == 'Semestral') {
+        tipoCuotras = 6
+    }
+
+    if(tipo_interes.value == 'ibr'){
+        taza_interes = interes_mas.value + interes.value
+    } else {
+        taza_interes =  interes.value
+    }
+
+    // monto_aprobar.value = monto_solicitar.value * 0.7
+
+    // Parámetros
+    const r_mensual = taza_interes / 100; // Tasa de interés mensual
+    // const capital = monto.value / (tiempo.value / tipoCuotras); // Pago de capital trimestral
+    const capital = monto.value / (tiempo.value / tipoCuotras); // Pago de capital trimestral
+    const fecha_inicial = new Date(); // Fecha actual
+    let saldo_pendiente = monto.value;
+
+    // Array para almacenar los pagos
+    tablaAmortizacion.value = [];
+
+    for (let i = 0; i < tiempo.value; i++) {
+        let pago_interes = saldo_pendiente * r_mensual;
+        let pago_capital = 0;
+
+        // Si es el último mes del trimestre, se paga el capital
+        if ((i + 1) % tipoCuotras === 0) {
+            pago_capital = capital;
+        }
+
+        let cuota = pago_interes + pago_capital;
+        // const cuota = (r_mensual * monto.value) / (1- Math.pow((1 + r_mensual), -tiempo))
+        saldo_pendiente -= pago_capital;
+
+        // Generar la fecha del pago
+        let fecha_pago = new Date(fecha_inicial);
+        fecha_pago.setMonth(fecha_inicial.getMonth() + i);
+
+        // Añadir al array de amortización
+        tablaAmortizacion.value.push({
+            mes:i + 1,
+            fecha: fecha_pago.toLocaleDateString(),
+            cuota: cuota.toFixed(2),
+            interes: pago_interes.toFixed(2),
+            amortizacion: pago_capital.toFixed(2),
+            saldoPendiente: saldo_pendiente.toFixed(2)
+        });
+    }
+
+}
+
+// const amortizacion = () => {
+//     const monto = 50000000
+//     const tiempo = 12
+//     const interes = 2.3 / 100;
+
+//     const cuota = (interes * monto) / (1- Math.pow((1 + interes), -tiempo))
+
+//     console.log(cuota)
+// }
+
+const amortizacionMensual = () => {
+    const r_mensual = interes.value / 100;
+    const fecha_inicial = new Date();
+
+    // Calcular la tasa efectiva para el período seleccionado
+    const r_periodica = Math.pow(1 + r_mensual, 1) - 1;
+
+    // Calcular la cuota periódica ajustada para la periodicidad
+    const n_periodos = Math.ceil(tiempo.value / 1);
+    const cuota_periodica = monto.value * r_periodica / (1 - Math.pow(1 + r_periodica, -n_periodos));
+
+    tablaAmortizacion.value = [];
+    let saldo_pendiente = parseFloat(monto.value);
+
+    for (let mes = 1; mes <= tiempo.value; mes++) {
+        let pago_interes = saldo_pendiente * r_mensual;
+        let pago_principal = 0;
+        let cuota_actual = 0;
+
+        // Realizar el pago de capital solo en los meses correspondientes a la periodicidad seleccionada
+        if (mes % 1 === 0 || mes === tiempo.value) {
+            cuota_actual = cuota_periodica;
+            pago_principal = cuota_actual - pago_interes;
+            saldo_pendiente -= pago_principal;
+
+            // Ajustar el saldo pendiente al final para corregir pequeños errores de redondeo
+            if (mes === tiempo.value && Math.abs(saldo_pendiente) < 1) {
+                saldo_pendiente = 0;
+            }
+        } else {
+            cuota_actual = pago_interes;
+        }
+
+        let fecha_pago = new Date(fecha_inicial);
+        fecha_pago.setMonth(fecha_inicial.getMonth() + mes);
+
+        tablaAmortizacion.value.push({
+            mes: mes,
+            fecha: fecha_pago.toLocaleDateString(),
+            cuota: cuota_actual.toFixed(2),
+            amortizacion: pago_principal.toFixed(2),
+            interes: pago_interes.toFixed(2),
+            saldoPendiente: saldo_pendiente.toFixed(2)
+        });
+    }
+}
+
+
+// const amortizacion = () => {
+
+//     const r_mensual = interes.value / 100;
+//     const cuota_mensual = monto.value * r_mensual * Math.pow(1 + r_mensual, tiempo.value) / (Math.pow(1 + r_mensual, tiempo.value) - 1);
+//     const fecha_inicial = new Date();
+
+//     tablaAmortizacion.value = [];
+//     let saldo_pendiente = monto.value;
+
+//     for (let mes = 1; mes <= tiempo.value; mes++) {
+//         let pago_interes = saldo_pendiente * r_mensual;
+//         let pago_principal = cuota_mensual - pago_interes;
+//         saldo_pendiente -= pago_principal;
+
+//         let fecha_pago = new Date(fecha_inicial);
+//         fecha_pago.setMonth(fecha_inicial.getMonth() + mes);
+
+//         tablaAmortizacion.value.push({
+//             mes: mes,
+//             fecha: fecha_pago.toLocaleDateString(),
+//             cuota: cuota_mensual.toFixed(2),
+//             amortizacion: pago_principal.toFixed(2),
+//             interes: pago_interes.toFixed(2),
+//             saldoPendiente: saldo_pendiente.toFixed(2)
+//         });
+//     }
+// };
+
+const solicitarCredit = () => {
+    axios.post('/solicitud-inicial', {
+        client_id: client_id.value,
+        monto_solicitar: monto.value,
+        tiempo_pagar: tiempo.value,
+        ineteres: interes.value,
+        tipo_interes: tipo_interes.value,      
+        interes_mas: interes_mas.value,
+        cobro_intereses: tipo_amortizacion.value
+    }).then(({ data }) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Registro creado con exito'
+        })
+        paginationList()
+        $("#modalSolicitud").modal("hide");
+    })
+}
+
+
+
+watch(tipo_interes, () =>{
+    if(tipo_interes.value == 'IVR'){
+        const ibr = dataIntereses.value.filter(i => i.name == 'IVR')
+        interes.value = 0
+        interes_mas.value = ibr[0].valor
+    } else {
+        const otro = dataIntereses.value.filter(i => i.name == 'Corriente')
+        interes.value = otro[0].valor
+    }
+})
 
 </script>
 
@@ -194,9 +407,9 @@ const formatearMoneda = (numero) => {
                         <h3 class="card-title">Todas las solicitudes</h3>
 
                         <div class="card-tools">
-                            <!-- <button v-if="permissions.create" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalClient">
-                            Crear Piezómetro
-                        </button> -->
+                            <button v-if="permissions.create" type="button" class="btn btn-success" @click="newCredit">
+                                Crear solicitud
+                            </button>
 
                         </div>
 
@@ -246,9 +459,6 @@ const formatearMoneda = (numero) => {
                                                     Solicitante
                                                 </th>
                                                 <th>
-                                                    Línea de crédito
-                                                </th>
-                                                <th>
                                                     Monto solicitado
                                                 </th>
                                                 <th>
@@ -274,9 +484,6 @@ const formatearMoneda = (numero) => {
 
                                                 <td>
                                                     {{ item_data.nombre }}
-                                                </td>
-                                                <td>
-                                                    {{ item_data.nombre_producto }} {{ item_data.nombre_caract }}
                                                 </td>
                                                 <td>
                                                     {{ formatearMoneda(item_data.monto) }}
@@ -404,220 +611,110 @@ const formatearMoneda = (numero) => {
                 </div>
 
                 <!-- Modal -->
-                <div class="modal fade" id="modalClient" data-backdrop="static" tabindex="-1"
-                    aria-labelledby="modalClientLabel" aria-hidden="true">
+                <div class="modal fade" id="modalSolicitud" data-backdrop="static" tabindex="-1"
+                    aria-labelledby="modalSolicitudLabel" aria-hidden="true">
                     <!-- <div class="modal-dialog"> -->
                     <div class="modal-dialog modal-xl">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modalClientLabel">+ Nuevo cliente</h5>
+                                <h5 class="modal-title" id="modalSolicitudLabel">+ Nuevo solicitud</h5>
 
                             </div>
                             <div class="modal-body">
 
                                 <div class="row">
 
-                                    <!-- <div class="form-group col-md-3  has-validation">
-                                    <label for="zonas_id">Zona</label>
-                                    <select v-model="zonas_id" class="form-control" id="zonas_id">
-                                        <option value="0" >Seleccione..</option>
-                                        <option v-for="zona in zonas" :key="zona.id" :value="zona.id">{{ zona.name }}</option>
-                                    </select>
-                                    <div v-if="zonas_id.length == 0" class="invalid-feedback d-block">El campo es requerido</div>
-                                </div> -->
-
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="tipo_identificacion">Tipo de Identificación <span
+                                    <div class="form-group col-2" has-validation>
+                                        <label for="monto">Cliente <span
                                                 class="text-danger">
                                                 *</span></label>
-                                        <select id="inputState" class="form-control" v-model="tipo_identificacion">
+                                        <select id="inputState" class="form-control" v-model="client_id">
                                             <option value="" selected>Seleccione...</option>
-                                            <option value="CC">CC</option>
-                                            <option value="Pasaporte">Pasaporte</option>
+                                            <option v-for="client in dataClient" :key="client.id" :value="client.id">{{ client.nombre }}</option>
                                         </select>
-                                        <div v-if="tipo_identificacion == ''" class="invalid-feedback d-block">El
-                                            campo es
-                                            requerido
-                                        </div>
-
                                     </div>
+                                    
 
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="numero_identificacion">Numero de Identificación <span
+                                    <div class="form-group col-2" has-validation>
+                                        <label for="monto">Monto a solicitar <span
                                                 class="text-danger">
                                                 *</span></label>
-                                        <input v-model="numero_identificacion" type="text" class="form-control"
-                                            id="numero_identificacion" aria-describedby="numero_identificacion"
+                                        <input v-model="monto" type="text" class="form-control"
+                                            id="monto" aria-describedby="monto"
                                             autocomplete="off">
-                                        <div v-if="numero_identificacion == ''" class="invalid-feedback d-block">El
-                                            campo es
-                                            requerido
-                                        </div>
                                     </div>
 
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="nombre">Primer Nombre <span class="text-danger">
+                                    <div class="form-group col-1" has-validation>
+                                        <label for="tiempo">Tiempo <span class="text-danger">
                                                 *</span></label>
-                                        <input v-model="nombre" type="text" class="form-control" id="nombre"
-                                            aria-describedby="nombre" autocomplete="off">
-                                        <div v-if="nombre == ''" class="invalid-feedback d-block">El campo es
-                                            requerido
-                                        </div>
+                                        <input v-model="tiempo" type="number" class="form-control" id="tiempo"
+                                            aria-describedby="tiempo" autocomplete="off">
                                     </div>
 
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="segundo_nombre">Segundo Nombre <span class="text-danger">
+
+
+                                    <div class="form-group col-2">
+                                        <label for="inputState">Tipo de interes <span class="text-danger">*</span></label>
+                                        <select id="inputState" class="form-control" v-model="tipo_interes">
+                                            <option value="" selected>Seleccione...</option>
+                                            <option v-for="int in dataIntereses" :key="int.id" :value="int.name">{{ int.name }}</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-2" has-validation>
+                                        <label for="tiempo">interes <span class="text-danger">
                                                 *</span></label>
-                                        <input v-model="segundo_nombre" type="text" class="form-control"
-                                            id="segundo_nombre" aria-describedby="segundo_nombre" autocomplete="off">
-                                        <div v-if="segundo_nombre == ''" class="invalid-feedback d-block">El campo
-                                            es
-                                            requerido
-                                        </div>
+                                        <input v-model="interes" type="text" class="form-control" id="tiempo"
+                                            aria-describedby="tiempo" autocomplete="off">
                                     </div>
 
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="apellido">Primer Apellido <span class="text-danger">*</span></label>
-                                        <input v-model="apellido" type="text" class="form-control" id="apellido"
-                                            aria-describedby="apellido" autocomplete="off">
-                                        <div v-if="apellido == ''" class="invalid-feedback d-block">El campo es
-                                            requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="segundo_apellido">Segundo Apellido <span
-                                                class="text-danger">*</span></label>
-                                        <input v-model="segundo_apellido" type="text" class="form-control"
-                                            id="segundo_apellido" aria-describedby="segundo_apellido"
-                                            autocomplete="off">
-                                        <div v-if="segundo_apellido == ''" class="invalid-feedback d-block">El campo
-                                            es
-                                            requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-md-4">
-                                        <label for="inputState">Genero <span class="text-danger">*</span></label>
-                                        <select id="inputState" class="form-control" v-model="genero">
+                                    <div class="form-group col-2">
+                                        <label for="inputState">Periocidad de pagos <span class="text-danger">*</span></label>
+                                        <select id="inputState" class="form-control" v-model="tipo_amortizacion">
                                             <option value="" selected>Seleccione...</option>
-                                            <option value="Masculino">Masculino</option>
-                                            <option value="Femenino">Femenino</option>
+                                            <option value="Mensual">Mensual</option>
+                                            <option value="Trimestral">Trimestral</option>
+                                            <option value="Semestral">Semestral</option>
                                         </select>
                                     </div>
-
-                                    <div class="form-group col-md-4">
-                                        <label for="inputState">Tipo de Persona <span
-                                                class="text-danger">*</span></label>
-                                        <select id="inputState" class="form-control" v-model="tipo_persona">
-                                            <option value="" selected>Seleccione...</option>
-                                            <option value="Tipo uno">Tipo uno</option>
-                                            <option value="Tipo dos">Tipo dos</option>
-                                        </select>
+                                    
+                                    <div class="form-group col-1">
+                                        <button @click="amortizacion" class="btn btn-info" style="margin-top: 32px;">Calcular</button>
                                     </div>
-
-                                    <div class="form-group col-4" has-validation>
-                                        <label for="fecha_nacimiento">Fecha de Nacimiento <span
-                                                class="text-danger">*</span></label>
-                                        <input v-model="fecha_nacimiento" type="date" class="form-control"
-                                            id="fecha_nacimiento" aria-describedby="fecha_nacimiento"
-                                            autocomplete="off">
-                                        <div v-if="fecha_nacimiento == ''" class="invalid-feedback d-block">El campo
-                                            es
-                                            requerido
+                                        
+                                    <div v-if="tablaAmortizacion.length > 0" class="form-group col-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Mes</th>
+                                                        <th scope="col">Fecha</th>
+                                                        <th scope="col">Cuota</th>
+                                                        <th scope="col">Interés</th>
+                                                        <th scope="col">Valor Capital</th>
+                                                        <th scope="col">Saldo Pendiente</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="fila in tablaAmortizacion" :key="fila.fecha">
+                                                        <td scope="row">{{ fila.mes }}</td>
+                                                        <td scope="row">{{ fila.fecha }}</td>
+                                                        <td>{{ formatearMoneda(fila.cuota) }}</td>
+                                                        <td>{{ formatearMoneda(fila.interes) }}</td>
+                                                        <td>{{ formatearMoneda(fila.amortizacion) }}</td>
+                                                        <td>{{ formatearMoneda(fila.saldoPendiente) }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-
-                                    <div class="form-group col-6" has-validation>
-                                        <label for="email">Correo electrónico<span class="text-danger">*</span></label>
-                                        <input v-model="email" type="email" class="form-control" id="email"
-                                            aria-describedby="email" autocomplete="off">
-                                        <div v-if="email == ''" class="invalid-feedback d-block">El campo
-                                            es
-                                            requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-6" has-validation>
-                                        <label for="password">Contraseña<span class="text-danger">*</span></label>
-                                        <input v-model="password" type="password" class="form-control" id="password"
-                                            aria-describedby="password" autocomplete="off">
-                                        <div v-if="password == ''" class="invalid-feedback d-block">El campo
-                                            es
-                                            requerido
-                                        </div>
-                                    </div>
-
-                                    <hr>
-                                    <h4 class="col-12">Direcciones</h4>
-                                    <hr>
-
-                                    <div class="form-group col-md-3">
-                                        <label for="tipo_direccion">Tipo Dirección</label>
-                                        <select id="tipo_direccion" class="form-control" v-model="tipo_direccion">
-                                            <option value="" selected>Seleccione...</option>
-                                            <option value="Tipo uno">Tipo uno</option>
-                                            <option value="Tipo dos">Tipo dos</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group col-3" has-validation>
-                                        <label for="direccion">Dirección</label>
-                                        <input v-model="direccion" type="text" class="form-control" id="direccion"
-                                            aria-describedby="direccion" autocomplete="off">
-                                    </div>
-
-                                    <div class="form-group col-3" has-validation>
-                                        <label for="ciudad">Ciudad</label>
-                                        <input v-model="ciudad" type="text" class="form-control" id="ciudad"
-                                            aria-describedby="ciudad" autocomplete="off">
-                                    </div>
-
-                                    <div class="form-group col-3" has-validation>
-                                        <label for="departamento">Departamento</label>
-                                        <input v-model="departamento" type="text" class="form-control" id="departamento"
-                                            aria-describedby="departamento" autocomplete="off">
-                                    </div>
-
-                                    <div class="col-12">
-                                        <button class="btn btn-success float-right"
-                                            @click="agregarDirecciones">Agregar</button>
-                                    </div>
-
-                                    <div class="col-12 mt-4">
-                                        <table class="table">
-                                            <thead class="thead-dark">
-                                                <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">Tipo Dirección</th>
-                                                    <th scope="col">Dirección</th>
-                                                    <th scope="col">Ciudad</th>
-                                                    <th scope="col">Departamento</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(direc, index) in direcciones" :key="index">
-                                                    <th scope="row">{{ index }}</th>
-                                                    <td>{{ direc.tipo_direccion }}</td>
-                                                    <td>{{ direc.direccion }}</td>
-                                                    <td>{{ direc.ciudad }}</td>
-                                                    <td>{{ direc.departamento }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                    </div>
-
 
                                 </div>
                             </div>
 
-
-
-
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                                <button @click="save" type="button" class="btn btn-primary">Guardar</button>
+                                <button v-if="tablaAmortizacion.length > 0" @click="solicitarCredit" type="button" class="btn btn-primary">Solicitar</button>
                             </div>
                         </div>
                     </div>

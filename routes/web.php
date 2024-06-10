@@ -144,6 +144,7 @@ Route::middleware('auth')->group(function () {
 
     // Clients
     Route::get('/clients',                          [ClientsController::class, 'index'])->name('clients.index');
+    Route::get('/get-clients',                      [ClientsController::class, 'getClients'])->name('clients.getClients');
     Route::post('/clients-pagination',              [ClientsController::class, 'pagination'])->name('clients.pagination');
     Route::post('/clients',                         [ClientsController::class, 'store'])->name('clients.store');
     Route::post('/clients-pasword-update',          [ClientsController::class, 'passwordUpdate'])->name('clients.passwordUpdate');

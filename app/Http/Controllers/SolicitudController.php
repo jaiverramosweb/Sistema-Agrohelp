@@ -64,30 +64,9 @@ class SolicitudController extends Controller
                 'sol_servicios.tiempo',
                 'sol_servicios.created_at',
                 'clients.nombre',
-                'caracteristicas_productos.nombre AS nombre_caract',
-                'productos.nombre AS nombre_producto',
             ])
                 ->join("clients", "sol_servicios.clientes_id", "clients.id")
-                ->join("caracteristicas_productos", "sol_servicios.producto_id", "caracteristicas_productos.id")
-                ->join("productos", "caracteristicas_productos.productos_id", "productos.id")
                 ->orderBy($order_field, $order_type);
-
-            // foreach ($h as $value) {
-            //     $value->producto = CaracteristicasProducto::find($value->producto_id);
-
-            //     if (isset($value->producto)) {
-            //         $product = Producto::find($value->producto->productos_id);
-            //         $value->producto->nombre_producto = $product->nombre;
-            //     }
-            // }
-
-            //   $h = SolServicio::select(
-            //     "solicitudes.*",
-            //     "lineas_creditos.codigo AS linea_credito",
-            //   )
-            //     ->join("lineas_creditos", "solicitudes.linea_credito_id", "=", "lineas_creditos.id")
-            //     ->join("users", "solicitudes.user_id", "=", "users.id")
-            //     ->orderBy($order_field, $order_type);
 
             $show = $h->paginate($request->show);
         } else {
@@ -102,15 +81,6 @@ class SolicitudController extends Controller
             ])
                 ->join("clients", "sol_servicios.clientes_id", "clients.id")
                 ->orderBy($order_field, $order_type);
-
-            // $h =  SolServicio::select(
-            //     "solicitudes.*",
-            //     "lineas_creditos.codigo AS linea_credito",
-
-            // )
-            //     ->join("lineas_creditos", "solicitudes.linea_credito_id", "=", "lineas_creditos.id")
-            //     ->join("users", "solicitudes.user_id", "=", "users.id")
-            //     ->orderBy($order_field, $order_type);
 
             $this->search_ = $search;
 
@@ -177,9 +147,11 @@ class SolicitudController extends Controller
         $sol->producto_id     = 0;
         $sol->monto           = $request->monto_solicitar;
         $sol->tiempo          = $request->tiempo_pagar;
-        $sol->tasa_interes    = 2.3;
-        $sol->tasa_mora       = 2.4;
-        $sol->cobro_intereses = 2.3;
+        $sol->tasa_interes    = $request->ineteres;
+        $sol->tipo_interes    = $request->tipo_interes;
+        $sol->interes_mas    = isset($request->interes_mas) ? $request->interes_mas : 0;
+        $sol->tasa_mora       = 0;
+        $sol->cobro_intereses = $request->cobro_intereses;
         $sol->save();
 
         $referencias = new ReferenciaCredito();
@@ -623,7 +595,7 @@ class SolicitudController extends Controller
 
     public function solicitudAprobada(Request $request, $id)
     {
-        // return $request->all();
+        // return $id;
 
         // dd($request->tablaAmortizacion);
 
@@ -645,7 +617,9 @@ class SolicitudController extends Controller
             $amortization->fecha = $value['fecha'];
             $amortization->cuota = $value['cuota'];
             $amortization->interes = $value['interes'];
+            $amortization->interes2 = $value['interes'];
             $amortization->amortizacion = $value['amortizacion'];
+            $amortization->amortizacion2 = $value['amortizacion'];
             $amortization->saldo_pendiente =  $value['saldoPendiente'];
             $amortization->tasa = $tasa;
             $amortization->mora = $mora;
@@ -674,17 +648,20 @@ class SolicitudController extends Controller
             $cuota = strval($value['cuota']);
             $amortization = Amortization::find($value['id']);
             // dd($amortization);
-            $amortization->cuota = $cuota;
-            $amortization->interes = strval($value['interes']);
-            $amortization->amortizacion = strval($value['amortizacion']);
-            $amortization->saldo_pendiente = strval($value['saldo_pagar']);
-            $amortization->estado = $cuota == 0 ? true : false;
+            $amortization->cuota            = $cuota;
+            $amortization->interes          = strval($value['interes']);
+            $amortization->interes2         = strval($value['interes2']);
+            $amortization->amortizacion     = strval($value['amortizacion']);
+            $amortization->amortizacion2    = strval($value['amortizacion2']);
+            $amortization->saldo_pendiente  = strval($value['saldo_pagar']);
+            $amortization->estado           = $cuota == 0 ? true : false;
             $amortization->save();
 
             PagoAmortizacion::create([
                 'amortizations_id' => $amortization->id,
                 'factura_pagos_id' => $factura->id,
-                'metodo_pago_id'   => $request->metodo_pago
+                'metodo_pago_id'   => $request->metodo_pago,
+                'descripcion_pago' => $request->descripcion_pago
             ]);
 
             $solicitud = SolServicio::find($amortization->sol_servicios_id);

@@ -10,6 +10,7 @@ import Patrimonio from './components/Patrimonio.vue';
 import Ingreso from './components/Ingreso.vue';
 import Credito from './components/Credito.vue';
 import Producto from './components/Producto.vue';
+import FilesComponent from '../Clients/components/FilesComponent.vue';
 
 const props = defineProps(['solicitud', 'cliente'])
 
@@ -19,7 +20,7 @@ onMounted(() => {
     cliente.value = props.cliente
     solicitud.value = props.solicitud
     getFiles();
-    console.log(props.solicitud)
+    // console.log(props.solicitud)
 
 })
 
@@ -51,7 +52,7 @@ const documents_list = ref([])
 
 
 const updateStateSolicitud = (valor) => {
-    axios.put('/update-solicitud/' + producto.value.id, { accion: valor }).then(({ data }) => {
+    axios.put('/update-solicitud/' + solicitud.value.id, { accion: valor }).then(({ data }) => {
         Swal.fire({
             icon: 'success',
             title: 'Solicitud realizada'
@@ -145,6 +146,9 @@ const downloadFile = (id) => {
                         <ul class="nav nav-pills">
                             <li class="nav-item"><a class="nav-link active" href="#info" data-toggle="tab">Información
                                     Personal</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#solicitud"
+                                data-toggle="tab">Amortización</a>
+                            </li>
                             <li class="nav-item"><a class="nav-link" href="#referencia"
                                     data-toggle="tab">Referencias</a>
                             </li>
@@ -160,9 +164,7 @@ const downloadFile = (id) => {
                                     créditos
                                     vigentes</a>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="#solicitud"
-                                    data-toggle="tab">Amortización</a>
-                            </li>
+                            
                         </ul>
                     </div>
 
@@ -351,8 +353,8 @@ const downloadFile = (id) => {
 
                                 </div>
 
-                                <div class="mt-4">
-                                    <div class="row">
+                                <div class="mt-4" v-if="solicitud">
+                                    <!-- <div class="row">
 
                                         <div class='table-responsive'>
 
@@ -379,10 +381,6 @@ const downloadFile = (id) => {
                                                                     @click='downloadFile(item.id)'>
                                                                     <i class='fas fa-download'></i>
                                                                 </button>
-                                                                <!-- <button :class="'btn mr-1 btn-xs bg-danger btn-round'"
-                                                        @click='destroyFile(item.id)'>
-                                                        <i class='fas fa-trash'></i>
-                                                    </button> -->
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -393,7 +391,9 @@ const downloadFile = (id) => {
 
                                         </div>
 
-                                    </div>
+                                    </div> -->
+
+                                    <FilesComponent :solicitud_id="solicitud.id" />
                                 </div>
                             </div>
 
@@ -425,35 +425,9 @@ const downloadFile = (id) => {
                                     :capital="solicitud.valor" />
                             </div>
 
-
-
                         </div>
 
                     </div>
-
-                    <!-- <div v-if="solicitud.estado_solicitud == 'Solicitado'" class="card-footer">
-                        <button class="btn btn-success float-right ml-4"
-                            @click="updateStateSolicitud('Aceptado')">Aceptar</button>
-                        <button class="btn btn-danger float-right"
-                            @click="updateStateSolicitud('Denegado')">Denegar</button>
-                    </div> -->
-
-                    <!-- <form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
-                        <input name="merchantId" type="hidden" value="508029">
-                        <input name="accountId" type="hidden" value="512321">
-                        <input name="description" type="hidden" value="Produnto data">
-                        <input name="referenceCode" type="hidden" value="ESTEPAGOESUNICO01">
-                        <input name="amount" type="hidden" value="22500">
-                        <input name="tax" type="hidden" value="0">
-                        <input name="taxReturnBase" type="hidden" value="0">
-                        <input name="currency" type="hidden" value="COP">
-                        <input name="signature" type="hidden" value="8a7bdacf308a638a3f0d906441dc32a2">
-                        <input name="test" type="hidden" value="1">
-                        <input name="buyerEmail" type="hidden" value="jramos@wolke.com.co">
-                        <input name="responseUrl" type="hidden" value="http://agrohelp.test/response">
-                        <input name="confirmationUrl" type="hidden" value="http://agrohelp.test/confirmation">
-                        <input name="Submit" type="submit" value="Enviar">
-                    </form> -->
 
                 </div>
 

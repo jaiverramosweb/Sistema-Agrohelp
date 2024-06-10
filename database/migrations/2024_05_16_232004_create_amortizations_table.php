@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('fecha');
             $table->float('cuota', 15, 2);
             $table->float('interes', 15, 2);
+            $table->float('interes2', 15, 2);
             $table->float('amortizacion', 15, 2);
+            $table->float('amortizacion2', 15, 2);
             $table->float('saldo_pendiente', 15, 2);
             $table->float('tasa', 15, 2);
             $table->float('mora', 15, 2);
