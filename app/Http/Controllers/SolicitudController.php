@@ -615,6 +615,7 @@ class SolicitudController extends Controller
             $amortization = new Amortization();
             $amortization->sol_servicios_id = $id;
             $amortization->fecha = $value['fecha'];
+            $amortization->cuota_numero = $value['mes'];
             $amortization->cuota = $value['cuota'];
             $amortization->interes = $value['interes'];
             $amortization->interes2 = $value['interes'];
@@ -648,13 +649,15 @@ class SolicitudController extends Controller
             $cuota = strval($value['cuota']);
             $amortization = Amortization::find($value['id']);
             // dd($amortization);
-            $amortization->cuota            = $cuota;
-            $amortization->interes          = strval($value['interes']);
-            $amortization->interes2         = strval($value['interes2']);
-            $amortization->amortizacion     = strval($value['amortizacion']);
-            $amortization->amortizacion2    = strval($value['amortizacion2']);
-            $amortization->saldo_pendiente  = strval($value['saldo_pagar']);
-            $amortization->estado           = $cuota == 0 ? true : false;
+            $amortization->cuota                = $cuota;
+            $amortization->interes              = strval($value['interes']);
+            $amortization->interes2             = strval($value['interes2']);
+            $amortization->interes_pagado       = strval($value['interes_pagado']);
+            $amortization->amortizacion         = strval($value['amortizacion']);
+            $amortization->amortizacion2        = strval($value['amortizacion2']);
+            $amortization->amortizacion_pagado  = strval($value['amortizacion_pagado']);
+            $amortization->saldo_pendiente      = strval($value['saldo_pagar']);
+            $amortization->estado               = $cuota == 0 ? true : false;
             $amortization->save();
 
             PagoAmortizacion::create([

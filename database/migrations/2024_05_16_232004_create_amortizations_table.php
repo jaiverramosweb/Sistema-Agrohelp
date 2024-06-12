@@ -15,11 +15,14 @@ return new class extends Migration
             $table->id();
             $table->integer('sol_servicios_id');
             $table->string('fecha');
+            $table->integer('cuota_numero');
             $table->float('cuota', 15, 2);
             $table->float('interes', 15, 2);
             $table->float('interes2', 15, 2);
+            $table->float('interes_pagado', 15, 2)->nullable();
             $table->float('amortizacion', 15, 2);
             $table->float('amortizacion2', 15, 2);
+            $table->float('amortizacion_pagado', 15, 2)->nullable();
             $table->float('saldo_pendiente', 15, 2);
             $table->float('tasa', 15, 2);
             $table->float('mora', 15, 2);

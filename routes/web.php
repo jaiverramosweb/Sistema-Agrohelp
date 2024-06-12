@@ -210,6 +210,8 @@ Route::middleware('auth')->group(function () {
     // Creditos
     Route::post('/get-info-credito',                [CreditosController::class, 'show'])->name('credito.show');
     Route::post('/creditos-pagination',             [CreditosController::class, 'pagination'])->name('credito.pagination');
+    Route::get('/comprobante/{id}',                 [CreditosController::class, 'getComprobante'])->name('credito.getComprobante');
+    Route::get('/download-compro/{id}',             [CreditosController::class, 'downloadCompro'])->name('credito.downloadCompro');
     //
 
 });

@@ -348,16 +348,17 @@ const solicitarCredit = () => {
             icon: 'success',
             title: 'Registro creado con exito'
         })
-        paginationList()
-        $("#modalSolicitud").modal("hide");
+        // paginationList()
+        // $("#modalSolicitud").modal("hide");
+        location.reload();
     })
 }
 
 
 
 watch(tipo_interes, () =>{
-    if(tipo_interes.value == 'IVR'){
-        const ibr = dataIntereses.value.filter(i => i.name == 'IVR')
+    if(tipo_interes.value == 'IPC'){
+        const ibr = dataIntereses.value.filter(i => i.name == 'IPC')
         interes.value = 0
         interes_mas.value = ibr[0].valor
     } else {

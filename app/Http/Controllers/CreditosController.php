@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Amortization;
 use App\Models\CaracteristicasProducto;
+use App\Models\Client;
+use App\Models\FacturaPago;
+use App\Models\MetodoPago;
+use App\Models\PagoAmortizacion;
 use App\Models\Producto;
 use App\Models\SolServicio;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CreditosController extends Controller
 {
@@ -99,5 +105,31 @@ class CreditosController extends Controller
             ],
             'data' => $show,
         ];
+    }
+
+    public function getComprobante($id)
+    {
+        $comprobantes = PagoAmortizacion::select([
+            'pago_amortizacions.*',
+            'factura_pagos.pago',
+        ])
+        ->where('amortizations_id', $id)
+        ->join('factura_pagos', 'pago_amortizacions.factura_pagos_id', 'factura_pagos.id')
+        ->get();
+
+        return response()->json($comprobantes, 200);
+    }
+
+    public function downloadCompro($id)
+    {
+        $pagoAmor = PagoAmortizacion::find($id);        
+        $pagoAmor->pago = FacturaPago::find($pagoAmor->factura_pagos_id);
+        $pagoAmor->amortiz = Amortization::find($pagoAmor->amortizations_id);
+        $sol = SolServicio::find( $pagoAmor->amortiz->sol_servicios_id);
+        $pagoAmor->cliente = Client::select('nombre', 'documento')->find($sol->clientes_id);
+        $pagoAmor->metodo = MetodoPago::find($pagoAmor->metodo_pago_id);
+        // dd($pagoAmor->metodo);
+        return view('pdf.comprobante', compact('pagoAmor'));
+        // return PDF::loadView('pdf.comprobante', compact('pagoAmor'))->stream('archivo.pdf');
     }
 }

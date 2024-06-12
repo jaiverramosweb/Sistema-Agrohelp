@@ -51,6 +51,7 @@ const tablaAmortizacion = ref([])
 const tipo_interes = ref('')
 const descripcion_pago = ref('')
 const tablaPagos = ref([])
+const comprobantes = ref([])
 
 const metodoFrances = () => {
 
@@ -319,9 +320,11 @@ const calcularPago = () => {
             numero: numero_cuota.value,
             interes: interes,
             interes2: 0,
+            interes_pagado: interes,
             cuota: 0,
             amortizacion: capital,
             amortizacion2: 0,
+            amortizacion_pagado: capital,
             saldo_pagar: 0,
             saldo_pendiente: saldo_pendiente
         }
@@ -354,9 +357,11 @@ const calcularPago = () => {
             numero: numero_cuota.value,
             interes: interes,
             interes2: inte,
+            interes_pagado: inte,
             cuota: parseFloat(cuot).toFixed(2),
             amortizacion: capital,
             amortizacion2: capi,
+            amortizacion_pagado: capi,
             saldo_pagar: parseFloat(saldo_pendiente - valor).toFixed(2),
             saldo_pendiente: saldo_pendiente
         }
@@ -373,9 +378,11 @@ const calcularPago = () => {
             id: id_cuota,
             numero: numero_cuota.value,
             interes: interes,
+            interes_pagado: interes,
             interes2: 0,
             cuota: 0,
             amortizacion: capital,
+            amortizacion_pagado: capital,
             amortizacion2: 0,
             saldo_pagar: 0,
             saldo_pendiente: saldo_pendiente
@@ -417,17 +424,17 @@ const calcularPago = () => {
                 id: nueva.id,
                 numero: numero_cuota.value + 1,
                 interes2: parseFloat(inte2).toFixed(2),
+                interes_pagado: parseFloat(inte2).toFixed(2),
                 interes: parseFloat(nueva.interes).toFixed(2),
                 cuota: parseFloat(cuot2).toFixed(2),
                 amortizacion: parseFloat(nueva.amortizacion).toFixed(2),
                 amortizacion2: parseFloat(amor2).toFixed(2),
+                amortizacion_pagado: parseFloat(amor2).toFixed(2),
                 saldo_pagar: parseFloat(saldo_pendiente - cuot2).toFixed(2),
                 saldo_pendiente: saldo_pendiente
             }
 
             cuotas.push(p2)
-
-            console.log('cuota inteeres', p2)
 
         }
 
@@ -445,19 +452,27 @@ const pagarCuota = () => {
         pagos: valor_pagar.value,
         tabla_pagos: tablaPagos.value,
         metodo_pago: metodo_pago.value,
-        descripcion_pago: metodo_pago.descripcion_pago,
+        descripcion_pago: descripcion_pago.value,
 
     }).then(({ data }) => {
         // console.log(data)
         valor_pagar.value = ''
         metodo_pago.value = 0
         tablaPagos.value = []
+        descripcion_pago.value = ''
         getAmortizacionAll()
         Swal.fire({
             icon: 'success',
             title: 'Salgo agregado'
         })
         $("#modalPago").modal("hide");
+    })
+}
+
+const comprobante = (id) => {
+    axios.get(`/comprobante/${id}`).then(({data}) => {
+        comprobantes.value = data
+        $("#modalComprobante").modal("show");        
     })
 }
 
@@ -480,6 +495,12 @@ const formatearMoneda = (numero) => {
     const num = parseFloat(numero)
     return '$ ' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
+const descargar = (id) => {
+    let url = '/download-compro/' + id;
+    window.open(url, '_blank');
+}
+
 
 </script>
 
@@ -538,6 +559,10 @@ const formatearMoneda = (numero) => {
                 class="btn btn-success float-right">Aprobado</button>
 
             <button v-if="estado == 'Preaprobado'" @click="mostrarModal"
+                class="btn btn-warning float-right mr-4">Modificar
+                registro</button>
+
+            <button v-if="estado == 'En estudio'" @click="mostrarModal"
                 class="btn btn-warning float-right mr-4">Modificar
                 registro</button>
 
@@ -609,9 +634,9 @@ const formatearMoneda = (numero) => {
                     <td>
                         <button v-if="!fila.estado" class="btn btn-outline-success"
                             @click="modalPago(fila, i + 1)">Pagar</button>
-                        <button v-else class="btn btn-outline-danger">
-                            <i class="far fa-file-pdf"></i>
 
+                        <button @click="comprobante(fila.id)" v-else class="btn btn-outline-danger">
+                            <i class="far fa-file-pdf"></i>
                         </button>
                     </td>
                 </tr>
@@ -629,6 +654,10 @@ const formatearMoneda = (numero) => {
                 class="btn btn-success float-right">Aprobado</button>
 
             <button v-if="estado == 'Preaprobado'" @click="mostrarModal"
+                class="btn btn-warning float-right mr-4">Modificar
+                registro</button>
+
+            <button v-if="estado == 'En estudio'" @click="mostrarModal"
                 class="btn btn-warning float-right mr-4">Modificar
                 registro</button>
 
@@ -758,9 +787,9 @@ const formatearMoneda = (numero) => {
                                     <tr class="text-center" v-for="(fila, i) in tablaPagos" :key="i">
                                         <td scope="row">{{ fila.numero }}</td>
                                         <td><input type="text" v-model="tablaPagos[i].cuota"></td>
-                                        <td>{{ fila.interes }}</td>
+                                        <td>{{ formatearMoneda(fila.interes) }}</td>
                                         <td><input type="text" v-model="tablaPagos[i].interes2"></td>
-                                        <td>{{ fila.amortizacion }}</td>
+                                        <td>{{ formatearMoneda(fila.amortizacion) }}</td>
                                         <td><input type="text" v-model="tablaPagos[i].amortizacion2"></td>
                                     </tr>
                                 </tbody>
@@ -784,6 +813,39 @@ const formatearMoneda = (numero) => {
             </div>
         </div>
     </div>
+
+
+    <!-- Modal recibo -->
+    <div class="modal fade" id="modalComprobante" data-backdrop="static" tabindex="-1"
+        aria-labelledby="modalComprobanteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <!-- <div class="modal-dialog modal-xl"> -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalComprobanteLabel">Recibo de pagos</h5>
+
+                </div>
+                <div class="modal-body">
+                    <div v-for="comp in comprobantes" :key="comp.id">
+                        <div class="row">
+                            <div class="col-6 mt-2"> <b>Monto pagado: {{ formatearMoneda(comp.pago) }}</b></div>
+                            <div class="col-4 mt-2"><b>Fecha: {{ formatDate(comp.created_at) }}</b> </div>
+                            <div class="col-2">
+                                <button @click="descargar(comp.id)" class="btn btn-outline-danger">
+                                    <i class="far fa-file-pdf"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <style scoped>
