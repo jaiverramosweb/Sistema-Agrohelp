@@ -7,6 +7,7 @@ use App\Models\CaracteristicasProducto;
 use App\Models\Client;
 use App\Models\FacturaPago;
 use App\Models\MetodoPago;
+use App\Models\PagoAbono;
 use App\Models\PagoAmortizacion;
 use App\Models\Producto;
 use App\Models\SolServicio;
@@ -17,19 +18,7 @@ class CreditosController extends Controller
 {
     public function show(Request $request)
     {
-        // $sol = SolServicio::select(['id', 'clientes_id', 'producto_id', 'estado_solicitud', 'monto', 'tiempo'])->where('clientes_id', $request->id)->get();
-
-        // foreach ($sol as $value) {
-        //     $value->producto = CaracteristicasProducto::find($value->producto_id);
-
-        //     if (isset($value->producto)) {
-        //         $product = Producto::find($value->producto->productos_id);
-        //         $value->producto->nombre_producto = $product->nombre;
-        //     }
-        // }
-
         $sol = $this->pagination($request);
-
         return response()->json($sol, 200);
     }
 
@@ -130,6 +119,72 @@ class CreditosController extends Controller
         $pagoAmor->metodo = MetodoPago::find($pagoAmor->metodo_pago_id);
         // dd($pagoAmor->metodo);
         return view('pdf.comprobante', compact('pagoAmor'));
+        // return PDF::loadView('pdf.comprobante', compact('pagoAmor'))->stream('archivo.pdf');
+    }
+
+    public function getCreditos($id)
+    {
+        $creditos = Amortization::where('sol_servicios_id', $id)->where('estado', '!=', 1)->get();
+        return response()->json($creditos, 200);
+    }
+
+    public function saveAbono(Request $request)
+    {
+        Amortization::where('sol_servicios_id', $request->id)->where('estado', '!=', 1)->delete();
+        $credito = Amortization::where('sol_servicios_id', $request->id)->first();
+
+        foreach ($request->tablaAmortizacion as $value) {
+            $amortization = new Amortization();
+            $amortization->sol_servicios_id = $request->id;
+            $amortization->fecha            = $value['fecha'];
+            $amortization->cuota_numero     = $value['mes'];
+            $amortization->cuota            = $value['cuota'];
+            $amortization->interes          = $value['interes'];
+            $amortization->interes2         = $value['interes'];
+            $amortization->amortizacion     = $value['amortizacion'];
+            $amortization->amortizacion2    = $value['amortizacion'];
+            $amortization->saldo_pendiente  =  $value['saldoPendiente'];
+            $amortization->tasa             = $credito->tasa;
+            $amortization->mora             = $credito->mora;
+            $amortization->monto_solicitado = $credito->monto_solicitado;
+            $amortization->tiempo_pagar     = $credito->tiempo_pagar;
+            $amortization->save();
+        }
+
+        $pago = new PagoAbono();
+        $pago->sol_servicios_id = $request->id;
+        $pago->tipo             = $request->tipo;
+        $pago->monto            = $request->monto;
+        $pago->metodo_pago_id   = $request->metodo_pago_id;
+        $pago->save();
+
+        $solicitud = SolServicio::find($request->id);
+        $solicitud->valor = strval($request->capital);
+        $solicitud->save();
+
+        return response()->json($pago, 201);
+    }
+
+    public function getAbono($id)
+    {
+        $pagos = PagoAbono::select([
+            'pago_abonos.*',
+            'metodo_pagos.name'
+        ])
+        ->join('metodo_pagos', 'pago_abonos.metodo_pago_id', 'metodo_pagos.id')
+        ->where('sol_servicios_id', $id)        
+        ->get();
+        return response()->json($pagos, 200);
+    }
+
+    public function downloadAbono($id)
+    {
+        $pago = PagoAbono::find($id);        
+        $sol = SolServicio::find( $pago->sol_servicios_id);
+        $pago->cliente = Client::select('nombre', 'documento')->find($sol->clientes_id);
+        $pago->metodo = MetodoPago::find($pago->metodo_pago_id);
+        // dd($pago);
+        return view('pdf.abono', compact('pago'));
         // return PDF::loadView('pdf.comprobante', compact('pagoAmor'))->stream('archivo.pdf');
     }
 }

@@ -212,6 +212,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/creditos-pagination',             [CreditosController::class, 'pagination'])->name('credito.pagination');
     Route::get('/comprobante/{id}',                 [CreditosController::class, 'getComprobante'])->name('credito.getComprobante');
     Route::get('/download-compro/{id}',             [CreditosController::class, 'downloadCompro'])->name('credito.downloadCompro');
+    Route::get('/get-creditos/{id}',                [CreditosController::class, 'getCreditos'])->name('credito.getCreditos');
+    Route::post('/pagar-abono',                     [CreditosController::class, 'saveAbono'])->name('credito.saveAbono');
+    Route::get('/get-abonos/{id}',                  [CreditosController::class, 'getAbono'])->name('credito.getAbono');
+    Route::get('/download-abono/{id}',              [CreditosController::class, 'downloadAbono'])->name('credito.downloadAbono');
     //
 
 });

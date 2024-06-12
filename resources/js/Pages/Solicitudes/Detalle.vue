@@ -10,6 +10,7 @@ import Patrimonio from './components/Patrimonio.vue';
 import Ingreso from './components/Ingreso.vue';
 import Credito from './components/Credito.vue';
 import Producto from './components/Producto.vue';
+import Abono from './components/Abono.vue';
 import FilesComponent from '../Clients/components/FilesComponent.vue';
 
 const props = defineProps(['solicitud', 'cliente'])
@@ -163,6 +164,9 @@ const downloadFile = (id) => {
                             <li class="nav-item"><a class="nav-link" href="#tarjeta" data-toggle="tab">Tarjetas y
                                     créditos
                                     vigentes</a>
+                            </li>
+
+                            <li v-if="solicitud.estado_solicitud == 'Aprobado'" class="nav-item"><a class="nav-link" href="#abono" data-toggle="tab">Abonos a capital</a>
                             </li>
                             
                         </ul>
@@ -423,6 +427,10 @@ const downloadFile = (id) => {
                                     :estado="solicitud.estado_solicitud" :solicitud_id="solicitud.id"
                                     :tipo="solicitud.cobro_intereses" :mora="solicitud.tasa_mora"
                                     :capital="solicitud.valor" />
+                            </div>
+
+                            <div v-if="solicitud.creditos" class="tab-pane" id="abono">
+                                <Abono :credito="solicitud" />
                             </div>
 
                         </div>
