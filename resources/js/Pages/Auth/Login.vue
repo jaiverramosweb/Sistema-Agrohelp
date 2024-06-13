@@ -66,12 +66,12 @@
 
                   <div class="row">
 
-                    <div class="col-11 mb-3">
+                    <!-- <div class="col-11 mb-3">
                       <RecaptchaV2 @widget-id="handleWidgetId" @error-callback="handleErrorCalback"
                         @expired-callback="handleExpiredCallback" @load-callback="handleLoadCallback"
                         :size="comapact" />
 
-                    </div>
+                    </div> -->
 
                     <div class="col-7">
                       <div class="icheck-primary">

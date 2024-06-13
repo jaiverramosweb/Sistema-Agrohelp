@@ -276,6 +276,8 @@ const getAmortizacionAll = () => {
         })
 
         dataAmortizacion.value = info
+
+        console.log(data)
     })
 }
 

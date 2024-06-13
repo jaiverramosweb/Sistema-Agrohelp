@@ -130,8 +130,8 @@ class CreditosController extends Controller
 
     public function saveAbono(Request $request)
     {
-        Amortization::where('sol_servicios_id', $request->id)->where('estado', '!=', 1)->delete();
         $credito = Amortization::where('sol_servicios_id', $request->id)->first();
+        Amortization::where('sol_servicios_id', $request->id)->where('estado', '!=', 1)->delete();
 
         foreach ($request->tablaAmortizacion as $value) {
             $amortization = new Amortization();

@@ -38,6 +38,7 @@ const getMetodoPago = () => {
 const getCredito = () => {
     axios.get(`/get-creditos/${props.credito.id}`).then(({data}) => {
         ListCreditos.value = data
+        // console.log('credito',data)
     })
 }
 
@@ -51,7 +52,14 @@ const generarPago = () => {
         }
     
         if(tablaAmortizacion.value.length > 0){
-            // console.log(tablaAmortizacion.value)
+            pagarAbono()
+        }
+    }
+
+    if(tipo.value == 'Redicción de plazo') {
+        abonoReduccionPlazo()
+
+        if(tablaAmortizacion.value.length > 0){
             pagarAbono()
         }
     }
@@ -61,9 +69,9 @@ const generarPago = () => {
 const amortizacionMensual = () => {
     const r_mensual = tasa.value / 100;
     const tiempo_pagar = ListCreditos.value.length;
+    let mesCuota = ListCreditos.value[0].cuota_numero
     const [dia, mes, año] = ListCreditos.value[0].fecha.split('/');
     const newMes = (mes - 1)
-    let mesCuota = ListCreditos.value[0].cuota_numero
     const fecha_inicial = new Date(`${newMes.toString()}/${dia}/${año}`);
 
     const pago = capital.value - monto.value
@@ -176,6 +184,54 @@ for (let i = 0; i < tiempo_pagar; i++) {
 
 }
 
+const abonoReduccionPlazo = () => {
+    // Obtener el último saldo pendiente
+    // const saldoPendienteInicial = ListCreditos.value[0].saldo_pendiente
+    const cuotaMensual = ListCreditos.value[0].cuota; // Suponiendo que la cuota es constante
+    const tasaInteresMensual = tasa.value / 100;
+
+     // Calcular el nuevo saldo pendiente después del abono a capital
+     const nuevoSaldoPendiente = capital.value - monto.value;
+    //  const nuevoSaldoPendiente = saldoPendienteInicial - monto.value;
+
+    let saldo = nuevoSaldoPendiente;
+    let mesesRestantes = ListCreditos.value[0].cuota_numero;
+    const nuevoDatosPrestamo = [];
+
+    const [dia, mes, año] = ListCreditos.value[0].fecha.split('/');
+    const newMes = (mes - 1)
+    const fecha_inicial = new Date(`${newMes.toString()}/${dia}/${año}`);
+
+    console.log('fecha_inicial',fecha_inicial)
+
+    tablaAmortizacion.value = [];
+
+    let aumento = 1
+
+    while (saldo > 0) {
+        const interesMensual = saldo * tasaInteresMensual;
+        const abonoPrincipal = cuotaMensual - interesMensual;
+        saldo -= abonoPrincipal;
+
+        let fecha_pago = new Date(fecha_inicial);
+        fecha_pago.setMonth(fecha_inicial.getMonth() + aumento);
+        
+        tablaAmortizacion.value.push({
+            mes: mesesRestantes,
+            cuota: cuotaMensual.toFixed(2),
+            fecha: fecha_pago.toLocaleDateString(),
+            interes: interesMensual.toFixed(2),
+            amortizacion: abonoPrincipal.toFixed(2),
+            saldoPendiente: saldo > 0 ? saldo.toFixed(2) : 0,
+            });
+
+        mesesRestantes++;
+        aumento++;
+    }
+
+    console.log(tablaAmortizacion.value)
+}
+
 const pagarAbono = () => {
     axios.post('/pagar-abono', {
         id: props.credito.id,
@@ -190,6 +246,7 @@ const pagarAbono = () => {
             title: 'Abonado con exito'
         })
         getAbonos()
+        $('#modalAbono').modal('hide');
     })
 }
 
@@ -276,7 +333,7 @@ const formatDate = (date) => {
                             <select id="inputState" class="form-control" v-model="tipo">
                                 <option value="" selected>Seleccione...</option>
                                 <option value="Capital">Capital</option>
-                                <option value="Tiempo">Redicción de tiempo</option>
+                                <option value="Redicción de plazo">Redicción de plazo</option>
                                 <option value="Total">Pago total</option>
                             </select>
                         </div>
