@@ -8,6 +8,8 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
+    tipo: '',
+    documento: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -67,11 +69,54 @@ const submit = () => {
 
                                     <InputError class="mt-2" :message="form.errors.email" />
                                 </div> -->
+                                <div class="input-group mb-3">
+
+                                    <!-- <input id="name" type="text" class="form-control" placeholder="Nombre completo"
+                                        v-model="form.tipo" required autofocus> -->
+                                    <select name="" id="" class="form-control" v-model="form.tipo">
+                                        <option value="">Seleccione tipo de documento</option>
+                                        <option value="CC">CC</option>
+                                        <option value="NIT">NIT</option>
+                                    </select>
+
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="input-group mb-3">
+
+                                    <input id="name" type="text" class="form-control" placeholder="Numero de documento"
+                                        v-model="form.documento" required>
+
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="input-group mb-3">
+
+                                    <input id="name" type="text" class="form-control" placeholder="Nombre completo"
+                                        v-model="form.name" required>
+
+                                    <div class="input-group-append">
+                                        <div class="input-group-text">
+                                            <span class="fas fa-user"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
 
                                 <div class="input-group mb-3">
 
                                     <input id="email" type="email" class="form-control" placeholder="Correo Electronico"
-                                        v-model="form.email" required autofocus>
+                                        v-model="form.email" required>
 
                                     <div class="input-group-append">
                                         <div class="input-group-text">

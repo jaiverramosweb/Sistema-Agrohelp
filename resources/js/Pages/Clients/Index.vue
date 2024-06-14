@@ -53,17 +53,17 @@ const getCaracteristicas = () => {
     })
 }
 
+const getInteres = () => {
+    axios.get('/get-interes').then(({data}) => {
+        tasa.value = data.valor
+    })
+}
+
+
 const simuladorMonto = (producto) => {
-
-    console.log(producto)
-
-    tasa.value = 2.3
-    // terminos.value = producto.terminos_condiciones
-    // product_id.value = producto.id
+    getInteres()
+    tasa.value
     tipoAmortizacion.value = 'Mensual'
-    // tipoAmortizacion.value = 'Inglés'
-
-    console.log(producto)
 
     $("#modalMontoSimulador").modal("show");
 }
@@ -71,7 +71,9 @@ const simuladorMonto = (producto) => {
 const simulador = () => {
     $("#modalMontoSimulador").modal("hide");
 
-    metodoFrances()
+    // metodoFrances()
+    amortizacionMensual()
+    // amortizacion()
 
     setInterval(() => {
         $("#modalSimulador").modal("show");
@@ -127,6 +129,56 @@ function metodoFrances() {
     }
 
 }
+
+const amortizacionMensual = () => {
+    const r_mensual = tasa.value / 100;
+    const fecha_inicial = new Date();
+
+    monto_aprobar.value = monto_solicitar.value * 0.7
+
+    // Calcular la tasa efectiva para el período seleccionado
+    const r_periodica = Math.pow(1 + r_mensual, 1) - 1;
+
+    // Calcular la cuota periódica ajustada para la periodicidad
+    const n_periodos = Math.ceil(tiempo_pagar.value / 1);
+    const cuota_periodica = monto_aprobar.value * r_periodica / (1 - Math.pow(1 + r_periodica, -n_periodos));
+
+    tablaAmortizacion.value = [];
+    let saldo_pendiente = parseFloat(monto_aprobar.value);
+
+    for (let mes = 1; mes <= tiempo_pagar.value; mes++) {
+        let pago_interes = saldo_pendiente * r_mensual;
+        let pago_principal = 0;
+        let cuota_actual = 0;
+
+        // Realizar el pago de capital solo en los meses correspondientes a la periodicidad seleccionada
+        if (mes % 1 === 0 || mes === tiempo_pagar.value) {
+            cuota_actual = cuota_periodica;
+            pago_principal = cuota_actual - pago_interes;
+            saldo_pendiente -= pago_principal;
+
+            // Ajustar el saldo pendiente al final para corregir pequeños errores de redondeo
+            if (mes === tiempo_pagar.value && Math.abs(saldo_pendiente) < 1) {
+                saldo_pendiente = 0;
+            }
+        } else {
+            cuota_actual = pago_interes;
+        }
+
+        let fecha_pago = new Date(fecha_inicial);
+        fecha_pago.setMonth(fecha_inicial.getMonth() + mes);
+
+        tablaAmortizacion.value.push({
+            mes: mes,
+            fecha: fecha_pago.toLocaleDateString(),
+            cuota: cuota_actual.toFixed(2),
+            amortizacion: pago_principal.toFixed(2),
+            interes: pago_interes.toFixed(2),
+            saldoPendiente: saldo_pendiente.toFixed(2)
+        });
+    }
+}
+
 
 const metodoAleman = () => {
     const tasaMensual = tasa.value / 100 / 12;
@@ -237,7 +289,7 @@ const save = () => {
         })
         setTimeout(() => {
             location.reload();
-        }, 2000);
+        }, 1000);
         // creado.value = false
     })
 }
@@ -246,8 +298,8 @@ const editarCredito = (id) => {
     window.location.href = `/editar-solicitud/${id}`;
 }
 
-const verAmortizacion = (monto, tiempo, taza, tipo) => {
-    window.location.href = `/ver-amortizacion/${monto}/${tiempo}/${taza}/${tipo}`;
+const verAmortizacion = (id) => {
+    window.location.href = `/ver-amortizacion/${id}`;
 }
 
 const verAprobado = (id) => {
@@ -467,7 +519,7 @@ const descargarPre = (id) => {
                                                                 v-if="item_data.estado_solicitud == 'En estudio' || item_data.estado_solicitud == 'Preaprobado'"
                                                                 class="btn mr-1 btn-xs btn-outline-info btn-round"
                                                                 data-toggle="tooltip" title="Ver"
-                                                                @click="verAmortizacion(item_data.monto, item_data.tiempo, item_data.producto.interes, item_data.producto.cobro_intereses)">
+                                                                @click="verAmortizacion(item_data.id)">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
 

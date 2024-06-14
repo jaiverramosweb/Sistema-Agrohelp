@@ -120,6 +120,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/config/intereses',                 [InteresController::class, 'index'])->name('interes.index');
     Route::get('/get-intereses',                    [InteresController::class, 'getAll'])->name('interes.getAll');
     Route::get('/get-mora',                         [InteresController::class, 'getMora'])->name('interes.getMora');
+    Route::get('/get-interes',                      [InteresController::class, 'getInteres'])->name('interes.getInteres');
     Route::post('/intereses-pagination',            [InteresController::class, 'pagination'])->name('interes.pagination');
     Route::put('/intereses/{id}',                   [InteresController::class, 'update'])->name('interes.update');
     //
@@ -179,7 +180,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/solicitud-inicial',                       [SolicitudController::class, 'primeraSolicitud'])->name('solicitud.primeraSolicitud');
 
     Route::get('/editar-solicitud/{id}',                    [SolicitudController::class, 'editarSolicitud'])->name('solicitud.editarSolicitud');
-    Route::get('/ver-amortizacion/{monto}/{tiempo}/{taza}/{tipo}', [SolicitudController::class, 'verAmortizacion'])->name('solicitud.verAmortizacion');
+    Route::get('/ver-amortizacion/{id}',                    [SolicitudController::class, 'verAmortizacion'])->name('solicitud.verAmortizacion');
     Route::get('/ver-aprobado/{id}',                        [SolicitudController::class, 'verAprobado'])->name('solicitud.verAprobado');
     Route::get('/get-solicitud/{id}',                       [SolicitudController::class, 'getSolicitud'])->name('solicitud.getSolicitud');
     Route::put('/update-solicitud/{id}',                    [SolicitudController::class, 'updateStateSolicitud'])->name('solicitud.updateStateSolicitud');

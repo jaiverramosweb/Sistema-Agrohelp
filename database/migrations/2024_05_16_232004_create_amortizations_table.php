@@ -26,6 +26,7 @@ return new class extends Migration
             $table->float('saldo_pendiente', 15, 2);
             $table->float('tasa', 15, 2);
             $table->float('mora', 15, 2);
+            $table->float('mora_pagado', 15, 2)->nullable();
             $table->float('monto_solicitado', 15, 2);
             $table->string('tiempo_pagar');
             $table->boolean('estado')->default(false);

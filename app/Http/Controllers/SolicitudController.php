@@ -514,13 +514,11 @@ class SolicitudController extends Controller
         ]);
     }
 
-    public function verAmortizacion($monto, $tiempo, $taza, $tipo)
+    public function verAmortizacion($id)
     {
+        $credito = SolServicio::find($id);
         return Inertia::render('Clients/VerCreditos', [
-            'monto'     => $monto,
-            'tiempo'    => $tiempo,
-            'taza'      => $taza,
-            'tipo'      => $tipo
+            'credito' => $credito
         ]);
     }
 
@@ -655,6 +653,8 @@ class SolicitudController extends Controller
             $amortization->interes_pagado       = strval($value['interes_pagado']);
             $amortization->amortizacion         = strval($value['amortizacion']);
             $amortization->amortizacion2        = strval($value['amortizacion2']);
+            $amortization->mora                 = strval($value['mora']);
+            $amortization->mora_pagado          = strval($value['mora2']);
             $amortization->amortizacion_pagado  = strval($value['amortizacion_pagado']);
             $amortization->saldo_pendiente      = strval($value['saldo_pagar']);
             $amortization->estado               = $cuota == 0 ? true : false;

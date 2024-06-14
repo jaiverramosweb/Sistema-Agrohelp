@@ -200,7 +200,7 @@ const amortizacionVariable = () => {
         tipoCuotras = 6
     }
 
-    if(tipo_interes.value == 'ibr'){
+    if(tipo_interes.value == 'IPC'){
         taza_interes = interes_mas.value + interes.value
     } else {
         taza_interes =  interes.value
@@ -358,9 +358,9 @@ const solicitarCredit = () => {
 
 watch(tipo_interes, () =>{
     if(tipo_interes.value == 'IPC'){
-        const ibr = dataIntereses.value.filter(i => i.name == 'IPC')
+        const ipc = dataIntereses.value.filter(i => i.name == 'IPC')
         interes.value = 0
-        interes_mas.value = ibr[0].valor
+        interes_mas.value = ipc[0].valor
     } else {
         const otro = dataIntereses.value.filter(i => i.name == 'Corriente')
         interes.value = otro[0].valor

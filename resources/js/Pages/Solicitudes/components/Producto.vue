@@ -115,7 +115,7 @@ if (tipo.value == 'Semestral') {
     tipoCuotras = 6
 }
 
-if(tipo_interes.value == 'ibr'){
+if(tipo_interes.value == 'IPC'){
     taza_interes = interes_mas.value + tasa.value
 } else {
     taza_interes =  tasa.value
@@ -209,50 +209,6 @@ const amortizacionMensual = () => {
     }
 }
 
-const metodoAleman = () => {
-    const tasaMensual = tasa.value / 100 / 12;
-    const cuotaTotal = monto_solicitar.value / tiempo_pagar.value;
-    let saldoPendiente = monto_solicitar.value;
-    tablaAmortizacion.value = [];
-    let fecha = new Date();
-    for (let i = 1; i <= tiempo_pagar.value; i++) {
-        const interes = saldoPendiente * tasaMensual;
-        const amortizacion = cuotaTotal;
-        saldoPendiente -= amortizacion;
-        tablaAmortizacion.value.push({
-            mes: i,
-            fecha: fecha.toLocaleDateString(),
-            cuota: cuotaTotal.toFixed(2),
-            interes: interes.toFixed(2),
-            amortizacion: amortizacion.toFixed(2),
-            saldoPendiente: saldoPendiente.toFixed(2)
-        });
-        fecha.setMonth(fecha.getMonth() + 1);
-    }
-}
-
-const metodoIngles = () => {
-    const tasaMensual = tasa.value / 100 / 12;
-    const cuota = monto_solicitar.value * tasaMensual * Math.pow(1 + tasaMensual, tiempo_pagar.value) / (Math.pow(1 + tasaMensual, tiempo_pagar.value) - 1);
-    let saldoPendiente = monto_solicitar.value;
-    tablaAmortizacion.value = [];
-    let fecha = new Date();
-    for (let i = 1; i <= tiempo_pagar.value; i++) {
-        const interes = saldoPendiente * tasaMensual;
-        const amortizacion = cuota - interes;
-        saldoPendiente -= amortizacion;
-        tablaAmortizacion.value.push({
-            mes: i,
-            fecha: fecha.toLocaleDateString(),
-            cuota: cuota.toFixed(2),
-            interes: interes.toFixed(2),
-            amortizacion: amortizacion.toFixed(2),
-            saldoPendiente: saldoPendiente.toFixed(2)
-        });
-        fecha.setMonth(fecha.getMonth() + 1);
-    }
-}
-
 const mostrarModal = () => {
     $("#modalModificar").modal("show");
 }
@@ -272,18 +228,28 @@ const modificarValores = () => {
 
 const getAmortizacionAll = () => {
     axios.get(`/amortizacion-all/${solicitudId.value}`).then(({ data }) => {
-        // console.log(data)
+
         const info = data.map(d => {
+
+            const mora = calcularMora(d.cuota, d.fecha)
+
+            const cuota = d.cuota + mora
+                
             return {
                 ...d,
-                cuota: parseFloat(d.cuota).toFixed(2),
+                cuota: parseFloat(cuota).toFixed(2),
                 interes: parseFloat(d.interes).toFixed(2),
+                mora: parseFloat(mora).toFixed(2),
                 amortizacion: parseFloat(d.amortizacion).toFixed(2),
                 saldo_pendiente: parseFloat(d.saldo_pendiente).toFixed(2)
             }
+
+
         })
 
         dataAmortizacion.value = info
+
+        console.log('con mora',info)
     })
 }
 
@@ -315,6 +281,7 @@ const calcularPago = () => {
     const id_cuota = dataPagar.value.id
     const cuota = parseFloat(pago_cuota.value)
     const interes = parseFloat(pago_interes.value)
+    const mora = parseFloat(ineteresMoraPagar.value)
     const capital = parseFloat(pago_capital.value)
     const saldo_pendiente = parseFloat(saldo_pendiente_p.value)
 
@@ -334,6 +301,8 @@ const calcularPago = () => {
             amortizacion2: 0,
             amortizacion_pagado: capital,
             saldo_pagar: 0,
+            mora: mora,
+            mora2: 0,
             saldo_pendiente: saldo_pendiente
         }
         cuotas.push(p)
@@ -342,12 +311,17 @@ const calcularPago = () => {
     if (valor < cuota) {
         let saldo = valor
         let inte = interes
+        let mor = mora
         let cuot = cuota
         let capi = capital
 
         if (interes < saldo) {
+            saldo = valor - mora
+            mor = 0
+
             saldo = valor - interes
             inte = 0
+            
 
             if (saldo > 0) {
                 capi = capi - saldo
@@ -356,7 +330,8 @@ const calcularPago = () => {
             }
 
         } else {
-            inte = interes - valor
+            mor = mora - valor
+            inte = interes - mor
             saldo = 0
         }
 
@@ -365,6 +340,8 @@ const calcularPago = () => {
             numero: numero_cuota.value,
             interes: interes,
             interes2: inte,
+            mora: mora,
+            mora2: mor,
             interes_pagado: inte,
             cuota: parseFloat(cuot).toFixed(2),
             amortizacion: capital,
@@ -388,6 +365,8 @@ const calcularPago = () => {
             interes: interes,
             interes_pagado: interes,
             interes2: 0,
+            mora: mora,
+            mora2: 0,
             cuota: 0,
             amortizacion: capital,
             amortizacion_pagado: capital,
@@ -406,12 +385,16 @@ const calcularPago = () => {
 
         if (nueva) {
 
+            const mora2 = calcularMora(nueva.cuota, nueva.fecha)
+
             let inte2 = parseFloat(nueva.interes)
             let cuot2 = parseFloat(nueva.cuota)
             let amor2 = parseFloat(nueva.amortizacion)
+            const mor = 0
 
             if (inte2 < saldo) {
-                const saldo2 = saldo - inte2
+                const newSaldo = saldo - mora2
+                const saldo2 = newSaldo - inte2                
                 inte2 = 0
 
                 amor2 = amor2 - saldo2
@@ -420,8 +403,15 @@ const calcularPago = () => {
 
 
             } else {
-                inte2 = nueva.interes - saldo
-                cuot2 = cuot2 - inte2
+
+                if(saldo > mora2){
+                    const newSaldo = saldo - mora2
+                    inte2 = nueva.interes - newSaldo
+                    cuot2 = cuot2 - inte2
+                } else {
+                    mor = mora2 - saldo
+                    cuot2 = cuot2 - mor
+                }
             }
 
             const p2 = {
@@ -430,6 +420,8 @@ const calcularPago = () => {
                 interes2: parseFloat(inte2).toFixed(2),
                 interes_pagado: parseFloat(inte2).toFixed(2),
                 interes: parseFloat(nueva.interes).toFixed(2),
+                mora: parseFloat(mora2).toFixed(2),
+                mora2: parseFloat(mor).toFixed(2),
                 cuota: parseFloat(cuot2).toFixed(2),
                 amortizacion: parseFloat(nueva.amortizacion).toFixed(2),
                 amortizacion2: parseFloat(amor2).toFixed(2),
@@ -653,7 +645,7 @@ const calcularMora = (montoVencido, fecha) => {
                     <td scope="row">{{ formatDate(fila.fecha) }}</td>
                     <td>{{ formatearMoneda(fila.cuota) }}</td>
                     <td>{{ formatearMoneda(fila.interes) }}</td>
-                    <td>{{ formatearMoneda(calcularMora(fila.cuota, fila.fecha)) }}</td>
+                    <td>{{ formatearMoneda(fila.mora) }}</td>
                     <td>{{ formatearMoneda(fila.amortizacion) }}</td>
                     <td>{{ formatearMoneda(fila.saldo_pendiente) }}</td>
                     <td>
@@ -770,17 +762,22 @@ const calcularMora = (montoVencido, fecha) => {
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="form-group col-4">
+                        <div class="form-group col-3">
                             <label for="tasa">Cuota</label>
                             <p>{{ formatearMoneda(pago_cuota) }}</p>
                         </div>
 
-                        <div class="form-group col-4">
+                        <div class="form-group col-3">
                             <label for="monto_solicitar">Interés</label>
                             <p>{{ formatearMoneda(pago_interes) }}</p>
                         </div>
 
-                        <div class="form-group col-4">
+                        <div class="form-group col-3">
+                            <label for="monto_solicitar">Interés mora</label>
+                            <p>{{ formatearMoneda(ineteresMoraPagar) }}</p>
+                        </div>
+
+                        <div class="form-group col-3">
                             <label for="tiempo_pagar">Valor Capital</label>
                             <p>{{ formatearMoneda(pago_capital) }}</p>
                         </div>
@@ -805,28 +802,50 @@ const calcularMora = (montoVencido, fecha) => {
                         </div>
 
                         <div v-if="tablaPagos.length > 0" class="col-12">
-                            <table class="table table-bordered mt-4">
-                                <thead>
-                                    <tr class="text-center">
-                                        <th scope="col">Nro. cuota</th>
-                                        <th scope="col">Cuota</th>
-                                        <th scope="col">Interés</th>
-                                        <th scope="col">Interés pagado</th>
-                                        <th scope="col">Valor Capital</th>
-                                        <th scope="col">Valor Capital pagado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="text-center" v-for="(fila, i) in tablaPagos" :key="i">
-                                        <td scope="row">{{ fila.numero }}</td>
-                                        <td><input type="text" v-model="tablaPagos[i].cuota"></td>
-                                        <td>{{ formatearMoneda(fila.interes) }}</td>
-                                        <td><input type="text" v-model="tablaPagos[i].interes2"></td>
-                                        <td>{{ formatearMoneda(fila.amortizacion) }}</td>
-                                        <td><input type="text" v-model="tablaPagos[i].amortizacion2"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-bordered mt-4">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th scope="col">Nro. cuota</th>
+                                            <th scope="col">Cuota</th>
+                                            <th scope="col">Interés</th>
+                                            <th scope="col">Interés pagado</th>
+                                            <th scope="col">Interés mora</th>
+                                            <th scope="col">Interés mora pagado</th>
+                                            <th scope="col">Valor Capital</th>
+                                            <th scope="col">Valor Capital pagado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template v-if="tablaPagos.length > 0">
+                                            <tr class="text-center" v-for="(fila, i) in tablaPagos" :key="i">
+                                                <td scope="row">{{ fila.numero }}</td>
+                                                <td>
+                                                    <input style="width: 110px;" type="text" v-model="tablaPagos[i].cuota">
+                                                </td>
+                                                <td>
+                                                    <div style="width: 110px;">{{ formatearMoneda(fila.interes) }}</div> 
+                                                </td>
+                                                <td>
+                                                    <input style="width: 110px;" type="text" v-model="tablaPagos[i].interes2">
+                                                </td>
+                                                <td>
+                                                    <div style="width: 110px;">{{ formatearMoneda(fila.mora) }}</div>
+                                                </td>
+                                                <td>
+                                                    <input style="width: 110px;" type="text" v-model="tablaPagos[i].mora2">
+                                                </td>
+                                                <td>
+                                                    <div style="width: 110px;">{{ formatearMoneda(fila.amortizacion) }}</div>
+                                                </td>
+                                                <td>
+                                                    <input style="width: 110px;" type="text" v-model="tablaPagos[i].amortizacion2">
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div v-if="tablaPagos.length > 0" class="col-12">
