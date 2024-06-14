@@ -89,4 +89,10 @@ class InteresController extends Controller
         
         return response()->json($interes, 200);
     }
+
+    public function getMora()
+    {
+        $interese = Interes::where('name', 'Mora')->first();
+        return response()->json($interese, 200);
+    }
 }

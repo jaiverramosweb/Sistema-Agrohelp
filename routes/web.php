@@ -119,6 +119,7 @@ Route::middleware('auth')->group(function () {
     // Intereses
     Route::get('/config/intereses',                 [InteresController::class, 'index'])->name('interes.index');
     Route::get('/get-intereses',                    [InteresController::class, 'getAll'])->name('interes.getAll');
+    Route::get('/get-mora',                         [InteresController::class, 'getMora'])->name('interes.getMora');
     Route::post('/intereses-pagination',            [InteresController::class, 'pagination'])->name('interes.pagination');
     Route::put('/intereses/{id}',                   [InteresController::class, 'update'])->name('interes.update');
     //

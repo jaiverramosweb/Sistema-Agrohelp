@@ -56,7 +56,7 @@ const generarPago = () => {
         }
     }
 
-    if(tipo.value == 'Redicción de plazo') {
+    if(tipo.value == 'Reducción de plazo') {
         abonoReduccionPlazo()
 
         if(tablaAmortizacion.value.length > 0){
@@ -333,7 +333,7 @@ const formatDate = (date) => {
                             <select id="inputState" class="form-control" v-model="tipo">
                                 <option value="" selected>Seleccione...</option>
                                 <option value="Capital">Capital</option>
-                                <option value="Redicción de plazo">Redicción de plazo</option>
+                                <option value="Reducción de plazo">Reducción de plazo</option>
                                 <option value="Total">Pago total</option>
                             </select>
                         </div>

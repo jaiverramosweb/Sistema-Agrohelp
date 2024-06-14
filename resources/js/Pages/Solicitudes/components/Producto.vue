@@ -17,8 +17,8 @@ onMounted(() => {
     capital.value = props.capital
     // console.log('producto', props.producto)
     metodoFrances()
-
     getAmortizacionAll()
+    getMora()
 })
 
 const producto = ref('')
@@ -44,6 +44,8 @@ const metodosPago = ref([])
 
 const tasa = ref('')
 const mora = ref('')
+const ineteresMora = ref('')
+const ineteresMoraPagar = ref(0)
 const capital = ref('')
 const monto_solicitar = ref('')
 const tiempo_pagar = ref('')
@@ -52,6 +54,12 @@ const tipo_interes = ref('')
 const descripcion_pago = ref('')
 const tablaPagos = ref([])
 const comprobantes = ref([])
+
+const getMora = () => {
+    axios.get('/get-mora').then(({data}) => {
+        ineteresMora.value = data.valor
+    })
+}
 
 const metodoFrances = () => {
 
@@ -276,8 +284,6 @@ const getAmortizacionAll = () => {
         })
 
         dataAmortizacion.value = info
-
-        console.log(data)
     })
 }
 
@@ -400,14 +406,11 @@ const calcularPago = () => {
 
         if (nueva) {
 
-            console.log('saldo', saldo)
-
             let inte2 = parseFloat(nueva.interes)
             let cuot2 = parseFloat(nueva.cuota)
             let amor2 = parseFloat(nueva.amortizacion)
 
             if (inte2 < saldo) {
-                console.log('saldo mayor al interes')
                 const saldo2 = saldo - inte2
                 inte2 = 0
 
@@ -417,7 +420,6 @@ const calcularPago = () => {
 
 
             } else {
-                console.log('saldo menos al interes')
                 inte2 = nueva.interes - saldo
                 cuot2 = cuot2 - inte2
             }
@@ -442,11 +444,7 @@ const calcularPago = () => {
 
     }
 
-    console.log('cuotas a actualizar', cuotas)
-
     tablaPagos.value = cuotas
-
-    console.log('pagar', cuotas)
 }
 
 const pagarCuota = () => {
@@ -465,7 +463,7 @@ const pagarCuota = () => {
         getAmortizacionAll()
         Swal.fire({
             icon: 'success',
-            title: 'Salgo agregado'
+            title: 'Saldo agregado'
         })
         $("#modalPago").modal("hide");
     })
@@ -503,6 +501,45 @@ const descargar = (id) => {
     window.open(url, '_blank');
 }
 
+const calcularMora = (montoVencido, fecha) => {
+
+    // Dividir la fecha de vencimiento en partes
+    const fechap = '13/5/2024'
+    const partes = fecha.split('/');
+    const dia = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10) - 1; // Los meses en JavaScript son 0-indexados
+    const ano = parseInt(partes[2], 10);
+    
+    // Crear un objeto Date para la fecha de vencimiento
+    const fechaVenc = new Date(ano, mes, dia);
+    
+    // Obtener la fecha actual
+    const fechaActual = new Date();
+    
+    // Calcular la diferencia en milisegundos
+    const diferenciaMilisegundos = fechaActual - fechaVenc;
+    
+    // Convertir la diferencia de milisegundos a días
+    const milisegundosPorDia = 1000 * 60 * 60 * 24;
+    const diasRetraso = Math.floor(diferenciaMilisegundos / milisegundosPorDia);
+
+
+    if(diasRetraso > 0){
+        // Convertir la tasa mensual a tasa diaria
+        const tasaInteresMensual = ineteresMora.value /100
+        const tasaInteresDiaria = tasaInteresMensual / 30;
+        
+        // Calcular el interés de mora
+        const interesMora = montoVencido * tasaInteresDiaria * diasRetraso;
+        ineteresMoraPagar.value = interesMora
+        return interesMora
+        
+    } else {
+        return 0;
+    }
+
+}
+
 
 </script>
 
@@ -510,10 +547,6 @@ const descargar = (id) => {
 
     <div v-if="dataAmortizacion.length == 0" class="row">
 
-        <!-- <div class="col-3">
-            <b>Tipo de crédito</b>
-            <p>{{ producto.nombre }}</p>
-        </div> -->
         <div class="col-3">
             <b>Tasa de interés</b>
             <p>{{ tasa }}%</p>
@@ -580,10 +613,6 @@ const descargar = (id) => {
 
     <div v-else class="row">
 
-        <!-- <div class="col-3">
-            <b>Tipo de crédito solicitado</b>
-            <p>{{ producto.nombre }}</p>
-        </div> -->
         <div class="col-3">
             <b>Tasa de interés</b>
             <p>{{ tasa }}%</p>
@@ -611,6 +640,7 @@ const descargar = (id) => {
                     <th scope="col">Mes</th>
                     <th scope="col">Cuota</th>
                     <th scope="col">Interés</th>
+                    <th scope="col">Interés Mora</th>
                     <th scope="col">Valor Capital</th>
                     <th scope="col">Saldo Pendiente</th>
                     <th scope="col">Estado</th>
@@ -623,6 +653,7 @@ const descargar = (id) => {
                     <td scope="row">{{ formatDate(fila.fecha) }}</td>
                     <td>{{ formatearMoneda(fila.cuota) }}</td>
                     <td>{{ formatearMoneda(fila.interes) }}</td>
+                    <td>{{ formatearMoneda(calcularMora(fila.cuota, fila.fecha)) }}</td>
                     <td>{{ formatearMoneda(fila.amortizacion) }}</td>
                     <td>{{ formatearMoneda(fila.saldo_pendiente) }}</td>
                     <td>
