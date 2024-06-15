@@ -4,12 +4,12 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/dist/sweetalert2.css'
+import LineaCredito from '../Clients/components/LineaCredito.vue';
 
 const props = defineProps(['solicitudes', 'permissions',])
 
 onMounted(() => {
     activeMenu('solicitudes', 'solicitudes')
-
     dataSolicitudes.value = props.solicitudes.data.data
     pagination.value = props.solicitudes.pagination
 })
@@ -143,6 +143,7 @@ const changePage = (page) => {
 const client_id = ref(0)
 const monto = ref(50000000)
 const tiempo = ref(0)
+const linea_id = ref(0)
 const tipo_interes = ref('')
 const interes = ref(0)
 const interes_mas = ref(0)
@@ -152,6 +153,7 @@ const dataIntereses = ref([])
 const dataClient = ref([])
 const dataSolicitudes = ref([])
 const tablaAmortizacion = ref([])
+const LineaCreditos = ref([])
 
 const newCredit = () => {
     axios.get('/get-intereses').then(({data}) => {
@@ -160,6 +162,7 @@ const newCredit = () => {
     })
 
     getClient()
+    getLineaCredito()
 
     $('#modalSolicitud').modal('show')
 }
@@ -342,6 +345,7 @@ const solicitarCredit = () => {
         ineteres: interes.value,
         tipo_interes: tipo_interes.value,      
         interes_mas: interes_mas.value,
+        linea_id: linea_id.value,
         cobro_intereses: tipo_amortizacion.value
     }).then(({ data }) => {
         Swal.fire({
@@ -352,6 +356,12 @@ const solicitarCredit = () => {
         // $("#modalSolicitud").modal("hide");
         location.reload();
     })
+}
+
+const getLineaCredito = () => {
+    axios.get('/caracteristicas').then(({data}) => [
+        LineaCreditos.value = data.data
+    ])
 }
 
 
@@ -625,18 +635,28 @@ watch(tipo_interes, () =>{
 
                                 <div class="row">
 
-                                    <div class="form-group col-2" has-validation>
+                                    <div class="form-group col-3" has-validation>
                                         <label for="monto">Cliente <span
                                                 class="text-danger">
                                                 *</span></label>
                                         <select id="inputState" class="form-control" v-model="client_id">
-                                            <option value="" selected>Seleccione...</option>
+                                            <option value="0" selected>Seleccione...</option>
                                             <option v-for="client in dataClient" :key="client.id" :value="client.id">{{ client.nombre }}</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-3" has-validation>
+                                        <label for="monto">Liena de credito <span
+                                                class="text-danger">
+                                                *</span></label>
+                                        <select id="inputState" class="form-control" v-model="linea_id">
+                                            <option value="0" selected>Seleccione...</option>
+                                            <option v-for="linea in LineaCreditos" :key="linea.id" :value="linea.id">{{ linea.nombre }}</option>
                                         </select>
                                     </div>
                                     
 
-                                    <div class="form-group col-2" has-validation>
+                                    <div class="form-group col-3" has-validation>
                                         <label for="monto">Monto a solicitar <span
                                                 class="text-danger">
                                                 *</span></label>
@@ -645,7 +665,7 @@ watch(tipo_interes, () =>{
                                             autocomplete="off">
                                     </div>
 
-                                    <div class="form-group col-1" has-validation>
+                                    <div class="form-group col-3" has-validation>
                                         <label for="tiempo">Tiempo <span class="text-danger">
                                                 *</span></label>
                                         <input v-model="tiempo" type="number" class="form-control" id="tiempo"
@@ -654,7 +674,7 @@ watch(tipo_interes, () =>{
 
 
 
-                                    <div class="form-group col-2">
+                                    <div class="form-group col-3">
                                         <label for="inputState">Tipo de interes <span class="text-danger">*</span></label>
                                         <select id="inputState" class="form-control" v-model="tipo_interes">
                                             <option value="" selected>Seleccione...</option>
@@ -662,14 +682,14 @@ watch(tipo_interes, () =>{
                                         </select>
                                     </div>
 
-                                    <div class="form-group col-2" has-validation>
+                                    <div class="form-group col-3" has-validation>
                                         <label for="tiempo">interes <span class="text-danger">
                                                 *</span></label>
                                         <input v-model="interes" type="text" class="form-control" id="tiempo"
                                             aria-describedby="tiempo" autocomplete="off">
                                     </div>
 
-                                    <div class="form-group col-2">
+                                    <div class="form-group col-3">
                                         <label for="inputState">Periocidad de pagos <span class="text-danger">*</span></label>
                                         <select id="inputState" class="form-control" v-model="tipo_amortizacion">
                                             <option value="" selected>Seleccione...</option>

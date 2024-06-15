@@ -202,8 +202,6 @@ const abonoReduccionPlazo = () => {
     const newMes = (mes - 1)
     const fecha_inicial = new Date(`${newMes.toString()}/${dia}/${año}`);
 
-    console.log('fecha_inicial',fecha_inicial)
-
     tablaAmortizacion.value = [];
 
     let aumento = 1

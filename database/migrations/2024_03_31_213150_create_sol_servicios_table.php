@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->integer('clientes_id');
             $table->integer('producto_id');
+            $table->integer('linea_id');
 
             $table->string('monto')->default('');
             $table->string('tiempo')->default('');

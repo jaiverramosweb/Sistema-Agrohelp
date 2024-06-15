@@ -145,6 +145,7 @@ class SolicitudController extends Controller
         $sol = new SolServicio();
         $sol->clientes_id     = $request->client_id;
         $sol->producto_id     = 0;
+        $sol->linea_id        = isset($request->linea_id) ? $request->linea_id : 0;
         $sol->monto           = $request->monto_solicitar;
         $sol->tiempo          = $request->tiempo_pagar;
         $sol->tasa_interes    = $request->ineteres;

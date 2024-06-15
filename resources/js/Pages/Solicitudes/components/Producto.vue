@@ -54,6 +54,7 @@ const tipo_interes = ref('')
 const descripcion_pago = ref('')
 const tablaPagos = ref([])
 const comprobantes = ref([])
+const fecha_inicio = ref('')
 
 const getMora = () => {
     axios.get('/get-mora').then(({data}) => {
@@ -71,21 +72,44 @@ const metodoFrances = () => {
 }
 
 const aprobado = () => {
-    axios.put(`/solicitud-aprobada/${solicitudId.value}`, {
-        state: 'Aprobado',
-        tasa: tasa.value,
-        mora: mora.value,
-        tipo: tipo.value,
-        monto_solicitar: monto_solicitar.value,
-        tiempo_pagar: tiempo_pagar.value,
-        tablaAmortizacion: tablaAmortizacion.value
-    }).then(({ data }) => {
-        Swal.fire({
-            icon: 'success',
-            title: 'Aprobado'
+    $("#modalFechaAceptar").modal("show");
+    
+}
+
+const aprobadoSave = () => {
+
+    const [año, mes, dia] = fecha_inicio.value.split('-');
+    const newMes = (mes)
+    const fecha_inicial = new Date(`${newMes.toString()}/${dia}/${año}`);
+
+    let aumento = 1
+
+    for (let index = 0; index < tablaAmortizacion.value.length; index++) {
+        let fecha_pago = new Date(fecha_inicial);
+        fecha_pago.setMonth(fecha_inicial.getMonth() + aumento);
+
+        tablaAmortizacion.value[index].fecha =  fecha_pago.toLocaleDateString();
+        aumento++
+    }
+
+    setTimeout(() => {        
+        axios.put(`/solicitud-aprobada/${solicitudId.value}`, {
+            state: 'Aprobado',
+            tasa: tasa.value,
+            mora: mora.value,
+            tipo: tipo.value,
+            monto_solicitar: monto_solicitar.value,
+            tiempo_pagar: tiempo_pagar.value,
+            tablaAmortizacion: tablaAmortizacion.value
+        }).then(({ data }) => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Aprobado'
+            })
+            location.reload();
         })
-        location.reload();
-    })
+    }, 1000);
+
 }
 
 const savePreaprobado = () => {
@@ -248,8 +272,6 @@ const getAmortizacionAll = () => {
         })
 
         dataAmortizacion.value = info
-
-        console.log('con mora',info)
     })
 }
 
@@ -866,7 +888,6 @@ const calcularMora = (montoVencido, fecha) => {
         </div>
     </div>
 
-
     <!-- Modal recibo -->
     <div class="modal fade" id="modalComprobante" data-backdrop="static" tabindex="-1"
         aria-labelledby="modalComprobanteLabel" aria-hidden="true">
@@ -893,6 +914,34 @@ const calcularMora = (montoVencido, fecha) => {
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal recibo -->
+    <div class="modal fade" id="modalFechaAceptar" data-backdrop="static" tabindex="-1"
+        aria-labelledby="modalFechaAceptarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <!-- <div class="modal-dialog modal-xl"> -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalFechaAceptarLabel">Recibo de pagos</h5>
+
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-12">
+                            <label for="fecha_inicio">Fecha de inicio de cobro</label>
+                            <input v-model="fecha_inicio" type="date" class="form-control" id="fecha_inicio" aria-describedby="fecha_inicio"
+                                autocomplete="off">
+                        </div>
+                    </div>                   
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button @click="aprobadoSave" type="button" class="btn btn-success">Aprobar</button>
                 </div>
             </div>
         </div>
