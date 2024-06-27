@@ -96,6 +96,24 @@ class ModulesSeeder extends Seeder
             'module_permissions'    => "intereses",
             'module_group'          => "config_group",
         ]);
+        DB::table('modules')->insert([
+            'jerarquia'             => 5,
+            'name'                  => "Asesores",
+            'module_group'          => "0",
+            'icon'                  => "fas fa-user",
+            'route'                 => "/config/asesores",
+            'module_permissions'    => "asesores",
+            'module_group'          => "config_group",
+        ]);
+        DB::table('modules')->insert([
+            'jerarquia'             => 6,
+            'name'                  => "Cuentas Contables",
+            'module_group'          => "0",
+            'icon'                  => "fas fa-file-invoice-dollar",
+            'route'                 => "/config/cuenta",
+            'module_permissions'    => "cuenta",
+            'module_group'          => "config_group",
+        ]);
 
 
         // Cientes

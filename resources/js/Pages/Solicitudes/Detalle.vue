@@ -21,7 +21,8 @@ onMounted(() => {
     cliente.value = props.cliente
     solicitud.value = props.solicitud
     getFiles();
-    // console.log(props.solicitud)
+
+    console.log('info credito', props.solicitud)
 
 })
 
@@ -202,157 +203,157 @@ const downloadFile = (id) => {
                                     </div>
                                     <div class="col-4">
                                         <b>Dirección</b>
-                                        <p>{{ solicitud.direccion_pers }}</p>
+                                        <p>{{ cliente.direccion_pers }}</p>
                                     </div>
                                     <div class="col-4">
                                         <b>Teléfono</b>
-                                        <p>{{ solicitud.telefono }}</p>
+                                        <p>{{ cliente.telefono }}</p>
                                     </div>
 
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Edad</b>
-                                        <p>{{ solicitud.edad }}</p>
+                                        <p>{{ cliente.edad }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Estado Civil</b>
-                                        <p>{{ solicitud.estado_civil }}</p>
+                                        <p>{{ cliente.estado_civil }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Dirección de Residencia</b>
-                                        <p>{{ solicitud.direccion_recidencia }}</p>
+                                        <p>{{ cliente.direccion_recidencia }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Teléfono</b>
-                                        <p>{{ solicitud.telefono_recidencia }}</p>
+                                        <p>{{ cliente.telefono_recidencia }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Cuidad y Dept.</b>
-                                        <p>{{ solicitud.ciudad_recidencia }}</p>
+                                        <p>{{ cliente.ciudad_recidencia }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Profesión</b>
-                                        <p>{{ solicitud.profesion }}</p>
+                                        <p>{{ cliente.profesion }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Empresa donde trabaja</b>
-                                        <p>{{ solicitud.empresa }}</p>
+                                        <p>{{ cliente.empresa }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Teléfono</b>
-                                        <p>{{ solicitud.empresa_telefono }}</p>
+                                        <p>{{ cliente.empresa_telefono }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Cargo Actual</b>
-                                        <p>{{ solicitud.cargo_actual }}</p>
+                                        <p>{{ cliente.cargo_actual }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Antigüedad de la Empresa</b>
-                                        <p>{{ solicitud.antoguedad_empresa }}</p>
+                                        <p>{{ cliente.antoguedad_empresa }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>No. Personas a Cargo</b>
-                                        <p>{{ solicitud.personas_cargo }}</p>
+                                        <p>{{ cliente.personas_cargo }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Vivienda</b>
-                                        <p>{{ solicitud.vivienda }}</p>
+                                        <p>{{ cliente.vivienda }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Es independiente?</b>
-                                        <p>{{ solicitud.independiente }}</p>
+                                        <p>{{ cliente.independiente }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Tiene Negocio Registrado en Cámara?</b>
-                                        <p>{{ solicitud.camara_comercio }}</p>
+                                        <p>{{ cliente.camara_comercio }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Nombre del Negocio Registrado</b>
-                                        <p>{{ solicitud.nombre_negocio }}</p>
+                                        <p>{{ cliente.nombre_negocio }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Nombre del Cónyuge</b>
-                                        <p>{{ solicitud.nombre_conyuge }}</p>
+                                        <p>{{ cliente.nombre_conyuge }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Ocupación</b>
-                                        <p>{{ solicitud.ocupacion_conyuge }}</p>
+                                        <p>{{ cliente.ocupacion_conyuge }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
                                         <b>Empresa</b>
-                                        <p>{{ solicitud.empresa_conyuge }}</p>
+                                        <p>{{ cliente.empresa_conyuge }}</p>
                                     </div>
 
 
 
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Domicilio</b>
-                                        <p>{{ solicitud.domicilio }}</p>
+                                        <p>{{ cliente.domicilio }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Dirección comercial</b>
-                                        <p>{{ solicitud.direccion_comercial }}</p>
+                                        <p>{{ cliente.direccion_comercial }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Teléfono</b>
-                                        <p>{{ solicitud.telefono_comercial }}</p>
+                                        <p>{{ cliente.telefono_comercial }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Dirección Judicial</b>
-                                        <p>{{ solicitud.direccion_judicial }}</p>
+                                        <p>{{ cliente.direccion_judicial }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Teléfono</b>
-                                        <p>{{ solicitud.telefono_judicial }}</p>
+                                        <p>{{ cliente.telefono_judicial }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Representante Legal</b>
-                                        <p>{{ solicitud.representante }}</p>
+                                        <p>{{ cliente.representante }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Cédula No.</b>
-                                        <p>{{ solicitud.representante_doc }}</p>
+                                        <p>{{ cliente.representante_doc }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Tipo de Cliente</b>
-                                        <p>{{ solicitud.tipo_cliente }}</p>
+                                        <p>{{ cliente.tipo_cliente }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Que tipo de Declarante es?</b>
-                                        <p>{{ solicitud.tipo_declarante }}</p>
+                                        <p>{{ cliente.tipo_declarante }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Autorretenedor</b>
-                                        <p>{{ solicitud.autorretenedor }}</p>
+                                        <p>{{ cliente.autorretenedor }}</p>
                                     </div>
 
                                     <h4 class="col-12 mt-2 mb-2">Pago en</h4>
 
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Persona que autoriza los Pagos</b>
-                                        <p>{{ solicitud.persona_pago }}</p>
+                                        <p>{{ cliente.persona_pago }}</p>
                                     </div>
 
                                     <div class="col-8">
                                         <b>Dirección y ciudad donde se realizarán los pagos</b>
-                                        <p>{{ solicitud.direccion_pago }}</p>
+                                        <p>{{ cliente.direccion_pago }}</p>
                                     </div>
 
                                     <div class="col-4">
                                         <b>Teléfono</b>
-                                        <p>{{ solicitud.telefono_pago }}</p>
+                                        <p>{{ cliente.telefono_pago }}</p>
                                     </div>
 
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Dia de Pago</b>
-                                        <p>{{ solicitud.dia_pago }}</p>
+                                        <p>{{ cliente.dia_pago }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Horario de Pago</b>
-                                        <p>{{ solicitud.hora_pago }}</p>
+                                        <p>{{ cliente.hora_pago }}</p>
                                     </div>
                                     <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
                                         <b>Comentario Adicional</b>
-                                        <p>{{ solicitud.comentatio_pago }}</p>
+                                        <p>{{ cliente.comentatio_pago }}</p>
                                     </div>
 
                                 </div>

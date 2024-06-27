@@ -56,6 +56,8 @@ const tablaPagos = ref([])
 const comprobantes = ref([])
 const fecha_inicio = ref('')
 
+const fecha_pagar = ref('')
+
 const getMora = () => {
     axios.get('/get-mora').then(({data}) => {
         ineteresMora.value = data.valor
@@ -467,7 +469,7 @@ const pagarCuota = () => {
         tabla_pagos: tablaPagos.value,
         metodo_pago: metodo_pago.value,
         descripcion_pago: descripcion_pago.value,
-
+        fecha_pagar: fecha_pagar.value
     }).then(({ data }) => {
         // console.log(data)
         valor_pagar.value = ''
@@ -819,7 +821,13 @@ const calcularMora = (montoVencido, fecha) => {
                                 aria-describedby="tiempo_pagar" autocomplete="off">
                         </div>
 
-                        <div class="col-4" style="margin-top: 33px;">
+                        <div class="form-group col-2">
+                            <label for="tiempo_pagar">Fecha a pagar</label>
+                            <input v-model="fecha_pagar" type="date" class="form-control" id="tiempo_pagar"
+                                aria-describedby="tiempo_pagar" autocomplete="off">
+                        </div>
+
+                        <div class="col-2" style="margin-top: 33px;">
                             <button @click="calcularPago" class="btn btn-success float-right">Generar Pago</button>
                         </div>
 

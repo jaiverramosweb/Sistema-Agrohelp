@@ -114,12 +114,12 @@ class SolicitudController extends Controller
     public function show($id)
     {
         $solicitud = SolServicio::find($id);
-        $solicitud->producto = CaracteristicasProducto::find($solicitud->producto_id);
-        $solicitud->referencias = ReferenciaCredito::where('sol_servicios_id', $solicitud->id)->first();
-        $solicitud->linea = LineaCredito::where('sol_servicios_id', $solicitud->id)->first();
-        $solicitud->parimonio = PatrimonioCredito::where('sol_servicios_id', $solicitud->id)->first();
-        $solicitud->ingreso = IngresoEgresoCredito::where('sol_servicios_id', $solicitud->id)->first();
-        $solicitud->creditos = TarjetasCredito::where('sol_servicios_id', $solicitud->id)->first();
+        // $solicitud->producto = CaracteristicasProducto::find($solicitud->producto_id);
+        $solicitud->linea = LineaCredito::where('clientes_id', $solicitud->clientes_id)->first();
+        $solicitud->parimonio = PatrimonioCredito::where('clientes_id', $solicitud->clientes_id)->first();
+        $solicitud->ingreso = IngresoEgresoCredito::where('clientes_id', $solicitud->clientes_id)->first();
+        $solicitud->creditos = TarjetasCredito::where('clientes_id', $solicitud->clientes_id)->first();
+        $solicitud->referencias = ReferenciaCredito::where('clientes_id', $solicitud->clientes_id)->first();
 
         $cliente = Client::find($solicitud->clientes_id);
 
@@ -132,8 +132,6 @@ class SolicitudController extends Controller
 
     public function primeraSolicitud(Request $request)
     {
-        $cliente = Client::find($request->client_id);
-
         $sol = new SolServicio();
         $sol->clientes_id     = $request->client_id;
         $sol->producto_id     = 0;
@@ -146,26 +144,6 @@ class SolicitudController extends Controller
         $sol->tasa_mora       = 0;
         $sol->cobro_intereses = $request->cobro_intereses;
         $sol->save();
-
-        $referencias = new ReferenciaCredito();
-        $referencias->sol_servicios_id = $sol->id;
-        $referencias->save();
-
-        $linea = new LineaCredito();
-        $linea->sol_servicios_id = $sol->id;
-        $linea->save();
-
-        $parimonio = new PatrimonioCredito();
-        $parimonio->sol_servicios_id = $sol->id;
-        $parimonio->save();
-
-        $ingreso = new IngresoEgresoCredito();
-        $ingreso->sol_servicios_id = $sol->id;
-        $ingreso->save();
-
-        $creditos = new TarjetasCredito();
-        $creditos->sol_servicios_id = $sol->id;
-        $creditos->save();
 
         return response()->json($sol, 201);
     }

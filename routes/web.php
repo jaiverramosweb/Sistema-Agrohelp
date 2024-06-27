@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AsesorController;
 use App\Http\Controllers\CaracteristicasController;
 use App\Http\Controllers\ClientAuthController;
 use App\Http\Controllers\CreditosController;
+use App\Http\Controllers\CuentaContableController;
 use App\Http\Controllers\DocumentacionController;
 use App\Http\Controllers\GarantiaController;
 use App\Http\Controllers\InteresController;
@@ -135,6 +137,23 @@ Route::middleware('auth')->group(function () {
     Route::delete('/metodo-pago/{id}',            [MetodoPagoController::class, 'delete'])->name('metodoPago.delete');
     //
 
+    // Asesor
+    Route::get('/config/asesores',                  [AsesorController::class, 'index'])->name('asesores.index');
+    Route::get('/get-asesores',                     [AsesorController::class, 'getAll'])->name('asesores.getAll');
+    Route::post('/asesores-pagination',             [AsesorController::class, 'pagination'])->name('asesores.pagination');
+    Route::post('/asesores',                        [AsesorController::class, 'save'])->name('asesores.save');
+    Route::put('/asesores/{id}',                    [AsesorController::class, 'update'])->name('asesores.update');
+    Route::delete('/asesores/{id}',                 [AsesorController::class, 'distroy'])->name('asesores.delete');
+    //
+
+     // Cuenta Contable
+     Route::get('/config/cuenta',                  [CuentaContableController::class, 'index'])->name('cuenta.index');
+     Route::get('/get-cuenta',                     [CuentaContableController::class, 'getAll'])->name('cuenta.getAll');
+     Route::post('/cuenta-pagination',             [CuentaContableController::class, 'pagination'])->name('cuenta.pagination');
+     Route::post('/cuenta',                        [CuentaContableController::class, 'save'])->name('cuenta.save');
+     Route::put('/cuenta/{id}',                    [CuentaContableController::class, 'update'])->name('cuenta.update');
+     Route::delete('/cuenta/{id}',                 [CuentaContableController::class, 'distroy'])->name('cuenta.delete');
+     //
 
     // Modules  
     Route::get('/config/modules',                   [ModulesController::class, 'index'])->name('modules.index');

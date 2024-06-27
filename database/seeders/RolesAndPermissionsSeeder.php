@@ -78,6 +78,14 @@ class RolesAndPermissionsSeeder extends Seeder
                 "module": "intereses"
             },
             {
+                "name": "Config/Asesores",
+                "module": "asesores"
+            },
+            {
+                "name": "Config/Cuentas Contable",
+                "module": "cuenta"
+            },
+            {
                 "name": "Config/Medio de pagos",
                 "module": "medio-pagos"
             },

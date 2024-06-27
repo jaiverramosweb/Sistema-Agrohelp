@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('factura_pagos', function (Blueprint $table) {
+        Schema::create('asesores', function (Blueprint $table) {
             $table->id();
-            $table->integer('pago');
-            $table->string('fecha_pagar');
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('code')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('factura_pagos');
+        Schema::dropIfExists('asesores');
     }
 };
