@@ -134,14 +134,6 @@ class SolicitudController extends Controller
     {
         $cliente = Client::find($request->client_id);
 
-        // $documentos = CaracteristicasDocumentacion::select([
-        //     'documentacions.nombre'
-        // ])->where('caracteristicas_productos_id', $producto_id)
-        //     ->join('documentacions', 'caracteristicas_documentacions.documentacions_id', 'documentacions.id')
-        //     ->get();
-
-        // $producto = CaracteristicasProducto::find($producto_id);
-
         $sol = new SolServicio();
         $sol->clientes_id     = $request->client_id;
         $sol->producto_id     = 0;

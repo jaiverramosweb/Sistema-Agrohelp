@@ -287,10 +287,18 @@ const transforDate = (date) => {
             <div class="row mb-2">
 
                 <div class="col-sm-6">
-                    <button v-if="permissions.create" type="button" class="btn btn-success" data-toggle="modal"
+                    <Link 
+                        v-if="permissions.create" 
+                        type="button" 
+                        class="btn btn-success" 
+                        :href="route('clients.create', {id: 0})"
+                    >
+                        + Nuevo Cliente
+                    </Link>
+                    <!-- <button v-if="permissions.create" type="button" class="btn btn-success" data-toggle="modal"
                         data-target="#modalClient">
                         + Nuevo Cliente
-                    </button>
+                    </button> -->
                 </div>
 
                 <div class="col-sm-6">
@@ -401,17 +409,26 @@ const transforDate = (date) => {
                                                             <i class='fas fa-eye'></i>
                                                         </button> -->
 
-                                                        <button 
+                                                        <!-- <button 
                                                             @click="edit(item_data)" 
                                                             class="btn mr-1 btn-xs btn-outline-warning  btn-round" data-toggle="tooltip" title="Editar"  v-if="permissions.update">
                                                             <i class="fas fa-user-edit"></i>
-                                                        </button>
+                                                        </button> -->
+
+                                                        <Link class="btn mr-1 btn-sm btn-outline-warning btn-round"
+                                                            data-toggle="tooltip" title="Editar"
+                                                            :href="route('clients.create', {id: item_data.id})"
+                                                            @click="isLouding" v-if="permissions.update"
+                                                        >
+                                                            <i class="fas fa-user-edit"></i>
+                                                        </Link>
 
                                                         <Link class="btn mr-1 btn-sm btn-outline-info btn-round"
                                                             data-toggle="tooltip" title="Info"
                                                             :href="route('client.show', { client: item_data.id })"
-                                                            @click="isLouding" v-if="permissions.read">
-                                                        <i class='fas fa-eye'></i>
+                                                            @click="isLouding" v-if="permissions.read"
+                                                        >                                                        
+                                                            <i class='fas fa-eye'></i>
                                                         </Link>
 
                                                         <!-- <Link :href="route('info.sensor',{id: item_data.serial} )" @click="isLouding" class="btn mr-1 btn-xs bg-info btn-round" data-toggle="tooltip" title="Ir a piezometro">

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('referencia_creditos', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('sol_servicios_id');
+            $table->integer('clientes_id');
 
             $table->string('banco')->default('');
             $table->string('sucursal')->default('');

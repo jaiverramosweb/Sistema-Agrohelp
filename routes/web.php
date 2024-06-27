@@ -146,6 +146,8 @@ Route::middleware('auth')->group(function () {
 
     // Clients
     Route::get('/clients',                          [ClientsController::class, 'index'])->name('clients.index');
+    Route::get('/info-client/{id}',                 [ClientsController::class, 'getInfoClient'])->name('clients.getInfoClient');
+    Route::get('/new-clients/{id?}',                [ClientsController::class, 'create'])->name('clients.create');
     Route::get('/get-clients',                      [ClientsController::class, 'getClients'])->name('clients.getClients');
     Route::post('/clients-pagination',              [ClientsController::class, 'pagination'])->name('clients.pagination');
     Route::post('/clients',                         [ClientsController::class, 'store'])->name('clients.store');
@@ -153,6 +155,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/client/{client}',                  [ClientsController::class, 'show'])->name('client.show');
     Route::put('/clients/{client}',                 [ClientsController::class, 'update'])->name('clients.update');
     Route::delete('/clients/{client}',              [ClientsController::class, 'destroy'])->name('clients.destroy');
+
+    Route::put('/save-clients-ref/{id}',            [ClientsController::class, 'saveClienteRef'])->name('clients.saveClienteRef');
+    Route::put('/save-clients-linea/{id}',          [ClientsController::class, 'saveClienteLinea'])->name('clients.saveClienteLinea');
+    Route::put('/save-clients-patri/{id}',          [ClientsController::class, 'saveClientePatri'])->name('clients.saveClientePatri');
+    Route::put('/save-clients-ingre/{id}',          [ClientsController::class, 'saveClienteIngre'])->name('clients.saveClienteIngre');
+    Route::put('/save-clients-tarjeta/{id}',        [ClientsController::class, 'saveClienteTarjeta'])->name('clients.saveClienteTarjeta');
+
+    Route::get('/info-client-ref/{id}',             [ClientsController::class, 'getInfoClienteRef'])->name('clients.getInfoClienteRef');
+    Route::get('/info-client-linea/{id}',           [ClientsController::class, 'getInfoClienteLinea'])->name('clients.getInfoClienteLinea');
+    Route::get('/info-client-patri/{id}',           [ClientsController::class, 'getInfoClientePatri'])->name('clients.getInfoClientePatri');
+    Route::get('/info-client-ingre/{id}',           [ClientsController::class, 'getInfoClienteIngre'])->name('clients.getInfoClienteIngre');
+    Route::get('/info-client-tarjeta/{id}',         [ClientsController::class, 'getInfoClienteTarjeta'])->name('clients.getInfoClienteTarjeta');
     //
 
     // Productos 

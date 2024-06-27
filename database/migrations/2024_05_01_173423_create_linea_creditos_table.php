@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('linea_creditos', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('sol_servicios_id');
+            $table->integer('clientes_id');
 
             $table->string('tipo_credito')->default('');
             $table->string('oficina_credito')->default('');

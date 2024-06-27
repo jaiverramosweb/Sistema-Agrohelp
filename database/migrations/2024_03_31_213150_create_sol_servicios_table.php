@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->integer('clientes_id');
-            $table->integer('producto_id');
-            $table->integer('linea_id');
+            $table->integer('producto_id')->nullable();
+            $table->integer('linea_id')->nullable();
 
             $table->string('monto')->default('');
             $table->string('tiempo')->default('');

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tarjetas_creditos', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('sol_servicios_id');
+            $table->integer('clientes_id');
 
             $table->string('acreedor')->default('');
             $table->string('acreedor_dos')->default('');
