@@ -9,6 +9,7 @@ onMounted(() => {
     activeMenu('pago', 'facturar')
     getClient()
     getMora()
+    getMetodoPago()
 })
 
 // Metodos Requeridos para iniciar modulo
@@ -33,23 +34,35 @@ const Toast = Swal.mixin({
 const dataClient = ref([])
 const dataCredit = ref([])
 const dataList = ref([])
+const metodosPago = ref([])
 const client_id = ref(0)
 const credit_id = ref(0)
+const metodo_pago = ref(0)
 
+const capital = ref(0)
 const tasa = ref(0)
-
+const fecha_pagar = ref('')
 const ineteresMora = ref('')
 const ineteresMoraPagar = ref(0)
+const descripcion_pago = ref('')
 
 const dataPagar = ref([])
+const tabla_pagos = ref([])
+const tabla_amor = ref([])
 
-const tipo_pago = ref('')
+const tipo_pago = ref('Mensual')
 
 const newTotal = ref(0)
 
 const getMora = () => {
     axios.get('/get-mora').then(({data}) => {
         ineteresMora.value = data.valor
+    })
+}
+
+const getMetodoPago = () => {
+    axios.get('/get-metodo-pago').then(({ data }) => {
+        metodosPago.value = data
     })
 }
 
@@ -67,7 +80,6 @@ const getCreditos = () => {
 
 const getListCredit = () => {
     axios.get(`/get-creditos/${credit_id.value}`).then(({data}) => {
-        console.log(data)
 
         const info = data.map(d => {
 
@@ -77,24 +89,27 @@ const getListCredit = () => {
                 
             return {
                 ...d,
-                cuota: 0,
-                cuotaPagar: parseFloat(cuota).toFixed(2),
+                cuota: parseFloat(cuota).toFixed(2),
+                cuotaPagar: 0,
                 interes: parseFloat(d.interes).toFixed(2),
                 interes2: 0,
+                interes_pagado: d.interes,
                 mora: parseFloat(mora).toFixed(2),
                 mora2: 0,
                 amortizacion: parseFloat(d.amortizacion).toFixed(2),
                 amortizacion2: 0,
-                saldo_pendiente: parseFloat(d.saldo_pendiente).toFixed(2)
+                amortizacion_pagado: d.amortizacion,
+                saldo_pendiente: parseFloat(d.saldo_pendiente).toFixed(2),
+                saldo_pagar: 0
             }
 
 
             })
 
         dataList.value = info
-
         if(dataList.value.length > 0){
-            $('#modalSolicitud').modal('show')
+            if(tipo_pago.value == 'Mensual') $('#modalSolicitud').modal('show')            
+            // if(tipo_pago.value == 'Capital') amortizacionMensual()           
         }
     })
 }
@@ -102,8 +117,8 @@ const getListCredit = () => {
 const addPagar = (item) => {
     newTotal.value += parseInt(item.cuotaPagar) 
 
-    dataPagar.value.push(item)
-    console.log(dataPagar.value)
+    tabla_pagos.value.push(item)
+    console.log(tabla_pagos.value)
 }
 
 const formatearMoneda = (numero) => {
@@ -329,11 +344,35 @@ const calcularNuevoPago = () => {
         num += parseInt(element.cuotaPagar)
     });
     console.log('entro')
-    dataPagar.value = newData
+    tabla_pagos.value = newData
     newTotal.value = num
 }
 
+const generarPago = () => {
+
+    if(dataList.value.length > 0){
+        if(tipo_pago.value == 'Capital'){
+            amortizacionMensual()
+            if(tabla_amor.value.length > 0){
+                pagarAbono()
+            }
+        }
+        
+        if(tipo_pago.value == 'Reducción de plazo') {
+            abonoReduccionPlazo()
+        
+            if(tabla_amor.value.length > 0){
+                pagarAbono()
+            }
+        }
+    }
+
+
+}
+
 const amortizacionMensual = () => {
+    console.log('amortizacionMensual', dataList.value[0].cuota_numero)
+
     const r_mensual = tasa.value / 100;
     const tiempo_pagar = dataList.value.length;
     let mesCuota = dataList.value[0].cuota_numero
@@ -350,7 +389,7 @@ const amortizacionMensual = () => {
     const n_periodos = Math.ceil(tiempo_pagar / 1);
     const cuota_periodica = pago * r_periodica / (1 - Math.pow(1 + r_periodica, -n_periodos));
 
-    tablaPagos.value = [];
+    tabla_amor.value = [];
     let saldo_pendiente = parseFloat(pago);
 
 
@@ -376,7 +415,7 @@ const amortizacionMensual = () => {
         let fecha_pago = new Date(fecha_inicial);
         fecha_pago.setMonth(fecha_inicial.getMonth() + mes);
 
-        tablaPagos.value.push({
+        tabla_amor.value.push({
             mes: mesCuota,
             fecha: fecha_pago.toLocaleDateString(),
             cuota: cuota_actual.toFixed(2),
@@ -389,22 +428,69 @@ const amortizacionMensual = () => {
     }
 }
 
+const abonoReduccionPlazo = () => {
+    // Obtener el último saldo pendiente
+    // const saldoPendienteInicial = ListCreditos.value[0].saldo_pendiente
+    const cuotaMensual = dataList.value[0].cuota; // Suponiendo que la cuota es constante
+    const tasaInteresMensual = tasa.value / 100;
+
+     // Calcular el nuevo saldo pendiente después del abono a capital
+     const nuevoSaldoPendiente = capital.value - monto.value;
+    //  const nuevoSaldoPendiente = saldoPendienteInicial - monto.value;
+
+    let saldo = nuevoSaldoPendiente;
+    let mesesRestantes = dataList.value[0].cuota_numero;
+    const nuevoDatosPrestamo = [];
+
+    const [dia, mes, año] = dataList.value[0].fecha.split('/');
+    const newMes = (mes - 1)
+    const fecha_inicial = new Date(`${newMes.toString()}/${dia}/${año}`);
+
+    tabla_amor.value = [];
+
+    let aumento = 1
+
+    while (saldo > 0) {
+        const interesMensual = saldo * tasaInteresMensual;
+        const abonoPrincipal = cuotaMensual - interesMensual;
+        saldo -= abonoPrincipal;
+
+        let fecha_pago = new Date(fecha_inicial);
+        fecha_pago.setMonth(fecha_inicial.getMonth() + aumento);
+        
+        tabla_amor.value.push({
+            mes: mesesRestantes,
+            cuota: cuotaMensual.toFixed(2),
+            fecha: fecha_pago.toLocaleDateString(),
+            interes: interesMensual.toFixed(2),
+            amortizacion: abonoPrincipal.toFixed(2),
+            saldoPendiente: saldo > 0 ? saldo.toFixed(2) : 0,
+            });
+
+        mesesRestantes++;
+        aumento++;
+    }
+}
+
 const savePago = () => {
     if(tipo_pago.value == 'Mensual') pagarCuota()
-    if(tipo_pago.value == 'Capital') pagarAbono()
+    // if(tipo_pago.value == 'Capital') pagarAbono()
 }
 
 const pagarCuota = () => {
-    axios.put(`/realizar-pago/${solicitudId.value}`, {
-        pagos: valor_pagar.value,
-        tabla_pagos: tablaPagos.value,
+    // console.log(tabla_pagos.value)
+    axios.post(`/realizar-pago`, {
+        id: credit_id.value,
+        pagos: newTotal.value,
+        tabla_pagos: tabla_pagos.value,
         metodo_pago: metodo_pago.value,
         descripcion_pago: descripcion_pago.value,
         fecha_pagar: fecha_pagar.value
     }).then(({ data }) => {
         // console.log(data)
         newTotal.value = 0
-        dataPagar.value = []
+        tabla_pagos.value = []
+        descripcion_pago.value = ''
         Toast.fire({
             icon: 'success',
             title: 'Pago realizado con exito'
@@ -413,20 +499,21 @@ const pagarCuota = () => {
 }
 
 const pagarAbono = () => {
+    console.log('pagarAbono',tabla_amor.value)
     axios.post('/pagar-abono', {
-        id: props.credito.id,
+        id: credit_id.value,
         capital: capital.value - newTotal.value,
         tipo: tipo_pago.value,
         monto: newTotal.value,
-        metodo_pago_id: metodo_pago.value,
-        tablaAmortizacion: tablaAmortizacion.value,
+        metodo_pago: metodo_pago.value,
+        tablaAmortizacion: tabla_amor.value,
+        // descripcion_pago: descripcion_pago.value,
+        fecha_pagar: fecha_pagar.value
     }).then(({data}) => {
-        Swal.fire({
+        Toast.fire({
             icon: 'success',
-            title: 'Abonado con exito'
+            title: 'Pago realizado con exito'
         })
-        getAbonos()
-        $('#modalAbono').modal('hide');
     })
 }
 
@@ -438,10 +525,15 @@ watch(client_id, () =>{
 watch(credit_id, () =>{
     if(tipo_pago.value == 'Mensual') getListCredit()
     
-    if(tipo_pago.value == 'Capital') {
+    if(tipo_pago.value == 'Capital' || tipo_pago.value == 'Reducción de plazo') {
         getListCredit()
         const credit = dataCredit.value.filter(c => c.id == credit_id.value)
-        tasa.value = credit[0].interes
+        console.log(credit)
+        tasa.value = credit[0].tasa_interes
+        capital.value = credit[0].valor
+
+        // console.log('interes ',credit[0].tasa_interes)
+        // console.log('capital ',credit[0].valor)
     }
 })
 
@@ -496,7 +588,22 @@ watch(credit_id, () =>{
                     <div class="card-body">
                         <div class="row">
 
-                            <div class="form-group col-4" has-validation>
+                            <div class="form-group col-3">
+                                <label for="tiempo_pagar">Fecha a pagar</label>
+                                <input v-model="fecha_pagar" type="date" class="form-control" id="tiempo_pagar"
+                                    aria-describedby="tiempo_pagar" autocomplete="off">
+                            </div>
+
+                            <div class="form-group col-3">
+                                <label for="tiempo_pagar">Metodo de pago</label>
+                                <select class="form-control" v-model="metodo_pago">
+                                    <option value="0">Seleccione</option>
+                                    <option v-for="metodo in metodosPago" :key="metodo.id" :value="metodo.id">{{ metodo.name
+                                        }}</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group col-3" has-validation>
                                 <label for="monto">Tipo de pago</label>
                                 <select id="inputState" class="form-control" v-model="tipo_pago">
                                     <option value="" selected>Seleccione...</option>
@@ -507,7 +614,7 @@ watch(credit_id, () =>{
                                 </select>
                             </div>
 
-                            <div class="form-group col-4" has-validation>
+                            <div class="form-group col-3" has-validation>
                                 <label for="monto">Cliente</label>
                                 <select id="inputState" class="form-control" v-model="client_id">
                                     <option value="0" selected>Seleccione...</option>
@@ -515,12 +622,22 @@ watch(credit_id, () =>{
                                 </select>
                             </div>
 
-                            <div class="form-group col-4" has-validation>
+                            <div class="form-group col-3" has-validation>
                                 <label for="monto">Credito</label>
                                 <select id="inputState" class="form-control" v-model="credit_id">
                                     <option value="0" selected>Seleccione...</option>
                                     <option v-for="credit in dataCredit" :key="credit.id" :value="credit.id">{{ credit.nombre_linea }} - {{ credit.valor }}</option>
                                 </select>
+                            </div>
+
+                            <div v-if="tipo_pago !== 'Mensual'" class="form-group col-3">
+                                <label for="tasa">Monto</label>
+                                <input v-model="newTotal" type="number" class="form-control" id="tasa" aria-describedby="tasa"
+                                    autocomplete="off">
+                            </div>
+
+                            <div v-if="tipo_pago !== 'Mensual'" class="form-group col-6">
+                                <button class="btn btn-info mt-4 float-right" @click="generarPago">Pagar</button>
                             </div>
 
                         </div>
@@ -532,7 +649,7 @@ watch(credit_id, () =>{
                 </div>
             </div>
 
-            <div v-if="dataPagar.length > 0" class="col-12">
+            <div v-if="tabla_pagos.length > 0" class="col-12">
                 <div class="card card-success">
                     <div class="card-header">
                         <h3 class="card-title">Pagos a realizar</h3>
@@ -555,7 +672,7 @@ watch(credit_id, () =>{
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(pagar, i) in dataPagar" :key="pagar.id">
+                                            <tr v-for="(pagar, i) in tabla_pagos" :key="pagar.id">
                                                 <td scope="row" class="text-center">Algo</td>
                                                 <td scope="row" class="text-center">{{ pagar.cuota_numero }}</td>
                                                 <td>{{ formatearMoneda(pagar.cuota) }}</td>
@@ -564,7 +681,7 @@ watch(credit_id, () =>{
                                                 <td>{{ formatearMoneda(pagar.amortizacion2) }}</td>
                                                 <td>
                                                     <div class="form-group">
-                                                        <input v-model="dataPagar[i].cuotaPagar" @change="calcularNuevoPago" type="number" class="form-control" id="tiempo_pagar"
+                                                        <input v-model="tabla_pagos[i].cuotaPagar" @change="calcularNuevoPago" type="number" class="form-control" id="tiempo_pagar"
                                                             aria-describedby="tiempo_pagar" autocomplete="off">
                                                     </div>
                                                 </td>
@@ -574,7 +691,12 @@ watch(credit_id, () =>{
 
                                     <div>
                                         <div class="row">
-                                            <div class="col-12">
+                                            <div class="col-12 mt-2">
+                                                <label for="">Descripción del pago</label>
+                                                <textarea class="form-control" v-model="descripcion_pago" name="descripcion_pago" id="descripcion_pago" rows="5"></textarea>
+                                            </div>
+
+                                            <div class="col-12 mt-2">
                                                 <div class="float-right">
                                                     <b>Total a pagar: {{ formatearMoneda(newTotal) }}</b>
                                                 </div>

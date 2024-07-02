@@ -236,7 +236,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/update-valores-solicitud/{id}',    [SolicitudController::class, 'updateValoresSolicitud'])->name('solicitud.updateValoresSolicitud');
     Route::put('/solicitud-aprobada/{id}',          [SolicitudController::class, 'solicitudAprobada'])->name('solicitud.solicitudAprobada');
     Route::get('/amortizacion-all/{id}',            [SolicitudController::class, 'AmortizacionAll'])->name('solicitud.AmortizacionAll');
-    Route::put('/realizar-pago/{id}',               [SolicitudController::class, 'realizarPago'])->name('solicitud.realizarPago');
+    Route::post('/realizar-pago',                   [SolicitudController::class, 'realizarPago'])->name('solicitud.realizarPago');
 
 
     Route::get('/download-solicitud/{id}',          [SolicitudController::class, 'downloadSolicitud'])->name('solicitud.downloadSolicitud');

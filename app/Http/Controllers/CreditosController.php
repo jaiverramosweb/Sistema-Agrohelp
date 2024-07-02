@@ -159,6 +159,13 @@ class CreditosController extends Controller
         $credito = Amortization::where('sol_servicios_id', $request->id)->first();
         Amortization::where('sol_servicios_id', $request->id)->where('estado', '!=', 1)->delete();
 
+        // PagoAmortizacion::create([
+        //     'amortizations_id' => $amortization->id,
+        //     'factura_pagos_id' => $factura->id,
+        //     'metodo_pago_id'   => $request->metodo_pago,
+        //     'descripcion_pago' => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
+        // ]);
+
         foreach ($request->tablaAmortizacion as $value) {
             $amortization = new Amortization();
             $amortization->sol_servicios_id = $request->id;
@@ -177,12 +184,30 @@ class CreditosController extends Controller
             $amortization->save();
         }
 
+        $factura = FacturaPago::create([
+            'pago' => $request->monto,
+            'fecha_pagar' => $request->fecha_pagar,
+            'sol_servicios_id' =>  $credito->sol_servicios_id,
+            'tipo' =>  $request->tipo,
+            'metodo_pago_id' =>  $request->metodo_pago,
+            'descripcion_pago' => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
+        ]);
+
+        PagoAmortizacion::create([
+            'amortizations_id' => $credito->id,
+            'factura_pagos_id' => $factura->id,
+            'metodo_pago_id'   => $request->metodo_pago,
+            'descripcion_pago' => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
+        ]);
+
         $pago = new PagoAbono();
         $pago->sol_servicios_id = $request->id;
         $pago->tipo             = $request->tipo;
         $pago->monto            = $request->monto;
-        $pago->metodo_pago_id   = $request->metodo_pago_id;
+        $pago->metodo_pago_id   = $request->metodo_pago;
         $pago->save();
+
+        
 
         $solicitud = SolServicio::find($request->id);
         $solicitud->valor = strval($request->capital);

@@ -294,7 +294,6 @@ const modalPago = (item, num) => {
 
 const getMetodoPago = () => {
     axios.get('/get-metodo-pago').then(({ data }) => {
-        // console.log(data)
         metodosPago.value = data
     })
 }
@@ -681,10 +680,10 @@ const calcularMora = (montoVencido, fecha) => {
                         </span>
                     </td>
                     <td>
-                        <button v-if="!fila.estado" class="btn btn-outline-success"
-                            @click="modalPago(fila, i + 1)">Pagar</button>
+                        <!-- <button v-if="!fila.estado" class="btn btn-outline-success"
+                            @click="modalPago(fila, i + 1)">Pagar</button> -->
 
-                        <button @click="comprobante(fila.id)" v-else class="btn btn-outline-danger">
+                        <button @click="comprobante(fila.id)" v-if="fila.estado" class="btn btn-outline-danger">
                             <i class="far fa-file-pdf"></i>
                         </button>
                     </td>

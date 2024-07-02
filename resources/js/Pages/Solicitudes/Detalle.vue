@@ -167,8 +167,8 @@ const downloadFile = (id) => {
                                     vigentes</a>
                             </li>
 
-                            <li v-if="solicitud.estado_solicitud == 'Aprobado'" class="nav-item"><a class="nav-link" href="#abono" data-toggle="tab">Abonos a capital</a>
-                            </li>
+                            <!-- <li v-if="solicitud.estado_solicitud == 'Aprobado'" class="nav-item"><a class="nav-link" href="#abono" data-toggle="tab">Abonos a capital</a>
+                            </li> -->
                             
                         </ul>
                     </div>
@@ -430,9 +430,9 @@ const downloadFile = (id) => {
                                     :capital="solicitud.valor" />
                             </div>
 
-                            <div v-if="solicitud.creditos" class="tab-pane" id="abono">
+                            <!-- <div v-if="solicitud.creditos" class="tab-pane" id="abono">
                                 <Abono :credito="solicitud" />
-                            </div>
+                            </div> -->
 
                         </div>
 

@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->integer('pago');
             $table->string('fecha_pagar');
+            $table->text('descripcion_pago')->nullable();
+            $table->integer('sol_servicios_id')->nullable();
+            $table->string('tipo')->nullable();
+            $table->integer('metodo_pago_id')->nullable();
             $table->timestamps();
         });
     }
