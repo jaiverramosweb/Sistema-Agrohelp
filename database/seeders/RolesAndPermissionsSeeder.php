@@ -92,6 +92,18 @@ class RolesAndPermissionsSeeder extends Seeder
             {
                 "name": "Solicitudes",
                 "module": "solicitudes"
+            },
+            {
+                "name": "Pagos",
+                "module": "pago"
+            },
+            {
+                "name": "Pagos/Facturar",
+                "module": "facturar"
+            },
+            {
+                "name": "Pagos/Lista",
+                "module": "lista"
             }
         ]';
 

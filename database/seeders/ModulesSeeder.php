@@ -115,6 +115,33 @@ class ModulesSeeder extends Seeder
             'module_group'          => "config_group",
         ]);
 
+        // GRUPO - Pagos
+        DB::table('modules')->insert([
+            'jerarquia'             => 4,
+            'group'                 => true,
+            'name'                  => "Pagos",
+            'module_group'          => "0",
+            'icon'                  => "fas fa-money-check-alt",
+            'route'                 => "pago_group",
+            'module_permissions'    => "pago",
+        ]);
+        DB::table('modules')->insert([
+            'jerarquia'             => 1,
+            'name'                  => "Factura",
+            'icon'                  => "fas fa-cash-register",
+            'route'                 => "/pago/facturar",
+            'module_permissions'    => "facturar",
+            'module_group'          => "pago_group",
+        ]);
+        DB::table('modules')->insert([
+            'jerarquia'             => 2,
+            'name'                  => "Lista",
+            'icon'                  => "fas fa-table",
+            'route'                 => "/pago/lista",
+            'module_permissions'    => "lista",
+            'module_group'          => "pago_group",
+        ]);
+
 
         // Cientes
         DB::table('modules')->insert([

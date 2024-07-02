@@ -109,6 +109,32 @@ class CreditosController extends Controller
         return response()->json($comprobantes, 200);
     }
 
+    public function get($id)
+    {
+        $creditos = SolServicio::select([
+            'sol_servicios.*',
+            'caracteristicas_productos.nombre as nombre_linea'
+        ])
+        ->join('caracteristicas_productos', 'sol_servicios.linea_id', 'caracteristicas_productos.id')
+        ->where('clientes_id', $id)
+        ->get();
+
+        $creditosList = [];
+
+        if($creditos){
+            $creditosList =  $creditos;
+            // foreach ($creditos as $credito) {
+            //     $amor = Amortization::Where('sol_servicios_id', $credito->id)->where('estado', '!=', 1)->get();
+            //     if($amor){
+            //         $creditosList = $credito->amortizacion = $amor;
+            //     }
+            // }
+            
+        }
+
+        return response()->json($creditosList, 200);
+    }
+
     public function downloadCompro($id)
     {
         $pagoAmor = PagoAmortizacion::find($id);        

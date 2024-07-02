@@ -485,7 +485,7 @@ class ClientsController extends Controller
 
     public function getClients()
     {
-        $clients = Client::all('id', 'nombre');
+        $clients = Client::all('id', 'nombre', 'documento');
         return response()->json($clients, 200);
     }
 }

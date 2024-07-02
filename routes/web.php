@@ -15,6 +15,7 @@ use App\Http\Controllers\keller\PermissionsController;
 use App\Http\Controllers\keller\PruebasController;
 use App\Http\Controllers\keller\UsersController;
 use App\Http\Controllers\MetodoPagoController;
+use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SolicitudController;
@@ -244,6 +245,7 @@ Route::middleware('auth')->group(function () {
 
     // Creditos
     Route::post('/get-info-credito',                [CreditosController::class, 'show'])->name('credito.show');
+    Route::get('/get-credito-pay/{id}',             [CreditosController::class, 'get'])->name('credito.get');
     Route::post('/creditos-pagination',             [CreditosController::class, 'pagination'])->name('credito.pagination');
     Route::get('/comprobante/{id}',                 [CreditosController::class, 'getComprobante'])->name('credito.getComprobante');
     Route::get('/download-compro/{id}',             [CreditosController::class, 'downloadCompro'])->name('credito.downloadCompro');
@@ -251,6 +253,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/pagar-abono',                     [CreditosController::class, 'saveAbono'])->name('credito.saveAbono');
     Route::get('/get-abonos/{id}',                  [CreditosController::class, 'getAbono'])->name('credito.getAbono');
     Route::get('/download-abono/{id}',              [CreditosController::class, 'downloadAbono'])->name('credito.downloadAbono');
+    //
+
+
+    // Pagos 
+    Route::get('//pago/facturar',                   [PagoController::class, 'index'])->name('pagos.index');
     //
 
 });

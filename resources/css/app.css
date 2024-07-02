@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "../../node_modules/vue-multiselect/dist/vue-multiselect.css";
 
 .badge-yellow {
     background-color: white;

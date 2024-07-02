@@ -6,6 +6,7 @@ import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/dist/sweetalert2.css'
 import LineaCredito from '../Clients/components/LineaCredito.vue';
 
+
 const props = defineProps(['solicitudes', 'permissions',])
 
 onMounted(() => {
@@ -141,7 +142,7 @@ const changePage = (page) => {
 // FIN de metodos Requeridos para iniciar modulo
 
 const client_id = ref(0)
-const monto = ref(50000000)
+const monto = ref(0)
 const tiempo = ref(0)
 const linea_id = ref(0)
 const tipo_interes = ref('')
@@ -169,6 +170,13 @@ const newCredit = () => {
 
 const getClient = () => {
     axios.get('/get-clients').then(({data}) => {
+        // const client = data.map(c => {
+        //     return {
+        //         id: c.id,
+        //         name: c.nombre,
+        //         documento: c.documento,
+        //     }
+        // })
         dataClient.value = data
     })
 }
@@ -364,7 +372,9 @@ const getLineaCredito = () => {
     ])
 }
 
-
+const nameWithLang = ({name, documento}) => {
+      return `${name} — ${documento}`
+}
 
 watch(tipo_interes, () =>{
     if(tipo_interes.value == 'IPC'){
@@ -641,8 +651,18 @@ watch(tipo_interes, () =>{
                                                 *</span></label>
                                         <select id="inputState" class="form-control" v-model="client_id">
                                             <option value="0" selected>Seleccione...</option>
-                                            <option v-for="client in dataClient" :key="client.id" :value="client.id">{{ client.nombre }}</option>
+                                            <option v-for="client in dataClient" :key="client.id" :value="client.id">{{ client.nombre }} - {{ client.documento }}</option>
                                         </select>
+
+                                        <!-- <Multiselect 
+                                            v-model="client_id" 
+                                            :options="dataClient" 
+                                            :custom-label="nameWithLang" 
+                                            placeholder="Select one" 
+                                            label="name"
+                                            track-by="name" 
+                                        /> -->
+                                        <!-- <Multiselect v-model="client_id" :options="dataClient" mode="tags" /> -->
                                     </div>
 
                                     <div class="form-group col-3" has-validation>

@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="/assets/css/main.css">
         <link rel="stylesheet" href="/assets/css/styles.css">
         
+        
         @routes
           @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
