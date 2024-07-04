@@ -17,7 +17,6 @@ onMounted(() => {
     capital.value = props.capital
     // console.log('producto', props.producto)
     metodoFrances()
-    getAmortizacionAll()
     getMora()
 })
 
@@ -60,7 +59,8 @@ const fecha_pagar = ref('')
 
 const getMora = () => {
     axios.get('/get-mora').then(({data}) => {
-        ineteresMora.value = data.valor
+        ineteresMora.value = data
+        getAmortizacionAll()
     })
 }
 
@@ -255,25 +255,32 @@ const modificarValores = () => {
 const getAmortizacionAll = () => {
     axios.get(`/amortizacion-all/${solicitudId.value}`).then(({ data }) => {
 
-        const info = data.map(d => {
+        console.log('data Amor', data)
+        console.log('mora', ineteresMora.value)
 
-            const mora = calcularMora(d.cuota, d.fecha)
+        if(ineteresMora.value){
+            
+                    const info = data.map(d => {
+            
+                        const mora = calcularMora(d.cuota, d.fecha)
+            
+                        const cuota = d.cuota + mora
+                            
+                        return {
+                            ...d,
+                            cuota: parseFloat(cuota).toFixed(2),
+                            interes: parseFloat(d.interes).toFixed(2),
+                            mora: parseFloat(mora).toFixed(2),
+                            amortizacion: parseFloat(d.amortizacion).toFixed(2),
+                            saldo_pendiente: parseFloat(d.saldo_pendiente).toFixed(2)
+                        }
+            
+            
+                    })
+            
+                    dataAmortizacion.value = info
 
-            const cuota = d.cuota + mora
-                
-            return {
-                ...d,
-                cuota: parseFloat(cuota).toFixed(2),
-                interes: parseFloat(d.interes).toFixed(2),
-                mora: parseFloat(mora).toFixed(2),
-                amortizacion: parseFloat(d.amortizacion).toFixed(2),
-                saldo_pendiente: parseFloat(d.saldo_pendiente).toFixed(2)
-            }
-
-
-        })
-
-        dataAmortizacion.value = info
+        }
     })
 }
 
@@ -304,6 +311,7 @@ const calcularPago = () => {
     const id_cuota = dataPagar.value.id
     const cuota = parseFloat(pago_cuota.value)
     const interes = parseFloat(pago_interes.value)
+    const moraData = parseFloat(ineteresMoraPagar.value)
     const mora = parseFloat(ineteresMoraPagar.value)
     const capital = parseFloat(pago_capital.value)
     const saldo_pendiente = parseFloat(saldo_pendiente_p.value)
@@ -521,6 +529,7 @@ const calcularMora = (montoVencido, fecha) => {
     // Dividir la fecha de vencimiento en partes
     const fechap = '13/5/2024'
     const partes = fecha.split('/');
+
     const dia = parseInt(partes[0], 10);
     const mes = parseInt(partes[1], 10) - 1; // Los meses en JavaScript son 0-indexados
     const ano = parseInt(partes[2], 10);
@@ -539,19 +548,30 @@ const calcularMora = (montoVencido, fecha) => {
     const diasRetraso = Math.floor(diferenciaMilisegundos / milisegundosPorDia);
 
 
-    if(diasRetraso > 0){
-        // Convertir la tasa mensual a tasa diaria
-        const tasaInteresMensual = ineteresMora.value /100
-        const tasaInteresDiaria = tasaInteresMensual / 30;
-        
-        // Calcular el interés de mora
-        const interesMora = montoVencido * tasaInteresDiaria * diasRetraso;
-        ineteresMoraPagar.value = interesMora
-        return interesMora
-        
+    const result = ineteresMora.value.find(item => {
+        const itemDate = new Date(item.fecha);
+        return itemDate.getMonth() + 1 === mes && itemDate.getFullYear() === ano;
+    });
+
+    if(result != undefined){
+
+        if(diasRetraso > 0){
+            // Convertir la tasa mensual a tasa diaria
+            const tasaInteresMensual = result.valor /100
+            const tasaInteresDiaria = tasaInteresMensual / 30;
+            
+            // Calcular el interés de mora
+            const interesMora = montoVencido * tasaInteresDiaria * diasRetraso;
+            ineteresMoraPagar.value = interesMora
+            return interesMora
+            
+        } else {
+            return 0;
+        }
     } else {
         return 0;
     }
+
 
 }
 

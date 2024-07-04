@@ -4,12 +4,14 @@ import { onMounted, ref, computed, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/dist/sweetalert2.css'
+import axios from 'axios';
 
 onMounted(() => {
     activeMenu('pago', 'facturar')
     getClient()
     getMora()
     getMetodoPago()
+    getBancos()
 })
 
 // Metodos Requeridos para iniciar modulo
@@ -38,6 +40,7 @@ const metodosPago = ref([])
 const client_id = ref(0)
 const credit_id = ref(0)
 const metodo_pago = ref(0)
+const banco_id = ref(0)
 
 const capital = ref(0)
 const tasa = ref(0)
@@ -47,6 +50,7 @@ const ineteresMoraPagar = ref(0)
 const descripcion_pago = ref('')
 
 const dataPagar = ref([])
+const dataBancos = ref([])
 const tabla_pagos = ref([])
 const tabla_amor = ref([])
 
@@ -56,13 +60,19 @@ const newTotal = ref(0)
 
 const getMora = () => {
     axios.get('/get-mora').then(({data}) => {
-        ineteresMora.value = data.valor
+        ineteresMora.value = data
     })
 }
 
 const getMetodoPago = () => {
     axios.get('/get-metodo-pago').then(({ data }) => {
         metodosPago.value = data
+    })
+}
+
+const getBancos = () => {
+    axios.get('/get-cuenta').then(({data}) => {
+        dataBancos.value = data
     })
 }
 
@@ -89,17 +99,18 @@ const getListCredit = () => {
                 
             return {
                 ...d,
-                cuota: parseFloat(cuota).toFixed(2),
-                cuotaPagar: 0,
-                interes: parseFloat(d.interes).toFixed(2),
+                cuota: parseInt(cuota),
+                cuota2: 0,
+                cuotaPagar: parseInt(cuota),
+                interes: parseInt(d.interes),
                 interes2: 0,
                 interes_pagado: d.interes,
-                mora: parseFloat(mora).toFixed(2),
+                mora: parseInt(mora),
                 mora2: 0,
-                amortizacion: parseFloat(d.amortizacion).toFixed(2),
+                amortizacion: parseInt(d.amortizacion),
                 amortizacion2: 0,
                 amortizacion_pagado: d.amortizacion,
-                saldo_pendiente: parseFloat(d.saldo_pendiente).toFixed(2),
+                saldo_pendiente: parseInt(d.saldo_pendiente),
                 saldo_pagar: 0
             }
 
@@ -115,10 +126,17 @@ const getListCredit = () => {
 }
 
 const addPagar = (item) => {
-    newTotal.value += parseInt(item.cuotaPagar) 
+    console.log('newTotal.value', newTotal.value)
+    console.log('item.cuota', item.cuota)
+    const uno = parseInt(item.cuota)
+    const dos = parseInt(newTotal.value)
+
+    console.log('suma', uno + dos)
+
+    newTotal.value = parseInt(item.cuota) + newTotal.value
+    console.log(item)
 
     tabla_pagos.value.push(item)
-    console.log(tabla_pagos.value)
 }
 
 const formatearMoneda = (numero) => {
@@ -153,199 +171,234 @@ const calcularMora = (montoVencido, fecha) => {
     const milisegundosPorDia = 1000 * 60 * 60 * 24;
     const diasRetraso = Math.floor(diferenciaMilisegundos / milisegundosPorDia);
 
+    const result = ineteresMora.value.find(item => {
+        const itemDate = new Date(item.fecha);
+        return itemDate.getMonth() + 1 === mes && itemDate.getFullYear() === ano;
+    });
 
-    if(diasRetraso > 0){
-        // Convertir la tasa mensual a tasa diaria
-        const tasaInteresMensual = ineteresMora.value /100
-        const tasaInteresDiaria = tasaInteresMensual / 30;
-        
-        // Calcular el interés de mora
-        const interesMora = montoVencido * tasaInteresDiaria * diasRetraso;
-        ineteresMoraPagar.value = interesMora
-        return interesMora
-        
-    } else {
+    if(result != undefined){
+        if(diasRetraso > 0){
+            // Convertir la tasa mensual a tasa diaria
+            const tasaInteresMensual = result.valor /100
+            const tasaInteresDiaria = tasaInteresMensual / 30;
+            
+            // Calcular el interés de mora
+            const interesMora = montoVencido * tasaInteresDiaria * diasRetraso;
+            ineteresMoraPagar.value = interesMora
+            return interesMora
+            
+        } else {
+            return 0;
+        }
+    }else {
         return 0;
     }
 
+    
+
 }
 
-const calcularNuevoPago = () => {
-    let num = 0
-    let newData = []
+const calcularNuevoPago = ( itemData, montoModificar, index ) => {
+    const valor = montoModificar
 
-    dataPagar.value.forEach(element => {
+    const id_cuota = itemData.id
+    const cuota = parseInt(itemData.cuota)
+    const interes = parseInt(itemData.interes)
+    const mora = parseInt(itemData.mora)
+    const capital = parseInt(itemData.amortizacion)
+    const saldo_pendiente = parseInt(itemData.saldo_pendiente)
+    const numero_cuota = itemData.cuota_numero
+    const sol_servicios_id = itemData.sol_servicios_id
 
-        const valor = valor_pagar.value
 
-        const id_cuota = element.id
-        const cuota = parseFloat(element.cuota)
-        const interes = parseFloat(element.interes)
-        const mora = parseFloat(element.mora)
-        const capital = parseFloat(element.amortizacion)
-        const saldo_pendiente = parseFloat(element.saldo_pendiente)
+    // console.log('valor',valor)
+    // console.log('cuota',cuota)
 
-        if(valor == cuota){
-            const p = {
-                id: id_cuota,
-                numero: numero_cuota.value,
-                interes: interes,
-                interes2: 0,
-                interes_pagado: interes,
-                cuota: 0,
-                amortizacion: capital,
-                amortizacion2: 0,
-                amortizacion_pagado: capital,
-                saldo_pagar: 0,
-                mora: mora,
-                mora2: 0,
-                saldo_pendiente: saldo_pendiente
-            }
-            newData.push(p)
-        }
+    if(valor == cuota){
 
-        if (valor < cuota) {
-            let saldo = valor
-            let inte = interes
-            let mor = mora
-            let cuot = cuota
-            let capi = capital
+        tabla_pagos.value[index].id = id_cuota
+        tabla_pagos.value[index].sol_servicios_id = sol_servicios_id
+        tabla_pagos.value[index].cuota_numero = numero_cuota
+        tabla_pagos.value[index].interes = interes
+        tabla_pagos.value[index].interes2 = 0
+        tabla_pagos.value[index].interes_pagado = interes
+        tabla_pagos.value[index].cuota2 = 0
+        tabla_pagos.value[index].cuota = cuota
+        tabla_pagos.value[index].amortizacion = capital
+        tabla_pagos.value[index].amortizacion2 = 0
+        tabla_pagos.value[index].amortizacion_pagado = capital
+        tabla_pagos.value[index].saldo_pagar = 0
+        tabla_pagos.value[index].mora = mora
+        tabla_pagos.value[index].mora2 = 0
+        tabla_pagos.value[index].saldo_pendiente = saldo_pendiente
 
-            if(mora > 0) {
-                if (mora < saldo) {
-                    saldo = valor - mora
-                    mor = 0
-                }
+    }
 
-                if (interes < saldo) {     
-                    saldo = valor - interes
-                    inte = 0
-                    
-    
-                    if (saldo > 0) {
-                        capi = capi - saldo
-                        cuot = cuot - valor
-                        saldo = 0
-                    }
-    
-                } else {
-                    mor = mora - valor
-                    inte = interes - mor
+    if (valor < cuota) {
+        let saldo = valor
+        let inte = interes
+        let mor = mora
+        let cuot = cuota
+        let capi = capital
+
+
+        if(mora > 0) {
+           
+            saldo = valor - mora
+            mor = 0
+
+            if (interes < saldo) {     
+                saldo = saldo - interes
+                inte = 0
+              
+
+                if (saldo > 0) {
+                    capi = capi - saldo
+                    cuot = cuot - valor
                     saldo = 0
                 }
+
             } else {
-                capi = capi - saldo
-                cuot = cuot - valor
+                inte = interes - saldo
                 saldo = 0
+                cuot = cuot - valor
             }
+        } else {
 
+            if (interes < saldo) {     
+                saldo = saldo - interes
+                inte = 0
 
-            const p = {
-                id: id_cuota,
-                numero: numero_cuota.value,
-                interes: interes,
-                interes2: inte,
-                mora: mora,
-                mora2: mor,
-                interes_pagado: inte,
-                cuota: parseFloat(cuot).toFixed(2),
-                amortizacion: capital,
-                amortizacion2: capi,
-                amortizacion_pagado: capi,
-                saldo_pagar: parseFloat(saldo_pendiente - valor).toFixed(2),
-                saldo_pendiente: saldo_pendiente
-            }
-
-            newData.push(p)
-
-        }
-
-        if (valor > cuota) {
-
-            let saldo = 0
-
-            const p = {
-                id: id_cuota,
-                numero: numero_cuota.value,
-                interes: interes,
-                interes_pagado: interes,
-                interes2: 0,
-                mora: mora,
-                mora2: 0,
-                cuota: 0,
-                amortizacion: capital,
-                amortizacion_pagado: capital,
-                amortizacion2: 0,
-                saldo_pagar: 0,
-                saldo_pendiente: saldo_pendiente
-            }
-
-            newData.push(p)
-
-            saldo = valor - cuota
-
-            let idBuscar = id_cuota + 1
-
-            const nueva = dataAmortizacion.value.filter(d => d.id == idBuscar)[0]
-
-            if (nueva) {
-
-                const mora2 = calcularMora(nueva.cuota, nueva.fecha)
-
-                let inte2 = parseFloat(nueva.interes)
-                let cuot2 = parseFloat(nueva.cuota)
-                let amor2 = parseFloat(nueva.amortizacion)
-                const mor = 0
-
-                if (inte2 < saldo) {
-                    const newSaldo = saldo - mora2
-                    const saldo2 = newSaldo - inte2                
-                    inte2 = 0
-
-                    amor2 = amor2 - saldo2
-                    cuot2 = cuot2 - saldo
+                if (saldo > 0) {
+                    capi = capi - saldo
+                    cuot = cuot - valor
                     saldo = 0
-
-
-                } else {
-
-                    if(saldo > mora2){
-                        const newSaldo = saldo - mora2
-                        inte2 = nueva.interes - newSaldo
-                        cuot2 = cuot2 - inte2
-                    } else {
-                        mor = mora2 - saldo
-                        cuot2 = cuot2 - mor
-                    }
                 }
 
-                const p2 = {
-                    id: nueva.id,
-                    numero: numero_cuota.value + 1,
-                    interes2: parseFloat(inte2).toFixed(2),
-                    interes_pagado: parseFloat(inte2).toFixed(2),
-                    interes: parseFloat(nueva.interes).toFixed(2),
-                    mora: parseFloat(mora2).toFixed(2),
-                    mora2: parseFloat(mor).toFixed(2),
-                    cuota: parseFloat(cuot2).toFixed(2),
-                    amortizacion: parseFloat(nueva.amortizacion).toFixed(2),
-                    amortizacion2: parseFloat(amor2).toFixed(2),
-                    amortizacion_pagado: parseFloat(amor2).toFixed(2),
-                    saldo_pagar: parseFloat(saldo_pendiente - cuot2).toFixed(2),
-                    saldo_pendiente: saldo_pendiente
-                }
-
-                newData.push(p2)
-
+            } else {
+                inte = interes - saldo
+                saldo = 0
+                cuot = cuot - valor
             }
-
         }
 
-        num += parseInt(element.cuotaPagar)
+        tabla_pagos.value[index].id = id_cuota
+        tabla_pagos.value[index].sol_servicios_id = sol_servicios_id
+        tabla_pagos.value[index].cuota_numero = numero_cuota
+        tabla_pagos.value[index].interes = interes
+        tabla_pagos.value[index].interes2 = inte
+        tabla_pagos.value[index].interes_pagado = inte
+        tabla_pagos.value[index].cuota2 = parseInt(cuot)
+        tabla_pagos.value[index].cuota = cuota
+        tabla_pagos.value[index].amortizacion = capital
+        tabla_pagos.value[index].amortizacion2 = capi
+        tabla_pagos.value[index].amortizacion_pagado = capi
+        tabla_pagos.value[index].saldo_pagar = parseInt(saldo_pendiente - valor)
+        tabla_pagos.value[index].mora = mora
+        tabla_pagos.value[index].mora2 = mor
+        tabla_pagos.value[index].saldo_pendiente = saldo_pendiente
+
+    }
+
+    // if (valor > cuota) {
+
+    //     let saldo = 0
+
+    //     const p = {
+    //         id: id_cuota,
+    //         sol_servicios_id: sol_servicios_id,
+    //         numero: numero_cuota,
+    //         interes: interes,
+    //         interes_pagado: interes,
+    //         interes2: 0,
+    //         mora: mora,
+    //         mora2: 0,
+    //         cuota: 0,
+    //         amortizacion: capital,
+    //         amortizacion_pagado: capital,
+    //         amortizacion2: 0,
+    //         saldo_pagar: 0,
+    //         saldo_pendiente: saldo_pendiente
+    //     }
+
+    //     newData.push(p)
+
+    //     saldo = valor - cuota
+
+    //     let idBuscar = id_cuota + 1
+
+    //     const nueva = dataList.value.filter(d => d.id == idBuscar)[0]
+
+    //     if (nueva) {
+
+    //         const mora2 = calcularMora(nueva.cuota, nueva.fecha)
+
+    //         let inte2 = parseInt(nueva.interes)
+    //         let cuot2 = parseInt(nueva.cuota)
+    //         let amor2 = parseInt(nueva.amortizacion)
+    //         const mor = 0
+
+    //         if (inte2 < saldo) {
+    //             const newSaldo = saldo - mora2
+    //             const saldo2 = newSaldo - inte2                
+    //             inte2 = 0
+
+    //             amor2 = amor2 - saldo2
+    //             cuot2 = cuot2 - saldo
+    //             saldo = 0
+
+
+    //         } else {
+
+    //             if(saldo > mora2){
+    //                 const newSaldo = saldo - mora2
+    //                 inte2 = nueva.interes - newSaldo
+    //                 cuot2 = cuot2 - inte2
+    //             } else {
+    //                 mor = mora2 - saldo
+    //                 cuot2 = cuot2 - mor
+    //             }
+    //         }
+
+    //         const p2 = {
+    //             id: nueva.id,
+    //             sol_servicios_id: sol_servicios_id,
+    //             numero: numero_cuota + 1,
+    //             interes2: parseInt(inte2),
+    //             interes_pagado: parseInt(inte2),
+    //             interes: parseInt(nueva.interes),
+    //             mora: parseInt(mora2),
+    //             mora2: parseInt(mor),
+    //             cuota: parseInt(cuot2),
+    //             amortizacion: parseInt(nueva.amortizacion),
+    //             amortizacion2: parseInt(amor2),
+    //             amortizacion_pagado: parseInt(amor2),
+    //             saldo_pagar: parseInt(saldo_pendiente - cuot2),
+    //             saldo_pendiente: saldo_pendiente
+    //         }
+
+    //         newData.push(p2)
+
+    //     }
+
+    // }
+
+    let newPag = parseInt(newTotal.value)
+    const cuotaPaga = parseInt(itemData.cuota)
+    const restPago = newPag - cuotaPaga
+    newTotal.value = restPago + montoModificar
+
+    let num = 0
+
+    tabla_pagos.value.forEach(element => {
+        num = parseInt(element.cuotaPagar) + num
     });
-    console.log('entro')
-    tabla_pagos.value = newData
+
+    console.log('num',num)
     newTotal.value = num
+
+
+    console.log(tabla_pagos.value)
 }
 
 const generarPago = () => {
@@ -390,7 +443,7 @@ const amortizacionMensual = () => {
     const cuota_periodica = pago * r_periodica / (1 - Math.pow(1 + r_periodica, -n_periodos));
 
     tabla_amor.value = [];
-    let saldo_pendiente = parseFloat(pago);
+    let saldo_pendiente = parseInt(pago);
 
 
     for (let mes = 1; mes <= tiempo_pagar; mes++) {
@@ -418,10 +471,10 @@ const amortizacionMensual = () => {
         tabla_amor.value.push({
             mes: mesCuota,
             fecha: fecha_pago.toLocaleDateString(),
-            cuota: cuota_actual.toFixed(2),
-            amortizacion: pago_principal.toFixed(2),
-            interes: pago_interes.toFixed(2),
-            saldoPendiente: saldo_pendiente.toFixed(2)
+            cuota: cuota_actual,
+            amortizacion: pago_principal,
+            interes: pago_interes,
+            saldoPendiente: saldo_pendiente
         });
 
         mesCuota += 1
@@ -434,8 +487,10 @@ const abonoReduccionPlazo = () => {
     const cuotaMensual = dataList.value[0].cuota; // Suponiendo que la cuota es constante
     const tasaInteresMensual = tasa.value / 100;
 
+    console.log('cuota', cuotaMensual)
+
      // Calcular el nuevo saldo pendiente después del abono a capital
-     const nuevoSaldoPendiente = capital.value - monto.value;
+     const nuevoSaldoPendiente = capital.value - newTotal.value;
     //  const nuevoSaldoPendiente = saldoPendienteInicial - monto.value;
 
     let saldo = nuevoSaldoPendiente;
@@ -460,11 +515,11 @@ const abonoReduccionPlazo = () => {
         
         tabla_amor.value.push({
             mes: mesesRestantes,
-            cuota: cuotaMensual.toFixed(2),
+            cuota: parseInt(cuotaMensual),
             fecha: fecha_pago.toLocaleDateString(),
-            interes: interesMensual.toFixed(2),
-            amortizacion: abonoPrincipal.toFixed(2),
-            saldoPendiente: saldo > 0 ? saldo.toFixed(2) : 0,
+            interes: interesMensual,
+            amortizacion: abonoPrincipal,
+            saldoPendiente: saldo > 0 ? saldo : 0,
             });
 
         mesesRestantes++;
@@ -484,6 +539,7 @@ const pagarCuota = () => {
         pagos: newTotal.value,
         tabla_pagos: tabla_pagos.value,
         metodo_pago: metodo_pago.value,
+        banco_id: banco_id.value,
         descripcion_pago: descripcion_pago.value,
         fecha_pagar: fecha_pagar.value
     }).then(({ data }) => {
@@ -499,13 +555,14 @@ const pagarCuota = () => {
 }
 
 const pagarAbono = () => {
-    console.log('pagarAbono',tabla_amor.value)
+    // console.log('pagarAbono',tabla_amor.value)
     axios.post('/pagar-abono', {
         id: credit_id.value,
         capital: capital.value - newTotal.value,
         tipo: tipo_pago.value,
         monto: newTotal.value,
         metodo_pago: metodo_pago.value,
+        banco_id: banco_id.value,
         tablaAmortizacion: tabla_amor.value,
         // descripcion_pago: descripcion_pago.value,
         fecha_pagar: fecha_pagar.value
@@ -517,6 +574,12 @@ const pagarAbono = () => {
     })
 }
 
+const nombreCredito = (id) => {
+    const data = dataCredit.value
+    // console.log('sol servicio',data)
+    const cred = data.filter(d => d.id == id)
+    return cred[0].nombre_linea
+}
 
 watch(client_id, () =>{
     getCreditos()
@@ -536,16 +599,6 @@ watch(credit_id, () =>{
         // console.log('capital ',credit[0].valor)
     }
 })
-
-// watch(dataPagar, () =>{
-//     let num = 0
-//     dataPagar.value.forEach(element => {
-//         num += element.cuotaPagar
-//     });
-//     console.log('entro')
-//     newTotal.value = num
-// })
-
 
 </script>
 
@@ -603,6 +656,15 @@ watch(credit_id, () =>{
                                 </select>
                             </div>
 
+                            <div class="form-group col-3">
+                                <label for="tiempo_pagar">En la cuenta</label>
+                                <select class="form-control" v-model="banco_id">
+                                    <option value="0">Seleccione</option>
+                                    <option v-for="banco in dataBancos" :key="banco.id" :value="banco.id">{{ banco.nombre
+                                        }}</option>
+                                </select>
+                            </div>
+
                             <div class="form-group col-3" has-validation>
                                 <label for="monto">Tipo de pago</label>
                                 <select id="inputState" class="form-control" v-model="tipo_pago">
@@ -636,8 +698,13 @@ watch(credit_id, () =>{
                                     autocomplete="off">
                             </div>
 
-                            <div v-if="tipo_pago !== 'Mensual'" class="form-group col-6">
+                            <div v-if="tipo_pago !== 'Mensual'" class="form-group col-3">
                                 <button class="btn btn-info mt-4 float-right" @click="generarPago">Pagar</button>
+                            </div>
+
+                            <div v-if="tipo_pago !== 'Mensual'" class="form-group col-12">
+                                <label for="">Descripción del pago</label>
+                                <textarea class="form-control" v-model="descripcion_pago" name="descripcion_pago" id="descripcion_pago" rows="5"></textarea>
                             </div>
 
                         </div>
@@ -673,15 +740,16 @@ watch(credit_id, () =>{
                                         </thead>
                                         <tbody>
                                             <tr v-for="(pagar, i) in tabla_pagos" :key="pagar.id">
-                                                <td scope="row" class="text-center">Algo</td>
+                                                <td scope="row" class="text-center">{{ nombreCredito(pagar.sol_servicios_id) }}</td>
+                                                <!-- <td scope="row" class="text-center">hola</td> -->
                                                 <td scope="row" class="text-center">{{ pagar.cuota_numero }}</td>
-                                                <td>{{ formatearMoneda(pagar.cuota) }}</td>
+                                                <td>{{ formatearMoneda(pagar.cuota2) }}</td>
                                                 <td>{{ formatearMoneda(pagar.interes2) }}</td>
                                                 <td>{{ formatearMoneda(pagar.mora2) }}</td>
                                                 <td>{{ formatearMoneda(pagar.amortizacion2) }}</td>
                                                 <td>
                                                     <div class="form-group">
-                                                        <input v-model="tabla_pagos[i].cuotaPagar" @change="calcularNuevoPago" type="number" class="form-control" id="tiempo_pagar"
+                                                        <input v-model="tabla_pagos[i].cuotaPagar" @change="calcularNuevoPago(pagar, tabla_pagos[i].cuotaPagar, i)" type="number" class="form-control" id="tiempo_pagar"
                                                             aria-describedby="tiempo_pagar" autocomplete="off">
                                                     </div>
                                                 </td>
@@ -698,6 +766,7 @@ watch(credit_id, () =>{
 
                                             <div class="col-12 mt-2">
                                                 <div class="float-right">
+                                                    <!-- <b>Total a pagar: {{ newTotal }}</b> -->
                                                     <b>Total a pagar: {{ formatearMoneda(newTotal) }}</b>
                                                 </div>
                                             </div>
@@ -753,14 +822,15 @@ watch(credit_id, () =>{
                                             <tr v-for="(fila) in dataList" :key="fila.id">
                                                 <td scope="row" class="text-center">{{ fila.cuota_numero }}</td>
                                                 <td scope="row">{{ formatDate(fila.fecha) }}</td>
-                                                <td>{{ formatearMoneda(fila.cuota) }}</td>
+                                                <td>{{ fila.cuota }}</td>
+                                                <!-- <td>{{ formatearMoneda(fila.cuota) }}</td> -->
                                                 <td>{{ formatearMoneda(fila.interes) }}</td>
                                                 <td>{{ formatearMoneda(fila.mora) }}</td>
                                                 <td>{{ formatearMoneda(fila.amortizacion) }}</td>
                                                 <td>{{ formatearMoneda(fila.saldo_pendiente) }}</td>
                                                 <td>
-                                                    <button v-if="!dataPagar.includes(fila)" @click="addPagar(fila)" class="btn btn-outline-success">Agregar</button>
-                                                    <button v-else @click="addPagar(fila)" class="btn btn-outline-warning">
+                                                    <button v-if="!tabla_pagos.includes(fila)" @click="addPagar(fila)" class="btn btn-outline-success">Agregar</button>
+                                                    <button v-else class="btn btn-outline-warning">
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                     <!-- <button v-if="!dataPagar.includes(fila)" @click="addPagar(fila)" class="btn btn-outline-info">Agregar</button> -->

@@ -103,4 +103,9 @@ class CuentaContableController extends Controller
         CuentasContable::find($id)->delete();
         return response()->json('Eliminado conexito', 200);
     }
+
+    public function getAll(){
+        $cuentas = CuentasContable::all();
+        return response()->json($cuentas, 200);
+    }
 }

@@ -78,6 +78,10 @@ class RolesAndPermissionsSeeder extends Seeder
                 "module": "intereses"
             },
             {
+                "name": "Config/Mora",
+                "module": "mora"
+            },
+            {
                 "name": "Config/Asesores",
                 "module": "asesores"
             },

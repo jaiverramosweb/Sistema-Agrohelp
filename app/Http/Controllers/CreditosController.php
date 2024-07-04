@@ -185,12 +185,13 @@ class CreditosController extends Controller
         }
 
         $factura = FacturaPago::create([
-            'pago' => $request->monto,
-            'fecha_pagar' => $request->fecha_pagar,
-            'sol_servicios_id' =>  $credito->sol_servicios_id,
-            'tipo' =>  $request->tipo,
-            'metodo_pago_id' =>  $request->metodo_pago,
-            'descripcion_pago' => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
+            'pago'              => $request->monto,
+            'fecha_pagar'       => $request->fecha_pagar,
+            'sol_servicios_id'  =>  $credito->sol_servicios_id,
+            'tipo'              =>  $request->tipo,
+            'metodo_pago_id'    =>  $request->metodo_pago,
+            'banco_id'          =>  $request->banco_id,
+            'descripcion_pago'  => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
         ]);
 
         PagoAmortizacion::create([

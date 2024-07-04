@@ -97,6 +97,15 @@ class ModulesSeeder extends Seeder
             'module_group'          => "config_group",
         ]);
         DB::table('modules')->insert([
+            'jerarquia'             => 4,
+            'name'                  => "Mora",
+            'module_group'          => "0",
+            'icon'                  => "fas fa-money-check-alt",
+            'route'                 => "/config/mora",
+            'module_permissions'    => "mora",
+            'module_group'          => "config_group",
+        ]);
+        DB::table('modules')->insert([
             'jerarquia'             => 5,
             'name'                  => "Asesores",
             'module_group'          => "0",

@@ -21,9 +21,5 @@ class InteresSeeder extends Seeder
             'name'  => 'Corriente',
             'valor' => 2.3
         ]);
-        DB::table('interes')->insert([
-            'name'  => 'Mora',
-            'valor' => 2.5
-        ]);
     }
 }

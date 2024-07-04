@@ -620,11 +620,12 @@ class SolicitudController extends Controller
         $credito = Amortization::where('sol_servicios_id', $request->id)->first();
 
         $factura = FacturaPago::create([
-            'pago' => $request->pagos,
-            'fecha_pagar' => $request->fecha_pagar,
-            'sol_servicios_id' =>  $credito->sol_servicios_id,
-            'metodo_pago_id' =>  $request->metodo_pago,
-            'descripcion_pago' => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
+            'pago'              => $request->pagos,
+            'fecha_pagar'       => $request->fecha_pagar,
+            'sol_servicios_id'  =>  $credito->sol_servicios_id,
+            'metodo_pago_id'    =>  $request->metodo_pago,
+            'banco_id'          =>  $request->banco_id,
+            'descripcion_pago'  => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
         ]);
 
         foreach ($request->tabla_pagos as $value) {

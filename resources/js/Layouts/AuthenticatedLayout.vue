@@ -42,7 +42,7 @@
         keller V-4.0
       </div>
       
-      <strong>Copyright &copy; 2015 - {{ fechaActual }}  <a href="https://www.wolke.com.co/">WOLKE SAS</a>.</strong> Todos los derechos reservados.
+      <strong>Copyright &copy; 2015 - 2024  <a href="https://www.wolke.com.co/">WOLKE SAS</a>.</strong> Todos los derechos reservados.
 
     </footer>
 
