@@ -625,6 +625,7 @@ class SolicitudController extends Controller
             'sol_servicios_id'  =>  $credito->sol_servicios_id,
             'metodo_pago_id'    =>  $request->metodo_pago,
             'banco_id'          =>  $request->banco_id,
+            'tipo'              =>  $request->tipo,
             'descripcion_pago'  => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
         ]);
 
@@ -644,11 +645,12 @@ class SolicitudController extends Controller
             $amortization->saldo_pendiente      = strval($value['saldo_pagar']);
             $amortization->estado               = $cuota == 0 ? true : false;
             $amortization->save();
-
+            
             PagoAmortizacion::create([
                 'amortizations_id' => $amortization->id,
                 'factura_pagos_id' => $factura->id,
                 'metodo_pago_id'   => $request->metodo_pago,
+                'pago'             => strval($value['cuotaPagar']),
                 'descripcion_pago' => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
             ]);
 

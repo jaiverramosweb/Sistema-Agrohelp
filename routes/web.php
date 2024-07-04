@@ -261,7 +261,10 @@ Route::middleware('auth')->group(function () {
 
 
     // Pagos 
-    Route::get('//pago/facturar',                   [PagoController::class, 'index'])->name('pagos.index');
+    Route::get('/pago/facturar',                   [PagoController::class, 'index'])->name('pagos.index');
+    Route::get('/pago/lista',                      [PagoController::class, 'indexList'])->name('pagos.indexList');
+    Route::get('/info-pago/{id}',                  [PagoController::class, 'infoPago'])->name('pagos.infoPago');
+    Route::get('/download-pago/{id}',              [PagoController::class, 'downloadPago'])->name('credito.downloadPago');
     //
 
 });

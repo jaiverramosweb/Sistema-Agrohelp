@@ -159,13 +159,6 @@ class CreditosController extends Controller
         $credito = Amortization::where('sol_servicios_id', $request->id)->first();
         Amortization::where('sol_servicios_id', $request->id)->where('estado', '!=', 1)->delete();
 
-        // PagoAmortizacion::create([
-        //     'amortizations_id' => $amortization->id,
-        //     'factura_pagos_id' => $factura->id,
-        //     'metodo_pago_id'   => $request->metodo_pago,
-        //     'descripcion_pago' => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
-        // ]);
-
         foreach ($request->tablaAmortizacion as $value) {
             $amortization = new Amortization();
             $amortization->sol_servicios_id = $request->id;
@@ -198,6 +191,7 @@ class CreditosController extends Controller
             'amortizations_id' => $credito->id,
             'factura_pagos_id' => $factura->id,
             'metodo_pago_id'   => $request->metodo_pago,
+            'pago'             => $request->monto,
             'descripcion_pago' => isset($request->descripcion_pago) ? $request->descripcion_pago : ''
         ]);
 

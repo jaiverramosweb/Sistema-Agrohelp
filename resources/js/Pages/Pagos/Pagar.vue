@@ -12,6 +12,7 @@ onMounted(() => {
     getMora()
     getMetodoPago()
     getBancos()
+
 })
 
 // Metodos Requeridos para iniciar modulo
@@ -538,6 +539,7 @@ const pagarCuota = () => {
         id: credit_id.value,
         pagos: newTotal.value,
         tabla_pagos: tabla_pagos.value,
+        tipo: tipo_pago.value,
         metodo_pago: metodo_pago.value,
         banco_id: banco_id.value,
         descripcion_pago: descripcion_pago.value,
@@ -551,6 +553,10 @@ const pagarCuota = () => {
             icon: 'success',
             title: 'Pago realizado con exito'
         })
+        setTimeout(() => {            
+            const url = `${window.location.origin}/pago/lista`
+            location.href = url
+        }, 500);
     })
 }
 
@@ -571,6 +577,10 @@ const pagarAbono = () => {
             icon: 'success',
             title: 'Pago realizado con exito'
         })
+        setTimeout(() => {            
+            const url = `${window.location.origin}/pago/lista`
+            location.href = url
+        }, 500);
     })
 }
 
