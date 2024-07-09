@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\CaracteristicasProducto;
 use App\Models\Client;
+use App\Models\IngresoEgresoCredito;
+use App\Models\LineaCredito;
+use App\Models\PatrimonioCredito;
 use App\Models\Producto;
+use App\Models\ReferenciaCredito;
 use App\Models\SolServicio;
+use App\Models\TarjetasCredito;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -47,5 +52,20 @@ class ClientAuthController extends Controller
         $info = SolServicio::select(['id', 'clientes_id', 'producto_id', 'estado_solicitud', 'monto', 'tiempo'])->where('clientes_id', $client->id)->get();
 
         return response()->json($info, 200);
+    }
+
+    public function perfil()
+    {
+        $user = Auth::user();
+
+        $user->referencias = ReferenciaCredito::where('clientes_id', $user->id)->first();
+        $user->linea = LineaCredito::where('clientes_id', $user->id)->first();
+        $user->parimonio = PatrimonioCredito::where('clientes_id', $user->id)->first();
+        $user->ingreso = IngresoEgresoCredito::where('clientes_id', $user->id)->first();
+        $user->creditos = TarjetasCredito::where('clientes_id', $user->id)->first();
+
+        return Inertia::render('Clients/Perfil', [
+            'cliente'       => $user
+        ]);
     }
 }

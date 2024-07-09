@@ -13,6 +13,7 @@ const props = defineProps(['cliente', 'info', 'solicitudes'])
 onMounted(() => {
     infoUser.value = props.cliente
     infoCliente.value = props.info
+    console.log(props.info)
     solicitudes.value = props.solicitudes
     if (props.info) {
         if (props.info.tipo_documento) {
@@ -45,6 +46,7 @@ const tasa = ref('')
 const terminos = ref('')
 const tablaAmortizacion = ref([])
 const product_id = ref(0)
+const range_solicitar = ref(0)
 const tipoAmortizacion = ref('')
 
 const getCaracteristicas = () => {
@@ -133,8 +135,8 @@ function metodoFrances() {
 const amortizacionMensual = () => {
     const r_mensual = tasa.value / 100;
     const fecha_inicial = new Date();
-
-    monto_aprobar.value = monto_solicitar.value * 0.7
+    const porsentaje = range_solicitar.value / 100
+    monto_aprobar.value = monto_solicitar.value * porsentaje
 
     // Calcular la tasa efectiva para el período seleccionado
     const r_periodica = Math.pow(1 + r_mensual, 1) - 1;
@@ -241,7 +243,7 @@ const solicitarCredito = () => {
         $("#modalSimulador").modal("hide");
         setTimeout(() => {
             location.reload();
-        }, 2000);
+        }, 500);
     })
     // window.location.href = `/primera-solicitud/${infoCliente.value.id}/${monto_solicitar.value}/${tiempo_pagar.value}/${product_id.value}`;
 }
@@ -576,14 +578,19 @@ const descargarPre = (id) => {
                         </div>
                         <div class="modal-body">
                             <div class="row">
-                                <div class="form-group col-7">
+                                <div class="form-group col-6">
                                     <label for="monto_solicitar">Monto a solicitar <span
                                             class="text-danger">*</span></label>
                                     <input v-model="monto_solicitar" type="text" class="form-control"
                                         id="monto_solicitar" aria-describedby="monto_solicitar" autocomplete="off">
                                 </div>
 
-                                <div class="form-group col-5">
+                                <div class="form-group col-6">
+                                    <label for="formControlRange"> {{ range_solicitar }}% del valor solicitado</label>
+                                    <input type="range" v-model="range_solicitar" class="form-control-range" id="formControlRange">
+                                </div>
+
+                                <div class="form-group col-6">
                                     <label for="tiempo_pagar">Tiempo mes<span class="text-danger">*</span></label>
                                     <input v-model="tiempo_pagar" type="number" class="form-control" id="tiempo_pagar"
                                         aria-describedby="tiempo_pagar" autocomplete="off">
@@ -644,7 +651,7 @@ const descargarPre = (id) => {
                                 <h5>Terminos y condiciones</h5>
                                 <p>
                                     Todas las amortizaciones vistas aquí son sujetas a cambios, el valor mostrado es el
-                                    70% de lo solicitado.
+                                    {{range_solicitar}}% de lo solicitado.
                                 </p>
                             </span>
                         </div>

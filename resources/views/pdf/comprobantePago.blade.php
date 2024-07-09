@@ -18,8 +18,12 @@
     <div class="container">
         <div class="row">
             <div class="col-6">
-                <b>AGRO HELP S.A.S</b> <br>
-                <b>900406066-4</b>
+                <div class="row">
+                    <div class="col-6">
+                        <img src="/assets/images/agrohelp.png" alt="lofo" style="width: 80%;">
+                        <b>900406066-4</b>
+                    </div>
+                </div>
             </div>
             <div class="col-6">
                 <span class="float-right">
@@ -27,7 +31,7 @@
                 </span>                
             </div>
 
-            <div class="col-12 mt-2">
+            <div class="col-12 mt-4">
                 <div class="row">
                     <div class="col-12">
                         <b>RECIBO DE CAJA No. </b> <span class="float-right"><b>FECHA: {{$pagoAmor->fecha_pagar}}</b></span>
@@ -36,7 +40,7 @@
                             <div class="col-3">
                                 <b>RECIBIDO DE</b> <br>
                                 <b>NIT o C.C</b> <br>
-                                <b>VALOR</b><br>
+                                <b>VALOR PAGADO</b><br>
                                 <b>METODO DE PAGO</b>
                             </div>
                             <div class="col-9">
@@ -74,6 +78,15 @@
                                         <td>{{ formatearMoneda($item->amortizacion->amortizacion_pagado + $item->amortizacion->interes_pagado + $item->amortizacion->mora) }}</td>
                                     </tr>
                                 @endforeach
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td colspan="2">
+                                            <b style="margin-left: 70px">TOTAL PAGADO: {{ formatearMoneda($pagoAmor->pago) }}</b> 
+                                        </td>
+                                    </tr>
                             </tbody>
                         </table>
                     </div>

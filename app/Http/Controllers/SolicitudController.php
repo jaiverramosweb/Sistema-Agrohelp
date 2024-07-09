@@ -539,11 +539,11 @@ class SolicitudController extends Controller
 
         // dd($sol);
         $sol->cliente = Client::find($sol->clientes_id);
-        $sol->referencias = ReferenciaCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->linea = LineaCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->parimonio = PatrimonioCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->ingreso = IngresoEgresoCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->creditos = TarjetasCredito::where('sol_servicios_id', $sol->id)->first();
+        $sol->referencias = ReferenciaCredito::where('sol_servicios_id', $sol->cliente->id)->first();
+        $sol->linea = LineaCredito::where('sol_servicios_id', $sol->cliente->id)->first();
+        $sol->parimonio = PatrimonioCredito::where('sol_servicios_id', $sol->cliente->id)->first();
+        $sol->ingreso = IngresoEgresoCredito::where('sol_servicios_id', $sol->cliente->id)->first();
+        $sol->creditos = TarjetasCredito::where('sol_servicios_id', $sol->cliente->id)->first();
 
         // return PDF::loadView('pdf.solicitud')->stream('archivo.pdf');
         // $pdf = Pdf::loadView('pdf.solicitud', compact('sol'));

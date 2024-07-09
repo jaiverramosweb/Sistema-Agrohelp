@@ -31,6 +31,7 @@ const pago_interes = ref(0)
 const numero_cuota = ref(0)
 const pago_cuota = ref(0)
 const pago_capital = ref(0)
+const ineteresInt = ref(0)
 const saldo_pendiente_p = ref(0)
 
 const metodo_pago = ref(0)
@@ -255,21 +256,18 @@ const modificarValores = () => {
 const getAmortizacionAll = () => {
     axios.get(`/amortizacion-all/${solicitudId.value}`).then(({ data }) => {
 
-        console.log('data Amor', data)
-        console.log('mora', ineteresMora.value)
-
         if(ineteresMora.value){
             
                     const info = data.map(d => {
             
-                        const mora = calcularMora(d.cuota, d.fecha)
+                        const mora = calcularMora(d.cuota, d.fecha, d.amortizacion, d.interes)
             
                         const cuota = d.cuota + mora
                             
                         return {
                             ...d,
                             cuota: parseFloat(cuota).toFixed(2),
-                            interes: parseFloat(d.interes).toFixed(2),
+                            interes: parseFloat(d.interes + ineteresInt.value).toFixed(2),
                             mora: parseFloat(mora).toFixed(2),
                             amortizacion: parseFloat(d.amortizacion).toFixed(2),
                             saldo_pendiente: parseFloat(d.saldo_pendiente).toFixed(2)
@@ -524,7 +522,7 @@ const descargar = (id) => {
     window.open(url, '_blank');
 }
 
-const calcularMora = (montoVencido, fecha) => {
+const calcularMora = (montoVencido, fecha, capital, interes) => {
 
     // Dividir la fecha de vencimiento en partes
     const fechap = '13/5/2024'
@@ -553,24 +551,65 @@ const calcularMora = (montoVencido, fecha) => {
         return itemDate.getMonth() + 1 === mes && itemDate.getFullYear() === ano;
     });
 
-    if(result != undefined){
+    if(diasRetraso > 0) {
 
-        if(diasRetraso > 0){
+        console.log('Entro')
+
+        if(capital == 0){
+            console.log('capital',capital)
+
+            console.log('mes', fechaActual.getMonth()+ 1)
+            console.log('mes cuo', mes)
+            console.log('---------------------------')
+            const inte = parseFloat(tasa.value)
+    
+            
             // Convertir la tasa mensual a tasa diaria
-            const tasaInteresMensual = result.valor /100
-            const tasaInteresDiaria = tasaInteresMensual / 30;
+            const tasaInteresMensual = inte / 100
+            const tasaInteresDiaria = inte / 30;
             
             // Calcular el interés de mora
-            const interesMora = montoVencido * tasaInteresDiaria * diasRetraso;
-            ineteresMoraPagar.value = interesMora
-            return interesMora
-            
+            const interesInt = interes * tasaInteresDiaria * diasRetraso;
+            ineteresInt.value = interesInt
+    
+            console.log('interes', inte)
+            console.log('interes diario', tasaInteresDiaria)
+            console.log('dias', diasRetraso)
+            console.log('interes calculado', interesInt)
+            const sum =  interes + ineteresInt.value
+            console.log('suma',sum)
+          
+    
+            return 0
         } else {
-            return 0;
+    
+            console.log('----------------- diferente de 0 -----------------')
+    
+            if(result != undefined){
+                // Convertir la tasa mensual a tasa diaria
+                const tasaInteresMensual = result.valor /100
+                const tasaInteresDiaria = tasaInteresMensual / 30;
+                
+                // Calcular el interés de mora
+                const interesMora = montoVencido * tasaInteresDiaria * diasRetraso;
+
+                console.log('interes mora', result.valor)
+                console.log('interes dias', diasRetraso)
+                console.log('interes dias mora', tasaInteresMensual)
+                console.log('interes calculado mora', interesMora)
+
+                ineteresMoraPagar.value = interesMora
+                return interesMora                    
+
+            } else {
+                return 0;
+            }
         }
     } else {
-        return 0;
+        return 0
     }
+
+
 
 
 }

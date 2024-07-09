@@ -65,11 +65,12 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/inicio', [ClientAuthController::class, 'index'])->name('client.inicio');
-    Route::get('/creditos', [ClientAuthController::class, 'creditos'])->name('client.creditos');
-    Route::get('/dashboard', [ClientAuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/inicio',                           [ClientAuthController::class, 'index'])->name('client.inicio');
+    Route::get('/creditos',                         [ClientAuthController::class, 'creditos'])->name('client.creditos');
+    Route::get('/dashboard',                        [ClientAuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/perfil-cliente',                   [ClientAuthController::class, 'perfil'])->name('client.perfil');
 
-    Route::get('/pruebas-johann', [PruebasController::class, 'index'])->name('pruebas.johann');
+    // Route::get('/pruebas-johann', [PruebasController::class, 'index'])->name('pruebas.johann');
 
     // Users    
     Route::get('/users',                            [UsersController::class, 'index'])->name('users.index');
