@@ -339,12 +339,15 @@ class ClientsController extends Controller
 
         $permissions = permissionModule('clients', '', true);
 
-        $direcciones = Direccion::where('clients_id', $client->id)->get();
+        $client->referencias = ReferenciaCredito::where('clientes_id', $client->id)->first();
+        $client->linea = LineaCredito::where('clientes_id', $client->id)->first();
+        $client->parimonio = PatrimonioCredito::where('clientes_id', $client->id)->first();
+        $client->ingreso = IngresoEgresoCredito::where('clientes_id', $client->id)->first();
+        $client->creditos = TarjetasCredito::where('clientes_id', $client->id)->first();
 
         return Inertia::render('Keller/Clients/Details', [
             'permissions' => $permissions,
             'client' => $client,
-            'direcciones' => $direcciones,
         ]);
     }
 

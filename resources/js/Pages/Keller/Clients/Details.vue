@@ -9,10 +9,11 @@ import InfoCliente from './components/InfoClientes.vue';
 import InfoCreditos from './components/InfoCreditos.vue';
 
 
-const props = defineProps(['permissions', 'client', 'direcciones'])
+const props = defineProps(['permissions', 'client'])
 
 onMounted(() => {
   activeMenu('clients', 'clients')
+  console.log(props.client)
 })
 
 const loader = ref(false);
@@ -206,7 +207,7 @@ const tagsCambiar = (tag) => {
               <div class="tab-content">
 
                 <div class="active tab-pane" id="user">
-                  <InfoCliente :client="client" :direcciones="direcciones" />
+                  <InfoCliente :cliente="client" />
                 </div>
 
               </div>

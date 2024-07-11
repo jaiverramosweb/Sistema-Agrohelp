@@ -2,553 +2,270 @@
 import { onMounted, ref } from 'vue';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/dist/sweetalert2.css'
+import FilesComponent from '@/Pages/Clients/components/FilesComponent.vue';
+import Linea from '@/Pages/Solicitudes/components/Linea.vue';
+import Referencias from '@/Pages/Solicitudes/components/Referencias.vue';
+import Patrimonio from '@/Pages/Solicitudes/components/Patrimonio.vue';
+import Ingreso from '@/Pages/Solicitudes/components/Ingreso.vue';
+import Credito from '@/Pages/Solicitudes/components/Credito.vue';
+import Producto from '@/Pages/Solicitudes/components/Producto.vue';
 
-const props = defineProps([])
+const props = defineProps([
+    'cliente'
+])
 
 onMounted(() => {})
 
-const id = ref(0)
-const tipo_documento = ref('')
-const documento = ref('')
-const nombre = ref('')
-const email = ref('')
-
-const edad = ref('')
-const domicilio = ref('')
-const direccion_pers = ref('')
-const telefono = ref('')
-const direccion_comercial = ref('')
-const telefono_comercial = ref('')
-const direccion_judicial = ref('')
-const telefono_judicial = ref('')
-const representante = ref('')
-const representante_doc = ref('')
-const tipo_cliente = ref('')
-const autorretenedor = ref('')
-const persona_pago = ref('')
-const direccion_pago = ref('')
-const telefono_pago = ref('')
-const dia_pago = ref('')
-const hora_pago = ref('')
-const comentatio_pago = ref('')
-const estado_civil = ref('')
-const direccion_recidencia = ref('')
-const telefono_recidencia = ref('')
-const ciudad_recidencia = ref('')
-const empresa = ref('')
-const empresa_direccion = ref('')
-const empresa_telefono = ref('')
-const cargo_actual = ref('')
-const antoguedad_empresa = ref('')
-const personas_cargo = ref('')
-const vivienda = ref('')
-const camara_comercio = ref('')
-const profesion = ref('')
-const nombre_negocio = ref('')
-const tipo_direccion = ref('')
-const direccion = ref('')
-const ciudad = ref('')
-const departamento = ref('')
-const ciudad_solicitud = ref('')
-const tipo_declarante = ref('')
-const independiente = ref('')
-const nombre_conyuge = ref('')
-const ocupacion_conyuge = ref('')
-const empresa_conyuge = ref('')
 
 </script>
 
 <template>
-    <div class="row">
+<div class="row">
 
-        <div class="form-group col-4">
-            <label for="tipo_documento">Tipo de Identificación <span class="text-danger">
-                    *</span></label>
-            <select id="inputState" class="form-control" v-model="tipo_documento">
-                <option value="" selected>Seleccione...</option>
-                <option value="CC">CC</option>
-                <option value="NIT">NIT</option>
-            </select>
+<div class="col-lg-12">
 
+    <div class="card">
+
+        <div class="card-header p-2">
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a class="nav-link active" href="#info" data-toggle="tab">Información
+                        Personal</a></li>
+                <li class="nav-item"><a class="nav-link" href="#referencia"
+                        data-toggle="tab">Referencias</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#linea" data-toggle="tab">Linea de
+                        crédito</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#patrimonio" data-toggle="tab">Patrimonio</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#ingresos" data-toggle="tab">Ingresos y
+                        Egresos</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" href="#tarjeta" data-toggle="tab">Tarjetas y
+                        créditos
+                        vigentes</a>
+                </li>
+                
+            </ul>
         </div>
 
+        <!-- /.card-header -->
+        <div class="card-body">
 
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label v-if="tipo_documento == 'NIT'" for="documento">Nit <span class="text-danger">
-                    *</span></label>
-            <label v-else for="documento">Cédula No <span class="text-danger">
-                *</span></label>
+            <div class="tab-content">
 
-            <input v-model="documento" type="text" class="form-control" id="documento"
-                aria-describedby="documento" autocomplete="off">
-            <div v-if="documento == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
+                <div class="active tab-pane" id="info">
+                    <div class="row">
+                        <div class="col-4">
+                            <b v-if="cliente.tipo_documento == 'NIT'">Nombre o Razón social</b>
+                            <b v-else>Nombres y Apellidos</b>
+                            <br />
+                            <p>
+                                {{ cliente.nombre }}
+                            </p>
+                        </div>
+
+                        <div class="col-4">
+                            <b>Tipo de Identificación</b>
+                            <p>{{ cliente.tipo_documento }}</p>
+                        </div>
+                        <div class="col-4">
+                            <b>Numero</b>
+                            <p>{{ cliente.documento }}</p>
+                        </div>
+                        <div class="col-4">
+                            <b>Correo electrónico</b>
+                            <p>{{ cliente.email }}</p>
+                        </div>
+                        <div class="col-4">
+                            <b>Dirección</b>
+                            <p>{{ cliente.direccion_pers }}</p>
+                        </div>
+                        <div class="col-4">
+                            <b>Teléfono</b>
+                            <p>{{ cliente.telefono }}</p>
+                        </div>
+
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Edad</b>
+                            <p>{{ cliente.edad }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Estado Civil</b>
+                            <p>{{ cliente.estado_civil }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Dirección de Residencia</b>
+                            <p>{{ cliente.direccion_recidencia }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Teléfono</b>
+                            <p>{{ cliente.telefono_recidencia }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Cuidad y Dept.</b>
+                            <p>{{ cliente.ciudad_recidencia }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Profesión</b>
+                            <p>{{ cliente.profesion }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Empresa donde trabaja</b>
+                            <p>{{ cliente.empresa }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Teléfono</b>
+                            <p>{{ cliente.empresa_telefono }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Cargo Actual</b>
+                            <p>{{ cliente.cargo_actual }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Antigüedad de la Empresa</b>
+                            <p>{{ cliente.antoguedad_empresa }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>No. Personas a Cargo</b>
+                            <p>{{ cliente.personas_cargo }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Vivienda</b>
+                            <p>{{ cliente.vivienda }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Es independiente?</b>
+                            <p>{{ cliente.independiente }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Tiene Negocio Registrado en Cámara?</b>
+                            <p>{{ cliente.camara_comercio }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Nombre del Negocio Registrado</b>
+                            <p>{{ cliente.nombre_negocio }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Nombre del Cónyuge</b>
+                            <p>{{ cliente.nombre_conyuge }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Ocupación</b>
+                            <p>{{ cliente.ocupacion_conyuge }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'CC'" class="col-4">
+                            <b>Empresa</b>
+                            <p>{{ cliente.empresa_conyuge }}</p>
+                        </div>
+
+
+
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Domicilio</b>
+                            <p>{{ cliente.domicilio }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Dirección comercial</b>
+                            <p>{{ cliente.direccion_comercial }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Teléfono</b>
+                            <p>{{ cliente.telefono_comercial }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Dirección Judicial</b>
+                            <p>{{ cliente.direccion_judicial }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Teléfono</b>
+                            <p>{{ cliente.telefono_judicial }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Representante Legal</b>
+                            <p>{{ cliente.representante }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Cédula No.</b>
+                            <p>{{ cliente.representante_doc }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Tipo de Cliente</b>
+                            <p>{{ cliente.tipo_cliente }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Que tipo de Declarante es?</b>
+                            <p>{{ cliente.tipo_declarante }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Autorretenedor</b>
+                            <p>{{ cliente.autorretenedor }}</p>
+                        </div>
+
+                        <h4 class="col-12 mt-2 mb-2">Pago en</h4>
+
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Persona que autoriza los Pagos</b>
+                            <p>{{ cliente.persona_pago }}</p>
+                        </div>
+
+                        <div class="col-8">
+                            <b>Dirección y ciudad donde se realizarán los pagos</b>
+                            <p>{{ cliente.direccion_pago }}</p>
+                        </div>
+
+                        <div class="col-4">
+                            <b>Teléfono</b>
+                            <p>{{ cliente.telefono_pago }}</p>
+                        </div>
+
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Dia de Pago</b>
+                            <p>{{ cliente.dia_pago }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Horario de Pago</b>
+                            <p>{{ cliente.hora_pago }}</p>
+                        </div>
+                        <div v-if="cliente.tipo_documento == 'NIT'" class="col-4">
+                            <b>Comentario Adicional</b>
+                            <p>{{ cliente.comentatio_pago }}</p>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4" v-if="solicitud">
+                        <FilesComponent :solicitud_id="solicitud.id" />
+                    </div>
+                </div>
+
+                <div v-if="cliente.referencias" class="tab-pane" id="referencia">
+                    <Referencias :referencias="cliente.referencias" />
+                </div>
+
+                <div v-if="cliente.linea" class="tab-pane" id="linea">
+                    <Linea :linea="cliente.linea" />
+                </div>
+
+                <div v-if="cliente.parimonio" class="tab-pane" id="patrimonio">
+                    <Patrimonio :patrimonio="cliente.parimonio" />
+                </div>
+
+                <div v-if="cliente.ingreso" class="tab-pane" id="ingresos">
+                    <Ingreso :ingreso="cliente.ingreso" />
+                </div>
+
+                <div v-if="cliente.creditos" class="tab-pane" id="tarjeta">
+                    <Credito :creditos="cliente.creditos" />
+                </div>
+
             </div>
-        </div>
 
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-12">
-            <label v-if="tipo_documento == 'NIT'">Nombre o Razón social <span
-                    class="text-danger">
-                    *</span></label>
-
-            <label v-else>Nombres y Apellidos: <span class="text-danger">
-                    *</span></label>
-            <input v-model="nombre" type="text" class="form-control" id="documento"
-                aria-describedby="documento" autocomplete="off">
-            <div v-if="nombre == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
- 
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Edad <span class="text-danger">
-                    *</span></label>
-            <input v-model="edad" type="text" class="form-control" id="edad"
-                aria-describedby="edad" autocomplete="off" @change="saveCredito">
-            <div v-if="edad == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Estado Civil <span class="text-danger">
-                    *</span></label>
-            <!-- <input v-model="estado_civil" type="text" class="form-control" id="estado_civil"
-                aria-describedby="estado_civil" autocomplete="off" @change="saveCredito" /> -->
-
-            <select id="inputState" class="form-control" v-model="estado_civil"
-                @change="saveCredito">
-                <option value="" selected>Seleccione...</option>
-                <option value="Soltero">Soltero</option>
-                <option value="Casado">Casado</option>
-                <option value="Unión libre">Unión libre</option>
-                <option value="Divorciado / Separado">Divorciado / Separado</option>
-                <option value="Viudo">Viudo</option>
-            </select>
-
-            <div v-if="estado_civil == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-4">
-            <label for="documento">Domicilio <span class="text-danger">
-                    *</span></label>
-            <input v-model="domicilio" type="text" class="form-control" id="domicilio"
-                aria-describedby="documento" autocomplete="off" @change="saveCredito">
-            <div v-if="domicilio == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-8">
-            <label for="documento">Dirección comercial <span class="text-danger">
-                    *</span></label>
-            <input v-model="direccion_comercial" type="text" class="form-control"
-                id="direccion_comercial" aria-describedby="documento" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="direccion_comercial == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-4">
-            <label for="documento">Teléfono <span class="text-danger">
-                    *</span></label>
-            <input v-model="telefono_comercial" type="text" class="form-control"
-                id="telefono_comercial" aria-describedby="documento" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="telefono_comercial == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-8">
-            <label for="documento">Dirección Judicial <span class="text-danger">
-                    *</span></label>
-            <input v-model="direccion_judicial" type="text" class="form-control"
-                id="direccion_judicial" aria-describedby="documento" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="direccion_judicial == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-4">
-            <label for="documento">Teléfono <span class="text-danger">
-                    *</span></label>
-            <input v-model="telefono_judicial" type="text" class="form-control"
-                id="telefono_judicial" aria-describedby="documento" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="telefono_judicial == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Dirección de Residencia <span class="text-danger">
-                    *</span></label>
-            <input v-model="direccion_recidencia" type="text" class="form-control"
-                id="direccion_recidencia" aria-describedby="direccion_recidencia"
-                autocomplete="off" @change="saveCredito">
-            <div v-if="direccion_recidencia == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Teléfono <span class="text-danger">
-                    *</span></label>
-            <input v-model="telefono_recidencia" type="text" class="form-control"
-                id="telefono_recidencia" aria-describedby="telefono_recidencia"
-                autocomplete="off" @change="saveCredito">
-            <div v-if="telefono_recidencia == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-6">
-            <label for="edad">Cuidad y Dept. <span class="text-danger">
-                    *</span></label>
-            <input v-model="ciudad_recidencia" type="text" class="form-control"
-                id="ciudad_recidencia" aria-describedby="ciudad_recidencia"
-                autocomplete="off" @change="saveCredito">
-            <div v-if="ciudad_recidencia == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div class="form-group col-6">
-            <label for="documento">Correo electrónico <span class="text-danger">
-                    *</span></label>
-            <input v-model="email" type="email" class="form-control" id="telefono_judicial"
-                aria-describedby="email" autocomplete="off" @change="saveCredito">
-            <div v-if="email == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div class="form-group col-8">
-            <label for="documento">Dirección <span class="text-danger">
-                    *</span></label>
-            <input v-model="direccion_pers" type="text" class="form-control"
-                id="telefono_judicial" aria-describedby="direccion_pers" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="direccion_pers == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div class="form-group col-4">
-            <label for="documento">Teléfono <span class="text-danger">
-                    *</span></label>
-            <input v-model="telefono" type="text" class="form-control" id="telefono"
-                aria-describedby="documento" autocomplete="off" @change="saveCredito">
-            <div v-if="telefono == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Profesión <span class="text-danger">
-                    *</span></label>
-            <input v-model="profesion" type="text" class="form-control" id="profesion"
-                aria-describedby="profesion" autocomplete="off" @change="saveCredito">
-            <div v-if="profesion == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Empresa donde trabaja<span class="text-danger">
-                    *</span></label>
-            <input v-model="empresa" type="text" class="form-control" id="empresa"
-                aria-describedby="empresa" autocomplete="off" @change="saveCredito">
-            <div v-if="empresa == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Dirección y ciudada<span class="text-danger">
-                    *</span></label>
-            <input v-model="empresa_direccion" type="text" class="form-control"
-                id="empresa_direccion" aria-describedby="empresa_direccion"
-                autocomplete="off" @change="saveCredito">
-            <div v-if="empresa_direccion == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Teléfono<span class="text-danger">
-                    *</span></label>
-            <input v-model="empresa_telefono" type="text" class="form-control"
-                id="empresa_telefono" aria-describedby="empresa_telefono" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="empresa_telefono == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Cargo Actual<span class="text-danger">
-                    *</span></label>
-            <input v-model="cargo_actual" type="text" class="form-control" id="cargo_actual"
-                aria-describedby="cargo_actual" autocomplete="off" @change="saveCredito">
-            <div v-if="cargo_actual == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Antigüedad de la Empresa<span class="text-danger">
-                    *</span></label>
-            <input v-model="antoguedad_empresa" type="text" class="form-control"
-                id="antoguedad_empresa" aria-describedby="antoguedad_empresa"
-                autocomplete="off" @change="saveCredito">
-            <div v-if="antoguedad_empresa == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">No. Personas a Cargo<span class="text-danger">
-                    *</span></label>
-            <input v-model="personas_cargo" type="text" class="form-control"
-                id="personas_cargo" aria-describedby="personas_cargo" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="personas_cargo == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Vivienda<span class="text-danger">
-                    *</span></label>
-            <input v-model="vivienda" type="text" class="form-control" id="vivienda"
-                aria-describedby="vivienda" autocomplete="off" @change="saveCredito">
-            <div v-if="vivienda == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="documento">Es independiente? <span class="text-danger">
-                    *</span></label>
-            <select id="inputState" class="form-control" v-model="independiente"
-                @change="saveCredito">
-                <option value="" selected>Seleccione...</option>
-                <option value="Si">Si</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="documento">Tiene Negocio Registrado en Cámara? <span
-                    class="text-danger">
-                    *</span></label>
-            <select id="inputState" class="form-control" v-model="camara_comercio"
-                @change="saveCredito">
-                <option value="" selected>Seleccione...</option>
-                <option value="Si">Si</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Nombre del Negocio Registrado<span class="text-danger">
-                    *</span></label>
-            <input v-model="nombre_negocio" type="text" class="form-control"
-                id="nombre_negocio" aria-describedby="nombre_negocio" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="nombre_negocio == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Nombre del Cónyuge<span class="text-danger">
-                    *</span></label>
-            <input v-model="nombre_conyuge" type="text" class="form-control"
-                id="nombre_conyuge" aria-describedby="nombre_conyuge" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="nombre_conyuge == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Ocupación<span class="text-danger">
-                    *</span></label>
-            <input v-model="ocupacion_conyuge" type="text" class="form-control"
-                id="ocupacion_conyuge" aria-describedby="ocupacion_conyuge"
-                autocomplete="off" @change="saveCredito">
-            <div v-if="ocupacion_conyuge == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'CC'" class="form-group col-4">
-            <label for="edad">Empresa<span class="text-danger">
-                    *</span></label>
-            <input v-model="empresa_conyuge" type="text" class="form-control"
-                id="empresa_conyuge" aria-describedby="empresa_conyuge" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="empresa_conyuge == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-4">
-            <label for="documento">Representante Legal <span class="text-danger">
-                    *</span></label>
-            <input v-model="representante" type="text" class="form-control"
-                id="representante" aria-describedby="documento" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="representante == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-4">
-            <label for="documento">Cédula No. <span class="text-danger">
-                    *</span></label>
-            <input v-model="representante_doc" type="text" class="form-control"
-                id="representante_doc" aria-describedby="representante_doc"
-                autocomplete="off" @change="saveCredito">
-            <div v-if="representante_doc == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-4">
-            <label for="documento">Tipo de Cliente <span class="text-danger">
-                    *</span></label>
-            <input v-model="tipo_cliente" type="text" class="form-control" id="tipo_cliente"
-                aria-describedby="tipo_cliente" autocomplete="off" @change="saveCredito">
-            <div v-if="tipo_cliente == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-4">
-            <label for="documento">Que tipo de Declarante es? <span class="text-danger">
-                    *</span></label>
-            <select id="inputState" class="form-control" v-model="tipo_declarante"
-                @change="saveCredito">
-                <option value="" selected>Seleccione...</option>
-                <option value="Empresa Estatal">Empresa Estatal</option>
-                <option value="Régimen Común">Régimen Común</option>
-                <!-- <option value="Régimen Simplificado">Régimen Simplificado</option> -->
-                <option value="No Responsable de IVA">No Responsable de IVA</option>
-                <option value="Gran Contribuyente">Gran Contribuyente</option>
-            </select>
-        </div>
-
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-4">
-            <label for="documento">Autorretenedor <span class="text-danger">
-                    *</span></label>
-            <select id="inputState" class="form-control" v-model="autorretenedor"
-                @change="saveCredito">
-                <option value="" selected>Seleccione...</option>
-                <option value="Si">Si</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-
-        <hr class="col-11">
-
-        <h4 class="col-12">Pago en</h4>
-
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-12">
-            <label for="documento">Persona que autoriza los Pagos <span class="text-danger">
-                    *</span></label>
-            <input v-model="persona_pago" type="text" class="form-control" id="persona_pago"
-                aria-describedby="persona_pago" autocomplete="off" @change="saveCredito">
-            <div v-if="persona_pago == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div class="form-group col-8">
-            <label for="documento">Dirección y ciudad donde se realizarán los pagos<span
-                    class="text-danger">
-                    *</span></label>
-            <input v-model="direccion_pago" type="text" class="form-control"
-                id="direccion_pago" aria-describedby="direccion_pago" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="direccion_pago == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div class="form-group col-4">
-            <label for="documento">Teléfono<span class="text-danger">
-                    *</span></label>
-            <input v-model="telefono_pago" type="text" class="form-control"
-                id="direccion_pago" aria-describedby="direccion_pago" autocomplete="off"
-                @change="saveCredito">
-            <div v-if="direccion_pago == ''" class="invalid-feedback d-block">El
-                campo es
-                requerido
-            </div>
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-6">
-            <label for="dia_pago">Dia de Pago</label>
-            <input v-model="dia_pago" type="text" class="form-control" id="dia_pago"
-                aria-describedby="dia_pago" autocomplete="off" @change="saveCredito">
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-6">
-            <label for="hora_pago">Horario de Pago</label>
-            <input v-model="hora_pago" type="text" class="form-control" id="hora_pago"
-                aria-describedby="hora_pago" autocomplete="off" @change="saveCredito">
-        </div>
-
-        <div v-if="tipo_documento == 'NIT'" class="form-group col-12">
-            <label for="comentatio_pago">Comentario Adicional</label>
-            <input v-model="comentatio_pago" type="text" class="form-control"
-                id="comentatio_pago" aria-describedby="comentatio_pago" autocomplete="off"
-                @change="saveCredito">
         </div>
 
     </div>
+
+</div>
+
+</div>
 </template>

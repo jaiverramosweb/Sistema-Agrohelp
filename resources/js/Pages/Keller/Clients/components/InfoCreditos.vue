@@ -177,7 +177,7 @@ const transforDate = (date) => {
                         <tr v-for=" ( item_data, i ) in dataClient " :key='i'>
 
                             <td>
-                                {{ item_data.nombre_producto }} {{ item_data.nombre_caract }}
+                                {{ item_data.nombre_caract }}
                             </td>
                             <td>
                                 {{ item_data.monto }}

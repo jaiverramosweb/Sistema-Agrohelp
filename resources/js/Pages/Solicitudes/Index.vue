@@ -212,7 +212,7 @@ const amortizacionVariable = () => {
     }
 
     if(tipo_interes.value == 'IPC'){
-        taza_interes = interes_mas.value + interes.value
+        taza_interes = parseFloat(interes_mas.value)  +  parseFloat(interes.value)
     } else {
         taza_interes =  interes.value
     }
@@ -259,18 +259,17 @@ const amortizacionVariable = () => {
 
 }
 
-// const amortizacion = () => {
-//     const monto = 50000000
-//     const tiempo = 12
-//     const interes = 2.3 / 100;
-
-//     const cuota = (interes * monto) / (1- Math.pow((1 + interes), -tiempo))
-
-//     console.log(cuota)
-// }
-
 const amortizacionMensual = () => {
-    const r_mensual = interes.value / 100;
+
+    let taza_interes = 0
+
+    if(tipo_interes.value == 'IPC'){
+        taza_interes = parseFloat(interes_mas.value)  +  parseFloat(interes.value)
+    } else {
+        taza_interes =  interes.value
+    }
+
+    const r_mensual = taza_interes / 100;
     const fecha_inicial = new Date();
 
     // Calcular la tasa efectiva para el período seleccionado
@@ -381,6 +380,8 @@ watch(tipo_interes, () =>{
         const ipc = dataIntereses.value.filter(i => i.name == 'IPC')
         interes.value = 0
         interes_mas.value = ipc[0].valor
+
+        console.log(ipc[0].valor)
     } else {
         const otro = dataIntereses.value.filter(i => i.name == 'Corriente')
         interes.value = otro[0].valor

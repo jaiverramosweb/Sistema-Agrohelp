@@ -19,6 +19,7 @@ class CreditosController extends Controller
     public function show(Request $request)
     {
         $sol = $this->pagination($request);
+        // dd($sol);
         return response()->json($sol, 200);
     }
 
@@ -41,15 +42,14 @@ class CreditosController extends Controller
                 'sol_servicios.estado_solicitud',
                 'sol_servicios.monto',
                 'sol_servicios.tiempo',
+                'sol_servicios.linea_id',
                 'sol_servicios.created_at',
                 'clients.nombre',
-                'caracteristicas_productos.nombre AS nombre_caract',
-                'productos.nombre AS nombre_producto',
+                'caracteristicas_productos.nombre as nombre_caract',
             ])
                 ->join("clients", "sol_servicios.clientes_id", "clients.id")
-                ->join("caracteristicas_productos", "sol_servicios.producto_id", "caracteristicas_productos.id")
-                ->join("productos", "caracteristicas_productos.productos_id", "productos.id")
-                ->where('clientes_id', $request->id)
+                ->join("caracteristicas_productos", "sol_servicios.linea_id", "caracteristicas_productos.id")
+                ->where("sol_servicios.clientes_id", $request->id)                
                 ->orderBy($order_field, $order_type);
 
             $show = $h->paginate($request->show);
@@ -64,7 +64,7 @@ class CreditosController extends Controller
                 'sol_servicios.tiempo'
             ])
                 ->join("clients", "sol_servicios.clientes_id", "clients.id")
-                ->where('clientes_id', $request->id)
+                ->where("sol_servicios.clientes_id", $request->id)
                 ->orderBy($order_field, $order_type);
 
             $this->search_ = $search;
