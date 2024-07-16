@@ -56,16 +56,18 @@ class ClientAuthController extends Controller
 
     public function perfil()
     {
-        $user = Auth::user();
+        $user_id = Auth::user()->id;
 
-        $user->referencias = ReferenciaCredito::where('clientes_id', $user->id)->first();
-        $user->linea = LineaCredito::where('clientes_id', $user->id)->first();
-        $user->parimonio = PatrimonioCredito::where('clientes_id', $user->id)->first();
-        $user->ingreso = IngresoEgresoCredito::where('clientes_id', $user->id)->first();
-        $user->creditos = TarjetasCredito::where('clientes_id', $user->id)->first();
+        $client = Client::where('users_id', $user_id)->first();
 
-        return Inertia::render('Clients/Perfil', [
-            'cliente'       => $user
+        $client->referencias = ReferenciaCredito::where('clientes_id', $client->id)->first();
+        $client->linea = LineaCredito::where('clientes_id', $client->id)->first();
+        $client->parimonio = PatrimonioCredito::where('clientes_id', $client->id)->first();
+        $client->ingreso = IngresoEgresoCredito::where('clientes_id', $client->id)->first();
+        $client->creditos = TarjetasCredito::where('clientes_id', $client->id)->first();
+
+        return Inertia::render('Clients/CrearCliente', [
+            'cliente' => $client
         ]);
     }
 }

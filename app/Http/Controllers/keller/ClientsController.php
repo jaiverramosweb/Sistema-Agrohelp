@@ -115,6 +115,7 @@ class ClientsController extends Controller
         $client->tipo_documento     = $request->tipo_documento;
         $client->documento          = $request->documento;
         $client->email              = $request->email;
+        $client->edad              = $request->edad;
         $client->estado_persona     = 'Activo';
         $client->indicador_persona  = 'En espara';
 

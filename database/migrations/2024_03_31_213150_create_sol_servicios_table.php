@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->integer('clientes_id');
+            $table->integer('asesor_id')->nullable();
             $table->integer('producto_id')->nullable();
             $table->integer('linea_id')->nullable();
 
@@ -23,6 +24,8 @@ return new class extends Migration
 
             $table->string('numero')->default('');
             $table->float('valor', 15, 2)->nullable();
+            $table->integer('valor_activo')->nullable();
+            $table->integer('canon_extraordinario')->nullable();
             $table->string('tiempo_financiacion')->default('');
             $table->string('tasa_interes')->default('');
             $table->string('tipo_interes')->default('');
@@ -70,8 +73,8 @@ return new class extends Migration
             $table->string('camara_comercio')->default('');
             $table->string('ocupacion_conyuge')->default('');
 
-            $table->string('firma_solicitud')->default('');
-            $table->string('firma_declaracion')->default('');
+            // $table->string('firma_solicitud')->default('');
+            // $table->string('firma_declaracion')->default('');
 
             $table->timestamps();
         });

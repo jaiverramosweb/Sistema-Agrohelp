@@ -87,6 +87,11 @@ const downloadFile = (id) => {
     window.open(url, '_blank');
 }
 
+const descargarFormato = () => {
+    let url = '/download-solicitud/' + solicitud.value.id;
+    window.open(url, '_blank');
+}
+
 </script>
 
 <template>
@@ -359,46 +364,15 @@ const downloadFile = (id) => {
                                 </div>
 
                                 <div class="mt-4" v-if="solicitud">
-                                    <!-- <div class="row">
-
-                                        <div class='table-responsive'>
-
-                                            <div class="col-12">
-
-                                                <table class="table ">
-
-                                                    <thead class="thead-dark">
-                                                        <tr>
-                                                            <th scope="col"># </th>
-                                                            <th scope="col">Nombre </th>
-                                                            <th scope="col">Fecha</th>
-                                                            <th scope="col">Acciones</th>
-                                                        </tr>
-                                                    </thead>
-
-                                                    <tbody>
-                                                        <tr v-for=" ( item, i ) in documents_list " :key="i">
-                                                            <td>{{ i + 1 }}</td>
-                                                            <td>{{ item.name }}</td>
-                                                            <td>{{ transforDate(item.created_at) }}</td>
-                                                            <td>
-                                                                <button class="btn mr-1 btn-xs bg-warning  btn-round"
-                                                                    @click='downloadFile(item.id)'>
-                                                                    <i class='fas fa-download'></i>
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-
-                                                </table>
-
-                                            </div>
-
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button @click="descargarFormato" class="btn btn-danger float-left">Descargar
+                                                formato de solicitud</button>
                                         </div>
-
-                                    </div> -->
-
-                                    <FilesComponent :solicitud_id="solicitud.id" />
+                                        <div class="col-12 mt-4">
+                                            <FilesComponent :solicitud_id="solicitud.id" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

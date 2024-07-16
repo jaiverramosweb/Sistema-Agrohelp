@@ -825,6 +825,8 @@
 
    </table>
 
+   <div class="page-break"></div>
+
    {{--------------------------------  LINEA DE CRÉDITO   ---------------------------------}}
    <table style="margin-top: 40px;">
       <tr style="text-align: center; font-weight: bold; background-color: rgb(225, 217, 217); border-radius: 10px;">
@@ -1675,22 +1677,24 @@
       </tr>
    </table>
 
-   <div class="row" style="margin-top: 100px;" >
+   <div class="row" style="margin-top: 100px;">
       <div class="col-6">
          _______________________________________________ <br>
          NOMBRE DEL SOLICITANTE <br> 
          {{ $data->cliente->nombre }}
       </div>
 
-      <div class="col-6" >
+      <div class="col-6">
          _______________________________________________ <br>
-         FIRMA Y SELLO DEL SOLICITANTE<br>
-         CC. &nbsp;&nbsp; NIT. &nbsp;&nbsp; No.  {{ $data->cliente->documento }}
+         <span>FIRMA Y SELLO DEL SOLICITANTE</span><br>
+         <span>CC. / NIT. No. {{ $data->cliente->documento }}</span>
+         
       </div>
    </div>
 
 
    {{------------------------------- DOCUMENTACIÓN  REQUERIDA -----------------------------}}
+
    <table style="margin-top: 100px;">
       <tr>
          <td rowspan="2" class="text-sm border-right border-bottom bg-header">
@@ -1765,7 +1769,7 @@
          <td class=" border-right text-xs text-bold">&nbsp;EXTRACTOS BANCARIOS ÚLTIMOS 3 MESES</td>
          <td class=" border-right text-center text-sm">X</td>
          <td class=" border-right text-center text-sm">X</td>
-         <td class=" text-center text-sm">X</td>">&nbsp;</td>
+         <td class=" text-center text-sm">X</td>&nbsp;</td>
       </tr>
    </table>
 

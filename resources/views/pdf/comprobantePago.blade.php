@@ -41,55 +41,66 @@
                                 <b>RECIBIDO DE</b> <br>
                                 <b>NIT o C.C</b> <br>
                                 <b>VALOR PAGADO</b><br>
-                                <b>METODO DE PAGO</b>
+                                <b>METODO DE PAGO</b><br>
+                                <b>TIPO DE PAGO</b><br>
+                                @if ($pagoAmor->is_table == false)                                    
+                                    <b>TIPO DE CRÉDITO</b>
+                                @endif
                             </div>
                             <div class="col-9">
                                 <span>{{ $pagoAmor->cliente->nombre }}</span><br>
                                 <span>{{ $pagoAmor->cliente->documento }}</span><br>
                                 <span>{{ formatearMoneda($pagoAmor->pago) }}</span><br>
-                                <span>{{ $pagoAmor->metodo->name }}</span>
+                                <span>{{ $pagoAmor->metodo->name }}</span><br>
+                                <span>{{ $pagoAmor->tipo }}</span><br>
+                                @if ($pagoAmor->is_table == false)                                    
+                                    <span>{{ $pagoAmor->tipo_credito->nombre }}</span>
+                                @endif
                                 
                             </div>
                         </div>
                         
                     </div>
 
-                    <div class="col-12 mt-4">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>CUOTA</th>
-                                    <th>CREDITO</th>
-                                    <th>CAPITAL</th>
-                                    <th>INTERES</th>
-                                    <th>MORA</th>
-                                    <th>TOTAL</th>
-                                </tr>
-                            </thead>
+                    @if ($pagoAmor->is_table == true)                        
+                        <div class="col-12 mt-4">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>CUOTA</th>
+                                        <th>CREDITO</th>
+                                        <th>CAPITAL</th>
+                                        <th>INTERES</th>
+                                        <th>MORA</th>
+                                        <th>TOTAL</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody>
-                                @foreach ($pagoAmor->pago_amortiz as $item)                                    
-                                    <tr>
-                                        <td>{{ $item->amortizacion->cuota_numero }}</td>
-                                        <td>{{ $item->credito->nombre }}</td>
-                                        <td>{{ formatearMoneda($item->amortizacion->amortizacion_pagado) }}</td>
-                                        <td>{{ formatearMoneda($item->amortizacion->interes_pagado) }}</td>
-                                        <td>{{ formatearMoneda($item->amortizacion->mora) }}</td>
-                                        <td>{{ formatearMoneda($item->amortizacion->amortizacion_pagado + $item->amortizacion->interes_pagado + $item->amortizacion->mora) }}</td>
-                                    </tr>
-                                @endforeach
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td colspan="2">
-                                            <b style="margin-left: 70px">TOTAL PAGADO: {{ formatearMoneda($pagoAmor->pago) }}</b> 
-                                        </td>
-                                    </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                <tbody>
+                                    @foreach ($pagoAmor->pago_amortiz as $item)                                    
+                                        <tr>
+                                            <td>{{ $item->amortizacion->cuota_numero }}</td>
+                                            <td>{{ $item->credito->nombre }}</td>
+                                            <td>{{ formatearMoneda($item->amortizacion->amortizacion_pagado) }}</td>
+                                            <td>{{ formatearMoneda($item->amortizacion->interes_pagado) }}</td>
+                                            <td>{{ formatearMoneda($item->amortizacion->mora) }}</td>
+                                            <td>{{ formatearMoneda($item->amortizacion->amortizacion_pagado + $item->amortizacion->interes_pagado + $item->amortizacion->mora) }}</td>
+                                        </tr>
+                                    @endforeach
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td colspan="2">
+                                                <b style="margin-left: 70px">TOTAL PAGADO: {{ formatearMoneda($pagoAmor->pago) }}</b> 
+                                            </td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+
                 </div>
             </div>
         </div>

@@ -50,6 +50,9 @@ const ineteresMora = ref('')
 const ineteresMoraPagar = ref(0)
 const descripcion_pago = ref('')
 
+const retefuente = ref(false)
+const retefuenteValor = ref(0)
+
 const dataPagar = ref([])
 const dataBancos = ref([])
 const tabla_pagos = ref([])
@@ -127,15 +130,21 @@ const getListCredit = () => {
 }
 
 const addPagar = (item) => {
-    console.log('newTotal.value', newTotal.value)
-    console.log('item.cuota', item.cuota)
     const uno = parseInt(item.cuota)
     const dos = parseInt(newTotal.value)
 
-    console.log('suma', uno + dos)
+    let pago = parseInt(item.cuota) + newTotal.value
 
-    newTotal.value = parseInt(item.cuota) + newTotal.value
-    console.log(item)
+    if(retefuente.value == true){
+        const porcentaje = 6;
+        const resultado = (pago * porcentaje) / 100;
+        retefuenteValor.value = resultado
+        const newNum = pago - resultado
+
+        newTotal.value = newNum
+    } else {
+        newTotal.value = pago
+    }
 
     tabla_pagos.value.push(item)
 }
@@ -395,8 +404,17 @@ const calcularNuevoPago = ( itemData, montoModificar, index ) => {
         num = parseInt(element.cuotaPagar) + num
     });
 
-    console.log('num',num)
-    newTotal.value = num
+    if(retefuente.value == true){
+        const porcentaje = 6;
+        const resultado = (num * porcentaje) / 100;
+        retefuenteValor.value = resultado
+        const newNum = num - resultado
+
+        newTotal.value = newNum
+    } else {
+        newTotal.value = num
+    }
+
 
 
     console.log(tabla_pagos.value)
@@ -405,7 +423,7 @@ const calcularNuevoPago = ( itemData, montoModificar, index ) => {
 const generarPago = () => {
 
     if(dataList.value.length > 0){
-        if(tipo_pago.value == 'Capital'){
+        if(tipo_pago.value == 'Abono a capital'){
             amortizacionMensual()
             if(tabla_amor.value.length > 0){
                 pagarAbono()
@@ -538,6 +556,7 @@ const pagarCuota = () => {
     axios.post(`/realizar-pago`, {
         id: credit_id.value,
         pagos: newTotal.value,
+        retencion: parseInt(retefuenteValor.value),
         tabla_pagos: tabla_pagos.value,
         tipo: tipo_pago.value,
         metodo_pago: metodo_pago.value,
@@ -567,6 +586,7 @@ const pagarAbono = () => {
         capital: capital.value - newTotal.value,
         tipo: tipo_pago.value,
         monto: newTotal.value,
+        retencion: parseInt(retefuenteValor.value),
         metodo_pago: metodo_pago.value,
         banco_id: banco_id.value,
         tablaAmortizacion: tabla_amor.value,
@@ -598,7 +618,7 @@ watch(client_id, () =>{
 watch(credit_id, () =>{
     if(tipo_pago.value == 'Mensual') getListCredit()
     
-    if(tipo_pago.value == 'Capital' || tipo_pago.value == 'Reducción de plazo') {
+    if(tipo_pago.value == 'Abono a capital' || tipo_pago.value == 'Reducción de plazo') {
         getListCredit()
         const credit = dataCredit.value.filter(c => c.id == credit_id.value)
         console.log(credit)
@@ -610,6 +630,22 @@ watch(credit_id, () =>{
     }
 })
 
+watch(retefuente, () =>{
+    if(retefuente.value == true){
+        const porcentaje = 6;
+        const resultado = (newTotal.value * porcentaje) / 100;
+        retefuenteValor.value = resultado
+        const newNum = newTotal.value - resultado
+
+        newTotal.value = newNum
+    } else {
+        if(retefuenteValor.value !== 0){
+            const newNum = newTotal.value + retefuenteValor.value
+            retefuenteValor.value = 0
+            newTotal.value = newNum
+        }
+    }
+})
 </script>
 
 <template>
@@ -658,7 +694,7 @@ watch(credit_id, () =>{
                             </div>
 
                             <div class="form-group col-3">
-                                <label for="tiempo_pagar">Metodo de pago</label>
+                                <label for="tiempo_pagar">Método de pago</label>
                                 <select class="form-control" v-model="metodo_pago">
                                     <option value="0">Seleccione</option>
                                     <option v-for="metodo in metodosPago" :key="metodo.id" :value="metodo.id">{{ metodo.name
@@ -680,9 +716,9 @@ watch(credit_id, () =>{
                                 <select id="inputState" class="form-control" v-model="tipo_pago">
                                     <option value="" selected>Seleccione...</option>
                                     <option value="Mensual">Pago mensual</option>
-                                    <option value="Capital">Abono Capital</option>
+                                    <option value="Abono a capital">Abono Capital</option>
                                     <option value="Reducción de plazo">Abono Reducción de plazo</option>
-                                    <option value="Total">Pago total</option>
+                                    <!-- <option value="Total">Pago total</option> -->
                                 </select>
                             </div>
 
@@ -695,11 +731,17 @@ watch(credit_id, () =>{
                             </div>
 
                             <div class="form-group col-3" has-validation>
-                                <label for="monto">Credito</label>
+                                <label for="monto">Crédito</label>
                                 <select id="inputState" class="form-control" v-model="credit_id">
                                     <option value="0" selected>Seleccione...</option>
                                     <option v-for="credit in dataCredit" :key="credit.id" :value="credit.id">{{ credit.nombre_linea }} - {{ credit.valor }}</option>
                                 </select>
+                            </div>
+
+                            <div class="form-group form-check col-1 ml-3" style="margin-top: 40px;">
+                                <input v-model="retefuente" type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Retefuente</label>
+
                             </div>
 
                             <div v-if="tipo_pago !== 'Mensual'" class="form-group col-3">
@@ -708,7 +750,7 @@ watch(credit_id, () =>{
                                     autocomplete="off">
                             </div>
 
-                            <div v-if="tipo_pago !== 'Mensual'" class="form-group col-3">
+                            <div v-if="tipo_pago !== 'Mensual'" class="form-group col-1">
                                 <button class="btn btn-info mt-4 float-right" @click="generarPago">Pagar</button>
                             </div>
 
@@ -776,7 +818,7 @@ watch(credit_id, () =>{
 
                                             <div class="col-12 mt-2">
                                                 <div class="float-right">
-                                                    <!-- <b>Total a pagar: {{ newTotal }}</b> -->
+                                                    <b>Retención: {{ formatearMoneda(retefuenteValor) }}</b> <br>
                                                     <b>Total a pagar: {{ formatearMoneda(newTotal) }}</b>
                                                 </div>
                                             </div>
@@ -832,7 +874,7 @@ watch(credit_id, () =>{
                                             <tr v-for="(fila) in dataList" :key="fila.id">
                                                 <td scope="row" class="text-center">{{ fila.cuota_numero }}</td>
                                                 <td scope="row">{{ formatDate(fila.fecha) }}</td>
-                                                <td>{{ fila.cuota }}</td>
+                                                <td>{{ formatearMoneda(fila.cuota) }}</td>
                                                 <!-- <td>{{ formatearMoneda(fila.cuota) }}</td> -->
                                                 <td>{{ formatearMoneda(fila.interes) }}</td>
                                                 <td>{{ formatearMoneda(fila.mora) }}</td>

@@ -273,7 +273,7 @@ watch(caracteristica_id, () => {
             <!-- <div class="modal-dialog modal-xl"> -->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 v-if="id == 0" class="modal-title" id="modalSolicitudesLabel">+ Nuevo Solicitud</h5>
+                    <h5 v-if="id == 0" class="modal-title" id="modalSolicitudesLabel">+ Nueva Solicitud</h5>
                     <h5 v-else class="modal-title" id="modalSolicitudesLabel">+ Actualizar Solicitud</h5>
 
                 </div>

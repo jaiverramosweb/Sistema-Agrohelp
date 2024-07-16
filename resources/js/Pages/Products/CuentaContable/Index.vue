@@ -8,7 +8,7 @@ import axios from 'axios';
 const props = defineProps(['permissions', 'cuenta'])
 
 onMounted(() => {
-    activeMenu('config', 'asesores')
+    activeMenu('config', 'cuenta')
     dataCuentas.value = props.cuenta.data.data
     pagination.value = props.cuenta.pagination
 })
@@ -363,8 +363,8 @@ const isLouding = () => {
                 <!-- <div class="modal-dialog modal-xl"> -->
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 v-if="id == 0" class="modal-title" id="modalPagoLabel">+ Nuevo Asesor</h5>
-                        <h5 v-else class="modal-title" id="modalPagoLabel">+ Actualizar Asesor</h5>
+                        <h5 v-if="id == 0" class="modal-title" id="modalPagoLabel">+ Nuevo Cuentas Contables</h5>
+                        <h5 v-else class="modal-title" id="modalPagoLabel">+ Actualizar Cuentas Contables</h5>
 
                     </div>
                     <div class="modal-body">

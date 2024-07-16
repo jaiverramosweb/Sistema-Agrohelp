@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pago_amortizacions', function (Blueprint $table) {
             $table->id();
-            $table->integer('amortizations_id');
+            $table->integer('amortizations_id')->nullable();
             $table->integer('factura_pagos_id');
             $table->integer('metodo_pago_id');
             $table->text('descripcion_pago')->nullable();

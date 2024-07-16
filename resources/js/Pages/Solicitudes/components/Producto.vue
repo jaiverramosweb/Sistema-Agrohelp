@@ -119,6 +119,11 @@ const savePreaprobado = () => {
     axios.get(`/save-preaprovado/${solicitudId.value}`).then(({ data }) => {
         // console.log(data)
         estado.value = 'Preaprobado'
+        Swal.fire({
+            icon: 'success',
+            title: 'Preaprobado'
+        })
+        
     })
 }
 
@@ -614,6 +619,11 @@ const calcularMora = (montoVencido, fecha, capital, interes) => {
 
 }
 
+const descargarPre = () => {
+    let url = '/download-pre/' + solicitudId.value;
+    window.open(url, '_blank');
+}
+
 
 </script>
 
@@ -632,6 +642,15 @@ const calcularMora = (montoVencido, fecha, capital, interes) => {
         <div class="col-3">
             <b>Monto solicitado</b>
             <p>{{ formatearMoneda(monto_solicitar) }}</p>
+        </div>
+
+        <div v-if="estado == 'Preaprobado'" class="col-2">
+            <button
+                class="btn mr-1 btn-sm btn-outline-danger btn-round mt-2"
+                data-toggle="tooltip" title="Ver"
+                @click="descargarPre()">
+                <i class="fas fa-download"> Descargar Pre-aprobado</i>
+            </button>
         </div>
 
         <table class="table table-bordered mt-4">
@@ -688,7 +707,7 @@ const calcularMora = (montoVencido, fecha, capital, interes) => {
     <div v-else class="row">
 
         <div class="col-3">
-            <b>Tasa de interés</b>
+            <b>Tasa de interés aqui</b>
             <p>{{ tasa }}%</p>
         </div>
 
@@ -706,6 +725,7 @@ const calcularMora = (montoVencido, fecha, capital, interes) => {
             <b>Capital</b>
             <p>{{ formatearMoneda(capital) }}</p>
         </div>
+
 
         <table class="table table-bordered mt-4">
             <thead>

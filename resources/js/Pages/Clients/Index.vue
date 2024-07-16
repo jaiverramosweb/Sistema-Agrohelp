@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, computed, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import LayoutCLient from '@/Layouts/LayoutClient.vue';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
@@ -427,7 +427,7 @@ const descargarPre = (id) => {
                             <h4 class="card-title">Lista de solictudes</h4>
                             <div class="card-tools">
                                 <button class="btn btn-sm btn-primary" @click="simuladorMonto">
-                                    <i class="fas fa-plus"></i> Hacer solicitud </button>
+                                    <i class="fas fa-plus"></i> Hacer simulación </button>
                             </div>
                         </div>
 
@@ -664,7 +664,7 @@ const descargarPre = (id) => {
                                 :href="`/primera-solicitud/${infoCliente.id}/${monto_solicitar}/${tiempo_pagar}`">
                             Solicitar
                             </Link> -->
-                            <button type="button" @click="solicitarCredito()" class="btn btn-primary">Solicitar</button>
+                            <!-- <button type="button" @click="solicitarCredito()" class="btn btn-primary">Solicitar</button> -->
                         </div>
                     </div>
                 </div>

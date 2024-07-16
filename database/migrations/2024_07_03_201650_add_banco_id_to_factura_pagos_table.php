@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('factura_pagos', function (Blueprint $table) {
             $table->integer('banco_id')->nullable();
+            $table->integer('retencion')->nullable();
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('factura_pagos', function (Blueprint $table) {
             $table->dropColumn('banco_id');
+            $table->dropColumn('retencion');
         });
     }
 };

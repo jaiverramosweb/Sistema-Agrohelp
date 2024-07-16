@@ -86,6 +86,13 @@ class AsesorController extends Controller
         return response()->json($asesor, 201);
     }
 
+    public function getAll()
+    {
+        $asesor = Asesore::all();
+
+        return response()->json($asesor, 201);
+    }
+
     public function update(Request $request, $id)
     {
         $asesor = Asesore::find($id);

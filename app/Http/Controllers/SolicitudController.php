@@ -134,9 +134,12 @@ class SolicitudController extends Controller
     {
         $sol = new SolServicio();
         $sol->clientes_id     = $request->client_id;
+        $sol->asesor_id       = $request->asesor_id;
         $sol->producto_id     = 0;
         $sol->linea_id        = isset($request->linea_id) ? $request->linea_id : 0;
         $sol->monto           = $request->monto_solicitar;
+        $sol->valor_activo           = isset($request->valor_activo) ? $request->valor_activo : 0;
+        $sol->canon_extraordinario   = isset($request->canon_extraordinario) ? $request->canon_extraordinario : 0;     
         $sol->tiempo          = $request->tiempo_pagar;
         $sol->tasa_interes    = $request->ineteres;
         $sol->tipo_interes    = $request->tipo_interes;
@@ -159,11 +162,11 @@ class SolicitudController extends Controller
             ->join('documentacions', 'caracteristicas_documentacions.documentacions_id', 'documentacions.id')
             ->get();
 
-        $sol->referencias = ReferenciaCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->linea = LineaCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->parimonio = PatrimonioCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->ingreso = IngresoEgresoCredito::where('sol_servicios_id', $sol->id)->first();
-        $sol->creditos = TarjetasCredito::where('sol_servicios_id', $sol->id)->first();
+        $sol->referencias = ReferenciaCredito::where('clientes_id', $cliente->id)->first();
+        $sol->linea = LineaCredito::where('clientes_id', $cliente->id)->first();
+        $sol->parimonio = PatrimonioCredito::where('clientes_id', $cliente->id)->first();
+        $sol->ingreso = IngresoEgresoCredito::where('clientes_id', $cliente->id)->first();
+        $sol->creditos = TarjetasCredito::where('clientes_id', $cliente->id)->first();
 
 
         return Inertia::render('Clients/PrimeraSolicitud', [
@@ -539,11 +542,11 @@ class SolicitudController extends Controller
 
         // dd($sol);
         $sol->cliente = Client::find($sol->clientes_id);
-        $sol->referencias = ReferenciaCredito::where('sol_servicios_id', $sol->cliente->id)->first();
-        $sol->linea = LineaCredito::where('sol_servicios_id', $sol->cliente->id)->first();
-        $sol->parimonio = PatrimonioCredito::where('sol_servicios_id', $sol->cliente->id)->first();
-        $sol->ingreso = IngresoEgresoCredito::where('sol_servicios_id', $sol->cliente->id)->first();
-        $sol->creditos = TarjetasCredito::where('sol_servicios_id', $sol->cliente->id)->first();
+        $sol->referencias = ReferenciaCredito::where('clientes_id', $sol->cliente->id)->first();
+        $sol->linea = LineaCredito::where('clientes_id', $sol->cliente->id)->first();
+        $sol->parimonio = PatrimonioCredito::where('clientes_id', $sol->cliente->id)->first();
+        $sol->ingreso = IngresoEgresoCredito::where('clientes_id', $sol->cliente->id)->first();
+        $sol->creditos = TarjetasCredito::where('clientes_id', $sol->cliente->id)->first();
 
         // return PDF::loadView('pdf.solicitud')->stream('archivo.pdf');
         // $pdf = Pdf::loadView('pdf.solicitud', compact('sol'));
@@ -555,7 +558,7 @@ class SolicitudController extends Controller
 
     public function downloadPre($id)
     {
-        $sol = SolServicio::select('id', 'producto_id', 'clientes_id', 'tiempo', 'monto', 'tasa_interes')->find($id);
+        $sol = SolServicio::select('id', 'producto_id', 'clientes_id', 'tiempo', 'monto', 'tasa_interes', 'valor_activo', 'canon_extraordinario', 'cobro_intereses')->find($id);
         $sol->cliente = Client::find($sol->clientes_id);
 
         // return view('pdf.preaprobado', compact('sol'));
@@ -621,6 +624,7 @@ class SolicitudController extends Controller
 
         $factura = FacturaPago::create([
             'pago'              => $request->pagos,
+            'retencion'         => $request->retencion,
             'fecha_pagar'       => $request->fecha_pagar,
             'sol_servicios_id'  =>  $credito->sol_servicios_id,
             'metodo_pago_id'    =>  $request->metodo_pago,
@@ -631,6 +635,7 @@ class SolicitudController extends Controller
 
         foreach ($request->tabla_pagos as $value) {
             $cuota = strval($value['cuota']);
+            $cuota2 = strval($value['cuota2']);
             $amortization = Amortization::find($value['id']);
             // dd($amortization);
             $amortization->cuota                = $cuota;
@@ -643,7 +648,7 @@ class SolicitudController extends Controller
             $amortization->mora_pagado          = strval($value['mora2']);
             $amortization->amortizacion_pagado  = strval($value['amortizacion_pagado']);
             $amortization->saldo_pendiente      = strval($value['saldo_pagar']);
-            $amortization->estado               = $cuota == 0 ? true : false;
+            $amortization->estado               = $cuota2 == 0 ? true : false;
             $amortization->save();
             
             PagoAmortizacion::create([

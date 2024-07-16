@@ -107,8 +107,8 @@ class PagoController extends Controller
         $pagos = PagoAmortizacion::where('factura_pagos_id', $id)->get();
 
         foreach ($pagos as $pago) {
-            $amortizacion = Amortization::select('id', 'sol_servicios_id')->where('id', $pago->amortizations_id)->first();
-            $solservicio = SolServicio::select('id', 'linea_id')->where('id', $amortizacion->sol_servicios_id)->first();
+            $factura = FacturaPago::select('id', 'sol_servicios_id')->where('id', $pago->factura_pagos_id)->first();
+            $solservicio = SolServicio::select('id', 'linea_id')->where('id', $factura->sol_servicios_id)->first();
             $pago->credito = CaracteristicasProducto::select('id', 'nombre')->where('id', $solservicio->linea_id)->first();
         }
 
@@ -119,17 +119,32 @@ class PagoController extends Controller
     {
         $pagoAmor = FacturaPago::find($id);
         $pagoAmor->pago_amortiz = PagoAmortizacion::where('factura_pagos_id', $id)->get();
+        // dd($pagoAmor->pago_amortiz);
+
+        $isTable = false;
         
         foreach ($pagoAmor->pago_amortiz as $pago) {
-            $pago->amortizacion = Amortization::find($pago->amortizations_id);
-            $solservicio = SolServicio::select('id', 'linea_id')->where('id', $pago->amortizacion->sol_servicios_id)->first();
-            $pago->credito = CaracteristicasProducto::select('id', 'nombre')->where('id', $solservicio->linea_id)->first();
+
+            if($pago->amortizations_id !== 0){
+                $pago->amortizacion = Amortization::find($pago->amortizations_id);
+                $solservicio = SolServicio::select('id', 'linea_id')->where('id', $pago->amortizacion->sol_servicios_id)->first();
+                $pago->credito = CaracteristicasProducto::select('id', 'nombre')->where('id', $solservicio->linea_id)->first();
+                $isTable = true;
+            } else {
+                $solservicio = SolServicio::select('id', 'linea_id')->where('id', $pagoAmor->sol_servicios_id)->first();
+                $pago->credito = CaracteristicasProducto::select('id', 'nombre')->where('id', $solservicio->linea_id)->first();
+            }
+
         }
 
         // $pagoAmor->amortiz = Amortization::find($pagoAmor->amortizations_id);
         $sol = SolServicio::find( $pagoAmor->sol_servicios_id);
         $pagoAmor->cliente = Client::select('nombre', 'documento')->find($sol->clientes_id);
         $pagoAmor->metodo = MetodoPago::find($pagoAmor->metodo_pago_id);
+        if($isTable == false){
+            $pagoAmor->tipo_credito = CaracteristicasProducto::select('id', 'nombre')->where('id', $sol->linea_id)->first();
+        }
+        $pagoAmor->is_table = $isTable;
 
         // dd($pagoAmor);
 

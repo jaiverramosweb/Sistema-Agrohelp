@@ -157,6 +157,7 @@ class CreditosController extends Controller
     public function saveAbono(Request $request)
     {
         $credito = Amortization::where('sol_servicios_id', $request->id)->first();
+
         Amortization::where('sol_servicios_id', $request->id)->where('estado', '!=', 1)->delete();
 
         foreach ($request->tablaAmortizacion as $value) {
@@ -179,6 +180,7 @@ class CreditosController extends Controller
 
         $factura = FacturaPago::create([
             'pago'              => $request->monto,
+            'retencion'         => $request->retencion,
             'fecha_pagar'       => $request->fecha_pagar,
             'sol_servicios_id'  =>  $credito->sol_servicios_id,
             'tipo'              =>  $request->tipo,
@@ -188,7 +190,7 @@ class CreditosController extends Controller
         ]);
 
         PagoAmortizacion::create([
-            'amortizations_id' => $credito->id,
+            'amortizations_id' => 0,
             'factura_pagos_id' => $factura->id,
             'metodo_pago_id'   => $request->metodo_pago,
             'pago'             => $request->monto,

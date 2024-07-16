@@ -1,38 +1,24 @@
 <script setup>
-import { onMounted,  ref } from 'vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import axios from 'axios';
+import { onMounted, ref } from 'vue';
+import LayoutCLient from '@/Layouts/LayoutClient.vue';
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 import 'sweetalert2/dist/sweetalert2.css'
+import axios from 'axios';
+import UserReferencia from '../Keller/Clients/components/UserReferencia.vue';
+import UserCredito from '../Keller/Clients/components/UserCredito.vue';
+import UserPatrimonio from '../Keller/Clients/components/UserPatrimonio.vue';
+import UserIngreso from '../Keller/Clients/components/UserIngreso.vue';
+import UserTarjeta from '../Keller/Clients/components/UserTarjeta.vue';
 
-const props = defineProps(['id'])
-
-import UserReferencia from './components/UserReferencia.vue';
-import UserCredito from './components/UserCredito.vue';
-import UserPatrimonio from './components/UserPatrimonio.vue';
-import UserIngreso from './components/UserIngreso.vue';
-import UserTarjeta from './components/UserTarjeta.vue';
+const props = defineProps(['cliente'])
 
 onMounted(() => {
-
-if(props.id != 0){
-    getInfoUser()
-} 
-
+    infoUser.value = props.cliente
+    getInfo(props.cliente)
+    console.log(props.cliente)
 })
 
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-})
-
+const infoUser = ref('')
 
 const usuario_id = ref(0)
 
@@ -40,7 +26,6 @@ const tipo_documento = ref('')
 const documento = ref('')
 const nombre = ref('')
 const email = ref('')
-const password = ref('')
 
 const edad = ref('')
 const domicilio = ref('')
@@ -85,211 +70,65 @@ const nombre_conyuge = ref('')
 const ocupacion_conyuge = ref('')
 const empresa_conyuge = ref('')
 
-const items = ref('')
-
-const saveInfoClient = () => {
-    axios.post('/clients', {
-        tipo_documento: tipo_documento.value,
-        documento: documento.value,
-        nombre: nombre.value,
-        email: email.value,
-        password: password.value,
-        edad: edad.value,
-        domicilio: domicilio.value,
-        direccion_pers: direccion_pers.value,
-        telefono: telefono.value,
-        direccion_comercial: direccion_comercial.value,
-        telefono_comercial: telefono_comercial.value,
-        direccion_judicial: direccion_judicial.value,
-        telefono_judicial: telefono_judicial.value,
-        representante: representante.value,
-        representante_doc: representante_doc.value,
-        tipo_cliente: tipo_cliente.value,
-        autorretenedor: autorretenedor.value,
-        persona_pago: persona_pago.value,
-        direccion_pago: direccion_pago.value,
-        telefono_pago: telefono_pago.value,
-        dia_pago: dia_pago.value,
-        hora_pago: hora_pago.value,
-        comentatio_pago: comentatio_pago.value,
-        estado_civil: estado_civil.value,
-        direccion_recidencia: direccion_recidencia.value,
-        telefono_recidencia: telefono_recidencia.value,
-        ciudad_recidencia: ciudad_recidencia.value,
-        empresa: empresa.value,
-        empresa_direccion: empresa_direccion.value,
-        empresa_telefono: empresa_telefono.value,
-        cargo_actual: cargo_actual.value,
-        antoguedad_empresa: antoguedad_empresa.value,
-        personas_cargo: personas_cargo.value,
-        vivienda: vivienda.value,
-        camara_comercio: camara_comercio.value,
-        profesion: profesion.value,
-        nombre_negocio: nombre_negocio.value,
-        tipo_direccion: tipo_direccion.value,
-        direccion: direccion.value,
-        ciudad: ciudad.value,
-        departamento: departamento.value,
-        ciudad_solicitud: ciudad_solicitud.value,
-        tipo_declarante: tipo_declarante.value,
-        independiente: independiente.value,
-        nombre_conyuge: nombre_conyuge.value,
-        ocupacion_conyuge: ocupacion_conyuge.value,
-        empresa_conyuge: empresa_conyuge.value,
-
-    }).then(({ data }) => {
-        usuario_id.value = data.client.id
-        items.value = data.items
-        Toast.fire({
-            icon: 'success',
-            title: 'Registro creado con exito'
-        })
-
-        console.log(usuario_id.value)
-    })
+const getInfo = (data) => {
+    usuario_id.value = data.id
+    tipo_documento.value = data.tipo_documento
+    documento.value = data.documento
+    nombre.value = data.nombre
+    email.value = data.email
+    edad.value = data.edad
+    domicilio.value = data.domicilio
+    direccion_pers.value = data.direccion_pers
+    telefono.value = data.telefono
+    direccion_comercial.value = data.direccion_comercial
+    telefono_comercial.value = data.telefono_comercial
+    direccion_judicial.value = data.direccion_judicial
+    telefono_judicial.value = data.telefono_judicial
+    representante.value = data.representante
+    representante_doc.value = data.representante_doc
+    tipo_cliente.value = data.tipo_cliente
+    autorretenedor.value = data.autorretenedor
+    persona_pago.value = data.persona_pago
+    direccion_pago.value = data.direccion_pago
+    telefono_pago.value = data.telefono_pago
+    dia_pago.value = data.dia_pago
+    hora_pago.value = data.hora_pago
+    comentatio_pago.value = data.comentatio_pago
+    estado_civil.value = data.estado_civil
+    direccion_recidencia.value = data.direccion_recidencia
+    telefono_recidencia.value = data.telefono_recidencia
+    ciudad_recidencia.value = data.ciudad_recidencia
+    empresa.value = data.empresa
+    empresa_direccion.value = data.empresa_direccion
+    empresa_telefono.value = data.empresa_telefono
+    cargo_actual.value = data.cargo_actual
+    antoguedad_empresa.value = data.antoguedad_empresa
+    personas_cargo.value = data.personas_cargo
+    vivienda.value = data.vivienda
+    camara_comercio.value = data.camara_comercio
+    profesion.value = data.profesion
+    nombre_negocio.value = data.nombre_negocio
+    tipo_direccion.value = data.tipo_direccion
+    direccion.value = data.direccion
+    ciudad.value = data.ciudad
+    departamento.value = data.departamento
+    ciudad_solicitud.value = data.ciudad_solicitud
+    tipo_declarante.value = data.tipo_declarante
+    independiente.value = data.independiente
+    nombre_conyuge.value = data.nombre_conyuge
+    ocupacion_conyuge.value = data.ocupacion_conyuge
+    empresa_conyuge.value = data.empresa_conyuge
 }
 
-const getInfoUser = () => {
-    axios.get(`/info-client/${props.id}`).then(({ data }) => {
-        usuario_id.value = data.id
-        tipo_documento.value = data.tipo_documento
-        documento.value = data.documento
-        nombre.value = data.nombre
-        email.value = data.email
-        edad.value = data.edad
-        domicilio.value = data.domicilio
-        direccion_pers.value = data.direccion_pers
-        telefono.value = data.telefono
-        direccion_comercial.value = data.direccion_comercial
-        telefono_comercial.value = data.telefono_comercial
-        direccion_judicial.value = data.direccion_judicial
-        telefono_judicial.value = data.telefono_judicial
-        representante.value = data.representante
-        representante_doc.value = data.representante_doc
-        tipo_cliente.value = data.tipo_cliente
-        autorretenedor.value = data.autorretenedor
-        persona_pago.value = data.persona_pago
-        direccion_pago.value = data.direccion_pago
-        telefono_pago.value = data.telefono_pago
-        dia_pago.value = data.dia_pago
-        hora_pago.value = data.hora_pago
-        comentatio_pago.value = data.comentatio_pago
-        estado_civil.value = data.estado_civil
-        direccion_recidencia.value = data.direccion_recidencia
-        telefono_recidencia.value = data.telefono_recidencia
-        ciudad_recidencia.value = data.ciudad_recidencia
-        empresa.value = data.empresa
-        empresa_direccion.value = data.empresa_direccion
-        empresa_telefono.value = data.empresa_telefono
-        cargo_actual.value = data.cargo_actual
-        antoguedad_empresa.value = data.antoguedad_empresa
-        personas_cargo.value = data.personas_cargo
-        vivienda.value = data.vivienda
-        camara_comercio.value = data.camara_comercio
-        profesion.value = data.profesion
-        nombre_negocio.value = data.nombre_negocio
-        tipo_direccion.value = data.tipo_direccion
-        direccion.value = data.direccion
-        ciudad.value = data.ciudad
-        departamento.value = data.departamento
-        ciudad_solicitud.value = data.ciudad_solicitud
-        tipo_declarante.value = data.tipo_declarante
-        independiente.value = data.independiente
-        nombre_conyuge.value = data.nombre_conyuge
-        ocupacion_conyuge.value = data.ocupacion_conyuge
-        empresa_conyuge.value = data.empresa_conyuge
-    })
-}
 
-const saveInfoClientUpdate = () => {
-    axios.put(`/clients/${usuario_id.value}`, {
-        tipo_documento: tipo_documento.value,
-        documento: documento.value,
-        nombre: nombre.value,
-        email: email.value,
-        password: password.value,
-        edad: edad.value,
-        domicilio: domicilio.value,
-        direccion_pers: direccion_pers.value,
-        telefono: telefono.value,
-        direccion_comercial: direccion_comercial.value,
-        telefono_comercial: telefono_comercial.value,
-        direccion_judicial: direccion_judicial.value,
-        telefono_judicial: telefono_judicial.value,
-        representante: representante.value,
-        representante_doc: representante_doc.value,
-        tipo_cliente: tipo_cliente.value,
-        autorretenedor: autorretenedor.value,
-        persona_pago: persona_pago.value,
-        direccion_pago: direccion_pago.value,
-        telefono_pago: telefono_pago.value,
-        dia_pago: dia_pago.value,
-        hora_pago: hora_pago.value,
-        comentatio_pago: comentatio_pago.value,
-        estado_civil: estado_civil.value,
-        direccion_recidencia: direccion_recidencia.value,
-        telefono_recidencia: telefono_recidencia.value,
-        ciudad_recidencia: ciudad_recidencia.value,
-        empresa: empresa.value,
-        empresa_direccion: empresa_direccion.value,
-        empresa_telefono: empresa_telefono.value,
-        cargo_actual: cargo_actual.value,
-        antoguedad_empresa: antoguedad_empresa.value,
-        personas_cargo: personas_cargo.value,
-        vivienda: vivienda.value,
-        camara_comercio: camara_comercio.value,
-        profesion: profesion.value,
-        nombre_negocio: nombre_negocio.value,
-        tipo_direccion: tipo_direccion.value,
-        direccion: direccion.value,
-        ciudad: ciudad.value,
-        departamento: departamento.value,
-        ciudad_solicitud: ciudad_solicitud.value,
-        tipo_declarante: tipo_declarante.value,
-        independiente: independiente.value,
-        nombre_conyuge: nombre_conyuge.value,
-        ocupacion_conyuge: ocupacion_conyuge.value,
-        empresa_conyuge: empresa_conyuge.value,
-    }).then(({data}) => {
-        Toast.fire({
-            icon: 'success',
-            title: 'Registro actualizado con exito'
-        })
-    })
-}
 
 </script>
 
 <template>
-    <AuthenticatedLayout title="Nuevo cliente">
-        <div class="preloader flex-column justify-content-center align-items-center" v-if="loader">
-            <img class="animation__shake" src="/assets/img/CGRLogo.png" alt="AdminLTELogo" height="100" width="200">
-        </div>
-
-        <template #header>
-            <div class="row mb-2">
-
-                <div class="col-sm-6">
-                    <!-- <button v-if="permissions.create" type="button" class="btn btn-success" data-toggle="modal"
-                        data-target="#modalClient">
-                        + Nuevo Cliente
-                    </button> -->
-                </div>
-
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="/dashboard">Inicio</a></li>
-                        <li class="breadcrumb-item active">Clientes</li>
-                        <li class="breadcrumb-item active">Nuevo cliente</li>
-                    </ol>
-                </div>
-
-            </div>
-        </template>
-
+    <LayoutCLient>
         <div class="row">
 
-            <div class="col-lg-12">
+            <div class="col-12">
 
                 <div class="card">
 
@@ -325,7 +164,7 @@ const saveInfoClientUpdate = () => {
                             <div class="active tab-pane" id="info">
                                 <div class="row">
 
-                                    <div class="form-group col-4">
+                                    <!-- <div class="form-group col-4">
                                         <label for="tipo_documento">Tipo de Identificación <span class="text-danger">
                                                 *</span></label>
                                         <select id="inputState" class="form-control" v-model="tipo_documento">
@@ -334,7 +173,7 @@ const saveInfoClientUpdate = () => {
                                             <option value="NIT">NIT</option>
                                         </select>
 
-                                    </div>
+                                    </div> -->
 
 
                                     <div class="form-group col-4">
@@ -366,7 +205,7 @@ const saveInfoClientUpdate = () => {
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-6">
+                                    <div class="form-group col-4">
                                         <label for="documento">Correo electrónico <span class="text-danger">
                                                 *</span></label>
                                         <input v-model="email" type="email" class="form-control" id="telefono_judicial"
@@ -377,7 +216,7 @@ const saveInfoClientUpdate = () => {
                                         </div>
                                     </div>
 
-                                    <div class="form-group col-6">
+                                    <!-- <div class="form-group col-6">
                                         <label for="documento">Contraseña <span class="text-danger">
                                                 *</span></label>
                                         <input v-model="password" type="password" class="form-control" id="telefono_judicial"
@@ -386,7 +225,7 @@ const saveInfoClientUpdate = () => {
                                             campo es
                                             requerido
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div v-if="tipo_documento == 'CC'" class="form-group col-4">
                                         <label for="edad">Edad <span class="text-danger">
@@ -504,7 +343,7 @@ const saveInfoClientUpdate = () => {
                                         </div>
                                     </div>
 
-                                    <div v-if="tipo_documento == 'CC'" class="form-group col-6">
+                                    <div v-if="tipo_documento == 'CC'" class="form-group col-8">
                                         <label for="edad">Cuidad y Dept. <span class="text-danger">
                                                 *</span></label>
                                         <input v-model="ciudad_recidencia" type="text" class="form-control"
@@ -836,23 +675,23 @@ const saveInfoClientUpdate = () => {
                             </div>
 
                             <div v-if="usuario_id != 0" class="tab-pane" id="referencia">
-                                 <UserReferencia :usuario_id="usuario_id" />
+                                <UserReferencia :usuario_id="usuario_id" />
                             </div>
 
                             <div v-if="usuario_id != 0" class="tab-pane" id="linea">
-                                 <UserCredito :usuario_id="usuario_id" />
+                                <UserCredito :usuario_id="usuario_id" />
                             </div>
 
                             <div v-if="usuario_id != 0" class="tab-pane" id="patrimonio">
-                                 <UserPatrimonio :usuario_id="usuario_id" />
+                                <UserPatrimonio :usuario_id="usuario_id" />
                             </div>
 
                             <div v-if="usuario_id != 0" class="tab-pane" id="ingresos">
-                                 <UserIngreso :usuario_id="usuario_id" />
+                                <UserIngreso :usuario_id="usuario_id" />
                             </div>
 
                             <div v-if="usuario_id != 0" class="tab-pane" id="tarjeta">
-                                 <UserTarjeta :usuario_id="usuario_id" />
+                                <UserTarjeta :usuario_id="usuario_id" />
                             </div>
 
                         </div>
@@ -863,7 +702,6 @@ const saveInfoClientUpdate = () => {
 
             </div>
 
-        </div>
-
-    </AuthenticatedLayout>
+</div>
+    </LayoutCLient>
 </template>

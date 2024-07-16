@@ -69,11 +69,11 @@
                 </tr>
                 <tr>
                     <td class="border">Valor del Activo</td>
-                    <td class="border float-right">227.613.820.oo</td>
+                    <td class="border float-right">{{formatearMoneda($sol->valor_activo)}}</td>
                 </tr>
                 <tr>
                     <td class="border">Canon Extraordinario</td>
-                    <td class="border float-right">85.000.000.oo</td>
+                    <td class="border float-right">{{formatearMoneda($sol->canon_extraordinario)}}</td>
                 </tr>
                 <tr>
                     <td class="border">Valor a Financiar</td>
@@ -85,7 +85,16 @@
                 </tr>
                 <tr>
                     <td class="border">Periodicidad de Pago</td>
-                    <td class="border float-right">Pago de interés Mensual y abonos a Capital cada 6 Meses </td>
+                    <td class="border float-right"> 
+                        @if ($sol->cobro_intereses == 'Mensual')
+                            <span>Pago de interés y abonos a Capital es Mensual</span>
+                        @elseif($sol->cobro_intereses == 'Trimestral')
+                        <span>Pago de interés Mensual y abonos a Capital cada 3 Meses</span>
+                        @else
+                            <span>Pago de interés Mensual y abonos a Capital cada 6 Meses</span>
+                        @endif
+
+                    </td>
                 </tr>
                 <tr>
                     <td class="border">Tasa de Interés</td>

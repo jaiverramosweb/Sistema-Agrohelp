@@ -27,6 +27,10 @@ const Toast = Swal.mixin({
 
 const usuario_id = ref(0)
 
+const mostrar = ref(false)
+const mostrar_dos = ref(false)
+const mostrar_vehoculo = ref(false)
+
 const id = ref(0)
 
 const descripcion_bien = ref('')
@@ -131,6 +135,18 @@ axios.put(`/save-clients-patri/${props.usuario_id}`, {
         title: 'Registro creado con exito'
     })
 })
+}
+
+const mostrarUno = () => {
+    mostrar.value = true
+}
+
+const mostrarDos = () => {
+    mostrar_dos.value = true
+}
+
+const mostrarVeliculo = () => {
+    mostrar_vehoculo.value = true
 }
 
 const getInfoPatri = () => {

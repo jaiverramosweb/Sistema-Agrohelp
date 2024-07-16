@@ -34,9 +34,9 @@ const getClient = () => {
                     <li class="nav-item">
                         <a href="/inicio" class="nav-link">Inicio</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a href="/creditos" class="nav-link">Mis créditos</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <a href="/perfil-cliente" class="nav-link">Perfil</a>
                     </li>

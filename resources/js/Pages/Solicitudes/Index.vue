@@ -142,6 +142,7 @@ const changePage = (page) => {
 // FIN de metodos Requeridos para iniciar modulo
 
 const client_id = ref(0)
+const asesor_id = ref(0)
 const monto = ref(0)
 const tiempo = ref(0)
 const linea_id = ref(0)
@@ -150,11 +151,16 @@ const interes = ref(0)
 const interes_mas = ref(0)
 const tipo_amortizacion = ref('')
 
+const valor_activo = ref(0)
+const canon_extraordinario = ref(0)
+
 const dataIntereses = ref([])
 const dataClient = ref([])
 const dataSolicitudes = ref([])
 const tablaAmortizacion = ref([])
 const LineaCreditos = ref([])
+const dataAsesores = ref([])
+
 
 const newCredit = () => {
     axios.get('/get-intereses').then(({data}) => {
@@ -164,6 +170,7 @@ const newCredit = () => {
 
     getClient()
     getLineaCredito()
+    getAsesores()
 
     $('#modalSolicitud').modal('show')
 }
@@ -178,6 +185,12 @@ const getClient = () => {
         //     }
         // })
         dataClient.value = data
+    })
+}
+
+const getAsesores = () => {
+    axios.get('/get-asesores').then(({data}) => {
+        dataAsesores.value = data
     })
 }
 
@@ -348,6 +361,8 @@ const solicitarCredit = () => {
     axios.post('/solicitud-inicial', {
         client_id: client_id.value,
         monto_solicitar: monto.value,
+        valor_activo: valor_activo.value,
+        canon_extraordinario: canon_extraordinario.value,
         tiempo_pagar: tiempo.value,
         ineteres: interes.value,
         tipo_interes: tipo_interes.value,      
@@ -639,12 +654,23 @@ watch(tipo_interes, () =>{
                     <div class="modal-dialog modal-xl">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modalSolicitudLabel">+ Nuevo solicitud</h5>
+                                <h5 class="modal-title" id="modalSolicitudLabel">+ Nueva solicitud</h5>
 
                             </div>
                             <div class="modal-body">
 
                                 <div class="row">
+
+                                    <div class="form-group col-3" has-validation>
+                                        <label for="monto">Asesor <span
+                                                class="text-danger">
+                                                *</span></label>
+                                        <select id="inputState" class="form-control" v-model="asesor_id">
+                                            <option value="0" selected>Seleccione...</option>
+                                            <option v-for="asesor in dataAsesores" :key="asesor.id" :value="asesor.id">{{ asesor.name }}</option>
+                                        </select>
+
+                                    </div>
 
                                     <div class="form-group col-3" has-validation>
                                         <label for="monto">Cliente <span
@@ -667,7 +693,7 @@ watch(tipo_interes, () =>{
                                     </div>
 
                                     <div class="form-group col-3" has-validation>
-                                        <label for="monto">Liena de credito <span
+                                        <label for="monto">Linea de crédito <span
                                                 class="text-danger">
                                                 *</span></label>
                                         <select id="inputState" class="form-control" v-model="linea_id">
@@ -675,13 +701,30 @@ watch(tipo_interes, () =>{
                                             <option v-for="linea in LineaCreditos" :key="linea.id" :value="linea.id">{{ linea.nombre }}</option>
                                         </select>
                                     </div>
+
+                                    <div class="form-group col-3" has-validation>
+                                        <label for="monto">Valor del Activo <span
+                                                class="valor_activo-danger">
+                                                *</span></label>
+                                        <input v-model="valor_activo" type="number" class="form-control"
+                                            id="valor_activo" aria-describedby="valor_activo"
+                                            autocomplete="off">
+                                    </div>
                                     
+                                    <div class="form-group col-3" has-validation>
+                                        <label for="canon_extraordinario">Canon Extraordinario  <span
+                                                class="text-danger">
+                                                *</span></label>
+                                        <input v-model="canon_extraordinario" type="number" class="form-control"
+                                            id="canon_extraordinario" aria-describedby="canon_extraordinario"
+                                            autocomplete="off">
+                                    </div>
 
                                     <div class="form-group col-3" has-validation>
                                         <label for="monto">Monto a solicitar <span
                                                 class="text-danger">
                                                 *</span></label>
-                                        <input v-model="monto" type="text" class="form-control"
+                                        <input v-model="monto" type="number" class="form-control"
                                             id="monto" aria-describedby="monto"
                                             autocomplete="off">
                                     </div>
@@ -696,7 +739,7 @@ watch(tipo_interes, () =>{
 
 
                                     <div class="form-group col-3">
-                                        <label for="inputState">Tipo de interes <span class="text-danger">*</span></label>
+                                        <label for="inputState">Tipo de interés <span class="text-danger">*</span></label>
                                         <select id="inputState" class="form-control" v-model="tipo_interes">
                                             <option value="" selected>Seleccione...</option>
                                             <option v-for="int in dataIntereses" :key="int.id" :value="int.name">{{ int.name }}</option>
@@ -704,7 +747,7 @@ watch(tipo_interes, () =>{
                                     </div>
 
                                     <div class="form-group col-3" has-validation>
-                                        <label for="tiempo">interes <span class="text-danger">
+                                        <label for="tiempo">Interés <span class="text-danger">
                                                 *</span></label>
                                         <input v-model="interes" type="text" class="form-control" id="tiempo"
                                             aria-describedby="tiempo" autocomplete="off">
